@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 
 trait ApiResponseTrait
@@ -14,9 +15,13 @@ trait ApiResponseTrait
      * @param int $statusCode
      * @return JsonResponse
      */
-    protected function successResponse(string $message, array $additionalData = [], int $statusCode = 200): JsonResponse
+    protected function successResponse(string $message, Collection|array|null $additionalData = null, int $statusCode = 200): JsonResponse
     {
-        $response = array_merge(['message' => $message], $additionalData);
+        if ($additionalData instanceof Collection) {
+            $additionalData = $additionalData->toArray();
+        }
+    
+        $response = array_merge(['message' => $message], $additionalData ?? []);
 
         return response()->json($response, $statusCode);
     }

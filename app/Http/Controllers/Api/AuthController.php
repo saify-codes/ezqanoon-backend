@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Traits\ApiResponseTrait;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ForgotRequest;
+use App\Http\Requests\Api\ResetRequest;
 use App\Http\Requests\Api\SigninRequest;
 use App\Http\Requests\Api\SignupRequest;
 use App\Mail\Api\Verification;
@@ -32,6 +33,8 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        $this->generateAndSendToken($user, 'verify', env('NEXT_URL'));
+
         return $this->successResponse('User created', compact('user'), 201);
     }
 
@@ -49,17 +52,19 @@ class AuthController extends Controller
         if (!Hash::check($request->password, $user->password)) {
             return $this->errorResponse('Invalid email or password', 400);
         }
-        
+
         if (!$user->verified_email) {
             return $this->errorResponse('Account is not verified', 401);
         }
 
-        $expiryTime = $request->remember ? Carbon::now()->addDays(30) : Carbon::now()->addHours(12);
+        $expiryTime = $request->remember
+            ? Carbon::now()->addDays(30)
+            : Carbon::now()->addHours(12);
 
         $token = $user->createToken('auth_token', expiresAt: $expiryTime)->plainTextToken;
 
         return $this->successResponse('User logged in', [
-            'user'      => $user,
+            'user'      => $user->profile(),
             'token'     => $token,
             'expiresAt' => $expiryTime,
         ]);
@@ -74,67 +79,79 @@ class AuthController extends Controller
         return $this->successResponse('User logged out successfully');
     }
 
-
     /**
-     * forgot
-     *
-     * @param  ForgotRequest $request
-     * @return JsonResponse
+     * Handle "Forgot Password" request
      */
     public function forgot(ForgotRequest $request): JsonResponse
     {
-        // Generate a random token (for example, 16 hex characters)
-        $token = bin2hex(random_bytes(32));
-
-        // Look up the user by email.
-        $user = User::where('email', $request->email)->first();
-
+        $user = $this->getUserByEmail($request->email);
         if (!$user) {
-            return response()->json(['message' => 'User not found.'], 404);
+            return $this->errorResponse('User not found', 404);
         }
 
-        $user->update([
-            'verification_token' => $token,
-            'verification_token_expiry' => Carbon::now()->addMinute(5),
-        ]);
+        // Generate token and send a reset link
+        $this->generateAndSendToken($user, 'reset', env('NEXT_URL'));
 
-        $url = rtrim(env('NEXT_URL'), '/') . '/verify?token=' . $token;
-
-        Mail::to($request->email)->send(new Verification($url));
-
-        return $this->successResponse("verification link sent to <u>{$request->email}</u>");
+        return $this->successResponse("Verification link sent to <u>{$request->email}</u>");
     }
 
     /**
-     * verify
-     *
-     * @param  Request $request
-     * @return JsonResponse
+     * Handle "Reset Password" request
      */
-    public function verify(Request $request): JsonResponse
+    public function reset(ResetRequest $request): JsonResponse
     {
-
-        if (empty($request->token)) {
-            return $this->errorResponse('token missing');
-        }
-
-        $user = User::where('verification_token', $request->token)->first();
-
+        $user = $this->getUserByToken($request->token);
         if (!$user) {
-            return $this->errorResponse('invalid verification link');
-        }
-
-        if (Carbon::now()->isAfter($user->verification_token_expiry)) {
-            return $this->errorResponse('verification link expired');
+            return $this->errorResponse('Invalid or expired token');
         }
 
         $user->update([
-            'verified_email' => true,
-            'verification_token' => null,
+            'verification_token'        => null,
+            'verification_token_expiry' => null,
+            'password'                  => Hash::make($request->password),
+        ]);
+
+        return $this->successResponse("Password reset successfully");
+    }
+
+    /**
+     * Resend verification link
+     */
+    public function sendVerificationLink(ForgotRequest $request): JsonResponse
+    {
+        $user = $this->getUserByEmail($request->email);
+        if (!$user) {
+            return $this->errorResponse('User not found', 404);
+        }
+
+        // Generate token and send a verification link
+        $this->generateAndSendToken($user, 'verify', env('NEXT_URL'));
+
+        return $this->successResponse("Verification link sent to <u>{$request->email}</u>");
+    }
+
+    /**
+     * Verify user email
+     */
+    public function verify(Request $request): JsonResponse
+    {
+        if (empty($request->token)) {
+            return $this->errorResponse('Token missing');
+        }
+
+        $user = $this->getUserByToken($request->token);
+
+        if (!$user) {
+            return $this->errorResponse('Invalid or expired token');
+        }
+
+        $user->update([
+            'verified_email'            => true,
+            'verification_token'        => null,
             'verification_token_expiry' => null,
         ]);
 
-        return $this->successResponse('email verified');
+        return $this->successResponse('Email verified');
     }
 
     /**
@@ -147,24 +164,69 @@ class AuthController extends Controller
 
     /**
      * Mask the given email address.
-     *
-     * @param string $email
-     * @return string
      */
     private function maskEmail(string $email): string
     {
-        // Split the email into the local and domain parts
         [$local, $domain] = explode('@', $email);
 
         if (strlen($local) <= 3) {
             $mask = $local[0] . '*' . $local[2];
-        } else if (strlen($local) <= 4) {
+        } elseif (strlen($local) <= 4) {
             $mask = $local[0] . '**' . $local[3];
         } else {
-            $mask =  substr($local, 0, 2) . str_repeat('*', strlen($local) - 4) . substr($local, -2);
+            $mask = substr($local, 0, 2)
+                . str_repeat('*', strlen($local) - 4)
+                . substr($local, -2);
         }
 
-        // Return the masked email address
         return $mask . '@' . $domain;
+    }
+
+    /**
+     * Retrieve user by email (or return null if not found).
+     */
+    private function getUserByEmail(string $email): ?User
+    {
+        return User::where('email', $email)->first();
+    }
+
+    /**
+     * Retrieve user by valid (non-expired) verification token.
+     * Return null if the token is invalid or expired.
+     */
+    private function getUserByToken(string $token): ?User
+    {
+        $user = User::where('verification_token', $token)->first();
+        if (!$user) {
+            return null;
+        }
+
+        // Check if token is expired
+        if (Carbon::now()->isAfter($user->verification_token_expiry)) {
+            return null;
+        }
+
+        return $user;
+    }
+
+    /**
+     * Generate a new token, update the user, and send verification/reset mail.
+     *
+     * @param  User   $user
+     * @param  string $endpoint  The endpoint ('reset' or 'verify') used to build the final URL
+     * @param  string $baseUrl   The base URL from environment (NEXT_URL)
+     */
+    private function generateAndSendToken(User $user, string $endpoint, string $baseUrl): void
+    {
+        $token = bin2hex(random_bytes(32));
+
+        $user->update([
+            'verification_token'        => $token,
+            'verification_token_expiry' => Carbon::now()->addHours(12),
+        ]);
+
+        $url = rtrim($baseUrl, '/') . '/' . $endpoint . '?token=' . $token;
+
+        Mail::to($user->email)->queue(new Verification($url));
     }
 }

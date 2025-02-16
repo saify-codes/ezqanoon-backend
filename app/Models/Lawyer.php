@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class Lawyer extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -49,10 +48,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
+    
+    /**
+     * profile
+     *
+     * @return void
+     */
     public function profile()
     {
         return $this->only(['name', 'email', 'phone', 'avatar', 'verified_email']);
+    }
+    
+    public function reviews()
+    {
+        return $this->hasMany(Rating::class, 'lawyer_id');
     }
 
     /**
