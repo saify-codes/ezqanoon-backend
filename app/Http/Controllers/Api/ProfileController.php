@@ -6,12 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
     use ApiResponseTrait;
 
+
+    /**
+     * uploadAvatar
+     *
+     * @param  mixed $request
+     * @return JSONResponse
+     */
     public function uploadAvatar(Request $request)
     {
         // Validate the uploaded file
@@ -29,7 +37,7 @@ class ProfileController extends Controller
             $user = Auth::user();
 
             $fileName = time() . '.' . $request->file('avatar')->getClientOriginalExtension();
-            
+
             // Define the storage path with user_id
             $filePath = "users/{$user->id}/";
 
@@ -47,9 +55,64 @@ class ProfileController extends Controller
         return $this->errorResponse('no image uploaded');
     }
 
-    public function getProfile(Request $request){
+    /**
+     * getProfile
+     *
+     * @param  mixed $request
+     * @return JSONResponse
+     * 
+     */
+    public function getProfile(Request $request)
+    {
 
         return $this->successResponse('user profile', ['data' => Auth::user()->profile()]);
+    }
 
+    /**
+     * updateProfile
+     *
+     * @param  mixed $request
+     * @return JSONResponse
+     */
+    public function updateProfile(Request $request)
+    {
+        // Validate input
+        $request->validate([
+            'name'  => 'string',
+            'phone' => 'string',
+        ]);
+
+        // Get the authenticated user
+        $user = Auth::user();
+
+        // Update only the fields present in the request
+        $user->update($request->only('name', 'phone'));
+
+        // Return the updated user profile
+        return $this->successResponse(
+            'Profile updated successfully',
+            ['data' => $user->profile()]
+        );
+    }
+    
+    /**
+     * updatePassword
+     *
+     * @param  mixed $request
+     * @return JSONResponse
+     */
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'password'              => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required|string|min:8',
+        ]);
+
+        $user = Auth::user();
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return $this->successResponse('Password updated successfully');
     }
 }
