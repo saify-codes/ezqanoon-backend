@@ -23,9 +23,7 @@ jobs:
           script: |
             cd /var/www/EzQanoon
             git pull origin main
-            composer install --no-dev --prefer-dist
+            composer update
             php artisan optimize:clear
-            sudo chown -R www-data:www-data /var/www/EzQanoon
-            sudo chmod -R 775 /var/www/EzQanoon/storage /var/www/EzQanoon/bootstrap/cache
             sudo systemctl restart php8.4-fpm
             sudo systemctl restart nginx
