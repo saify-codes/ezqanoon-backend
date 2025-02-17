@@ -25,5 +25,3 @@ jobs:
             git pull origin main
             composer update
             php artisan optimize:clear
-            sudo systemctl restart php8.4-fpm
-            sudo systemctl restart nginx
