@@ -37,3 +37,8 @@ Route::post('/signin', [AuthController::class, 'signin']);
 
 Route::view('/signup', 'lawyer.signup')->name('lawyer.signup');
 Route::post('/signup', [AuthController::class, 'signup']);
+
+Route::get('/verification/resend', [AuthController::class, 'sendVerificationLink'])->name('lawyer.verification.resend');
+
+
+Route::view('/', 'welcome');

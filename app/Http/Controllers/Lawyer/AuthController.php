@@ -36,7 +36,7 @@ class AuthController extends Controller
 
         $this->generateAndSendToken($lawyer, 'verify');
 
-        return redirect()->route('lawyer.signin')->with('message','Account created');
+        return redirect()->route('lawyer.signin')->with('success','We have sent a verification mail to ' . $lawyer->email);
     }
 
     /**
@@ -47,15 +47,19 @@ class AuthController extends Controller
         $lawyer = Lawyer::where('email', $request->email)->first();
 
         if (!$lawyer) {
-            return redirect()->route('laywer.signin')->with('error','Email not found');
+            return redirect()->route('lawyer.signin')->with('error','Email not found');
         }
 
         if (!Hash::check($request->password, $lawyer->password)) {
-            return redirect()->route('laywer.signin')->with('error','Invalid email or password');
+            return redirect()->route('lawyer.signin')->with('error','Invalid email or password');
         }
 
         if (!$lawyer->verified_email) {
-            return redirect()->route('laywer.signin')->with('error','Account is not verified');
+
+            $resendLink = route('lawyer.verification.resend');
+            $message    = "Account is not verified <a href='$resendLink?email=$lawyer->email'  class='underline'>Resend verification link</a>";
+
+            return redirect()->route('lawyer.signin')->with('error', $message);
         }
 
         Auth::login($lawyer, $request->remember);
@@ -110,17 +114,18 @@ class AuthController extends Controller
     /**
      * Resend verification link
      */
-    public function sendVerificationLink(ForgotRequest $request): JsonResponse
+    public function sendVerificationLink(ForgotRequest $request)
     {
         $lawyer = $this->getLawyerByEmail($request->email);
+        
         if (!$lawyer) {
-            return $this->errorResponse('Lawyer not found', 404);
+            return redirect()->route('lawyer.signin')->with('error','Lawyer not found');
         }
 
         // Generate token and send a verification link
         $this->generateAndSendToken($lawyer, 'verify');
 
-        return $this->successResponse("Verification link sent to <u>{$request->email}</u>");
+        return redirect()->route('lawyer.signin')->with("success","Verification link sent to <u>{$request->email}</u>");
     }
 
     /**
