@@ -1,7 +1,7 @@
 <nav class="sidebar">
   <div class="sidebar-header">
     <a href="#" class="sidebar-brand">
-      Noble<span>UI</span>
+      Logo
     </a>
     <div class="sidebar-toggler not-active">
       <span></span>
@@ -16,6 +16,42 @@
         <a href="{{ url('/') }}" class="nav-link">
           <i class="link-icon" data-feather="box"></i>
           <span class="link-title">Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item {{ active_class(['/manage/client']) }}">
+        <a href="{{ url('/manage/client') }}" class="nav-link">
+          <i class="link-icon" data-feather="users"></i>
+          <span class="link-title">Client management</span>
+        </a>
+      </li>
+      <li class="nav-item {{ active_class(['/manage/case']) }}">
+        <a href="{{ url('/manage/client') }}" class="nav-link">
+          <i class="link-icon" data-feather="book-open"></i>
+          <span class="link-title">Case management</span>
+        </a>
+      </li>
+      <li class="nav-item {{ active_class(['/manage/task']) }}">
+        <a href="{{ url('/manage/client') }}" class="nav-link">
+          <i class="link-icon" data-feather="check-square"></i>
+          <span class="link-title">Task management</span>
+        </a>
+      </li>
+      <li class="nav-item {{ active_class(['/calendar-scheduling']) }}">
+        <a href="{{ url('/manage/client') }}" class="nav-link">
+          <i class="link-icon" data-feather="calendar"></i>
+          <span class="link-title">Calendar & scheduling</span>
+        </a>
+      </li>
+      <li class="nav-item {{ active_class(['/billing']) }}">
+        <a href="{{ url('/manage/client') }}" class="nav-link">
+          <i class="link-icon" data-feather="dollar-sign"></i>
+          <span class="link-title">Billing & invoicing</span>
+        </a>
+      </li>
+      <li class="nav-item {{ active_class(['/report']) }}">
+        <a href="{{ url('/manage/client') }}" class="nav-link">
+          <i class="link-icon" data-feather="trending-up"></i>
+          <span class="link-title">Report</span>
         </a>
       </li>
       <li class="nav-item nav-category">web apps</li>
@@ -302,13 +338,7 @@
           </ul>
         </div>
       </li>
-      <li class="nav-item nav-category">Docs</li>
-      <li class="nav-item">
-        <a href="https://www.nobleui.com/laravel/documentation/docs.html" target="_blank" class="nav-link">
-          <i class="link-icon" data-feather="hash"></i>
-          <span class="link-title">Documentation</span>
-        </a>
-      </li>
+      
     </ul>
   </div>
 </nav>

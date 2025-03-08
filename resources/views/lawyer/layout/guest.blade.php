@@ -34,8 +34,6 @@
 
 <body data-base-url="{{ url('/') }}">
 
-    <script src="{{ asset('assets/js/spinner.js') }}"></script>
-
     <div class="main-wrapper" id="app">
         <div class="page-wrapper full-page">
             {{ $slot }}

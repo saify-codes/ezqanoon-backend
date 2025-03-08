@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -26,12 +27,32 @@ return new class extends Migration
             $table->float('price')->nullable();
             $table->string('qualification')->nullable();
             $table->text('description')->nullable();
-            $table->boolean('verified_email')->default(false);
-            $table->string('verification_token')->nullable();
-            $table->dateTime('verification_token_expiry')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
+
+        Schema::create('lawyer_verification_tokens', function (Blueprint $table) {
+            $table->unsignedBigInteger('lawyer_id');
+            $table->string('token');
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+
+            $table->foreign('lawyer_id')
+                ->references('id')
+                ->on('lawyers')
+                ->onDelete('cascade');
+            });
+            
+            Schema::create('lawyer_password_reset_tokens', function (Blueprint $table) {
+                $table->unsignedBigInteger('lawyer_id');
+                $table->string('token');
+                $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+
+                $table->foreign('lawyer_id')
+                    ->references('id')
+                    ->on('lawyers')
+                    ->onDelete('cascade');
+            });
     }
 
     /**
@@ -40,5 +61,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('lawyers');
+        Schema::dropIfExists('lawyer_verification_tokens');
+        Schema::dropIfExists('lawyer_password_reset_tokens');
     }
 };

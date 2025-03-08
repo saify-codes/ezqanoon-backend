@@ -21,9 +21,7 @@ class Lawyer extends Authenticatable
         'password',
         'phone',
         'avatar',
-        'verified_email',
-        'verification_token',
-        'verification_token_expiry',
+        'email_verified_at',
     ];
 
     /**

@@ -6,25 +6,24 @@
                     <div class="row">
                         <div class="col-md-4 pe-md-0">
                             <div class="auth-side-wrapper"
-                                style="background-image: url({{ asset('images/auth-bg.jpg') }})">
+                                style="background-image: url({{ asset('assets/images/auth-bg.jpg') }})">
                             </div>
                         </div>
                         <div class="col-md-8 ps-md-0">
                             <div class="auth-form-wrapper px-4 py-5">
-                                <a href="{{ url('/') }}"
-                                    class="noble-ui-logo d-block mb-2">EzQanoon</a>
+                                <a href="{{ url('/') }}" class="noble-ui-logo d-block mb-2">EzQanoon</a>
                                 <h5 class="text-muted fw-normal mb-4">Welcome back! Log in to your account.</h5>
 
                                 <!-- Display Error Messages -->
                                 @if (session('error'))
                                     <div class="alert alert-danger">
-                                        {{ session('error') }}
+                                        {!! session('error') !!}
                                     </div>
                                 @endif
 
                                 @if (session('success'))
                                     <div class="alert alert-success">
-                                        {{ session('success') }}
+                                        {!! session('success') !!}
                                     </div>
                                 @endif
 
@@ -58,13 +57,9 @@
 
                                     <div>
                                         <button type="submit" class="btn btn-primary me-2 mb-2 mb-md-0">Login</button>
-                                        {{-- <button type="button" class="btn btn-outline-primary btn-icon-text mb-2 mb-md-0">
-                                            <i class="btn-icon-prepend" data-feather="twitter"></i>
-                                            Login with Twitter
-                                        </button> --}}
                                     </div>
 
-                                    <a href="{}" class="d-block mt-2 text-muted">
+                                    <a href="{{route('lawyer.forgot')}}" class="d-block mt-2 text-muted">
                                         Forgot password?
                                     </a>
 

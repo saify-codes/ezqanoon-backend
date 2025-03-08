@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Lawyer;
 use Carbon\Carbon;
 use App\Models\Lawyer;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -16,6 +15,7 @@ use App\Http\Requests\Lawyer\ResetRequest;
 use App\Http\Requests\Lawyer\SigninRequest;
 use App\Http\Requests\Lawyer\SignupRequest;
 use App\Mail\Lawyer\Verification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 
 class AuthController extends Controller
@@ -34,9 +34,9 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $this->generateAndSendToken($lawyer, 'verify');
+        $this->sendEmailVerificationLink($lawyer);
 
-        return redirect()->route('lawyer.signin')->with('success','We have sent a verification mail to ' . $lawyer->email);
+        return redirect()->route('lawyer.signin')->with('success',"We have sent a verification mail to <strong class='text-decoration-underline'>$lawyer->email</strong>");
     }
 
     /**
@@ -54,10 +54,10 @@ class AuthController extends Controller
             return redirect()->route('lawyer.signin')->with('error','Invalid email or password');
         }
 
-        if (!$lawyer->verified_email) {
+        if (!$lawyer->email_verified_at) {
 
             $resendLink = route('lawyer.verification.resend');
-            $message    = "Account is not verified <a href='$resendLink?email=$lawyer->email'  class='underline'>Resend verification link</a>";
+            $message    = "Account is not verified <a href='$resendLink?email=$lawyer->email'  class='text-decoration-underline'>Resend verification link</a>";
 
             return redirect()->route('lawyer.signin')->with('error', $message);
         }
@@ -73,42 +73,36 @@ class AuthController extends Controller
     public function signout()
     {
         Auth::logout();
-        return redirect()->route('lawyer.signin')->with('success','Lawyer logged out successfully');
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect()->route('lawyer.signin')->with('success','logged out successfully');
     }
 
     /**
      * Handle "Forgot Password" request
      */
-    public function forgot(ForgotRequest $request): JsonResponse
+    public function forgot(ForgotRequest $request)
     {
-        $lawyer = $this->getLawyerByEmail($request->email);
-        if (!$lawyer) {
-            return $this->errorResponse('Lawyer not found', 404);
-        }
-
         // Generate token and send a reset link
-        $this->generateAndSendToken($lawyer, 'reset');
-
-        return $this->successResponse("Verification link sent to <u>{$request->email}</u>");
+        
+        $lawyer = Lawyer::where('email', $request->email)->first();
+        $this->sendPasswordResetLink($lawyer, 'reset');
+        return redirect()->route('lawyer.forgot')->with('success', "Pasword reset link sent to <u>{$request->email}</u>");
     }
 
     /**
      * Handle "Reset Password" request
      */
-    public function reset(ResetRequest $request): JsonResponse
+    public function reset(ResetRequest $request)
     {
-        $lawyer = $this->getLawyerByToken($request->token);
+        $lawyerID = DB::table('lawyer_password_reset_tokens')->where('token', $request->token)->value('lawyer_id');
+        $lawyer   = Lawyer::find($lawyerID);
+        
         if (!$lawyer) {
-            return $this->errorResponse('Invalid or expired token');
+            return redirect()->route('lawyer.reset')->with('error','Invalid or expired token');
         }
-
-        $lawyer->update([
-            'verification_token'         => null,
-            'verification_token_expiry'  => null,
-            'password'                   => Hash::make($request->password),
-        ]);
-
-        return $this->successResponse("Password reset successfully");
+        
+        return redirect()->route('lawyer.signin')->with('success','Password changed successfully');
     }
 
     /**
@@ -116,16 +110,15 @@ class AuthController extends Controller
      */
     public function sendVerificationLink(ForgotRequest $request)
     {
-        $lawyer = $this->getLawyerByEmail($request->email);
+        $lawyer = Lawyer::where('email',$request->email)->first();
         
         if (!$lawyer) {
             return redirect()->route('lawyer.signin')->with('error','Lawyer not found');
         }
 
-        // Generate token and send a verification link
-        $this->generateAndSendToken($lawyer, 'verify');
+        $this->sendEmailVerificationLink($lawyer);
 
-        return redirect()->route('lawyer.signin')->with("success","Verification link sent to <u>{$request->email}</u>");
+        return redirect()->route('lawyer.signin')->with("success","Verification link sent to <strong class='text-decoration-underline'>{$request->email}</strong>");
     }
 
     /**
@@ -134,76 +127,45 @@ class AuthController extends Controller
     public function verify(Request $request)
     {
         if (empty($request->token)) {
-            return $this->errorResponse('Token missing');
+            return redirect()->route('lawyer.signin');
         }
-
-        $lawyer = $this->getLawyerByToken($request->token);
+        
+        $lawyerID = DB::table('lawyer_verification_tokens')->where('token', $request->token)->value('lawyer_id');
+        $lawyer   = Lawyer::find($lawyerID);
 
         if (!$lawyer) {
-            return $this->errorResponse('Invalid or expired token');
+            return redirect()->route('lawyer.signin')->with('error','Invalid or expired token');
         }
 
         $lawyer->update([
-            'verified_email'            => true,
-            'verification_token'        => null,
-            'verification_token_expiry' => null,
+            'email_verified_at' => Carbon::now()->toDateTimeString(),
         ]);
 
-        return $this->successResponse('Email verified');
+        return redirect()->route('lawyer.signin')->with('success', 'Email verified');
     }
 
-    /**
-     * Get the lawyer's profile (if you need a route for it)
-     */
-    public function profile(): JsonResponse
+    private function sendEmailVerificationLink(Lawyer $lawyer): void
     {
-        return $this->successResponse('Lawyer profile', Auth::user());
-    }
-
-    /**
-     * Retrieve lawyer by email (or return null if not found).
-     */
-    private function getLawyerByEmail(string $email): ?Lawyer
-    {
-        return Lawyer::where('email', $email)->first();
-    }
-
-    /**
-     * Retrieve lawyer by valid (non-expired) verification token.
-     * Return null if the token is invalid or expired.
-     */
-    private function getLawyerByToken(string $token): ?Lawyer
-    {
-        $lawyer = Lawyer::where('verification_token', $token)->first();
-        if (!$lawyer) {
-            return null;
-        }
-
-        // Check if token is expired
-        if (Carbon::now()->isAfter($lawyer->verification_token_expiry)) {
-            return null;
-        }
-
-        return $lawyer;
-    }
-
-    /**
-     * Generate a new token, update the lawyer, and send verification/reset mail.
-     *
-     * @param  Lawyer   $lawyer
-     * @param  string   $endpoint  The endpoint ('reset' or 'verify') used to build the final URL
-     */
-    private function generateAndSendToken(Lawyer $lawyer, string $endpoint): void
-    {
-        $token = bin2hex(random_bytes(32));
-
-        $lawyer->update([
-            'verification_token'        => $token,
-            'verification_token_expiry' => Carbon::now()->addHours(12),
-        ]);
-
-        $url = URL::to($endpoint) . '?token=' . $token;
+        $token  = bin2hex(random_bytes(32));
+        $url    = URL::to("/verify/$token");
 
         Mail::to($lawyer->email)->queue(new Verification($url));
+        DB::table('lawyer_verification_tokens')->insert([
+            'lawyer_id'     => $lawyer->id,
+            'token'         => $token,
+        ]);
+
+    }
+
+    private function sendPasswordResetLink(Lawyer $lawyer): void
+    {
+        $token = bin2hex(random_bytes(32));
+        $url   = URL::to("/reset/$token");
+
+        Mail::to($lawyer->email)->queue(new Verification($url));
+        DB::table('lawyer_password_reset_tokens')->insert([
+            'lawyer_id'     => $lawyer->id,
+            'token'         => $token,
+        ]);
     }
 }
