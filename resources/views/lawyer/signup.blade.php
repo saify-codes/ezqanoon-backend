@@ -68,7 +68,7 @@
                                     
                                     <div class="mb-3">
                                         <label for="password_confirmation" class="form-label">Confirm Password_confirmation</label>
-                                        <input type="password_confirmation" class="form-control" id="password_confirmation" placeholder="Confirm password" name="password_confirmation" required>
+                                        <input type="password" class="form-control" id="password_confirmation" placeholder="Confirm password" name="password_confirmation" required>
                                         @error('password_confirmation')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
