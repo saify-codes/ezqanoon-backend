@@ -20,7 +20,7 @@ return new class extends Migration
             // Foreign keys with indexes
             $table->foreign('lawyer_id')
                 ->references('id')
-                ->on('users')
+                ->on('lawyers')
                 ->onDelete('cascade');
 
             $table->foreign('user_id')
