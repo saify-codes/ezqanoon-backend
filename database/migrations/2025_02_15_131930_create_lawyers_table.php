@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('qualification')->nullable();
             $table->text('description')->nullable();
             $table->timestamp('email_verified_at')->nullable();
+            $table->boolean('is_profile_completed')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

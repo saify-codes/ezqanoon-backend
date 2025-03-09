@@ -58,6 +58,8 @@ class AppointmentController extends Controller
             }
         }
 
+        notify_lawyer($request->lawyer_id, 'New Appointment', "you have an appointemnt from $user->name");
+
         return $this->successResponse('Appointment created successfully', ['data' => $appointment], 201);
     }
 }

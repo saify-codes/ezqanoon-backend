@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class Appointment extends Model
 {
@@ -13,6 +14,16 @@ class Appointment extends Model
     }
 
     public function lawyer(){
-        return $this->hasOne(Lawyer::class, 'id');
+        return $this->hasOne(Lawyer::class, 'id', 'lawyer_id');
     }
+    
+    public function user(){
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function getCreatedAtAttribute($createdAt)
+    {
+        return Carbon::parse($createdAt)->format('Y-m-d h:m:i A');
+    }
+
 }

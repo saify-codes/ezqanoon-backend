@@ -22401,4 +22401,9 @@ div.tox .tox-dialog__body {
   margin: 0 0 0 0.7em;
 }
 
+
+.unread{
+  background: rgba(101, 113, 255, 0.1);
+}
+
 /*# sourceMappingURL=app.css.map*/

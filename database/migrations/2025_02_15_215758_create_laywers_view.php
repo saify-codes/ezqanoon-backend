@@ -21,6 +21,7 @@ return new class extends Migration
                 lawyers.availability_to,
                 lawyers.price,
                 lawyers.location,
+                lawyers.is_profile_completed,
                 COALESCE(ROUND(AVG(ratings.rating)), 0) AS rating
             FROM lawyers
             LEFT JOIN ratings ON lawyers.id = ratings.lawyer_id

@@ -18,37 +18,47 @@
           <span class="link-title">Dashboard</span>
         </a>
       </li>
-      <li class="nav-item {{ active_class(['/manage/client']) }}">
+
+      <li class="nav-item nav-category">Management</li>
+      <li class="nav-item {{ active_class(['manage/appointments']) }}">
+        <a href="{{ url('/manage/appointments') }}" class="nav-link">
+          <i class="link-icon" data-feather="clipboard"></i>
+          <span class="link-title">Appointments</span>
+        </a>
+      </li>
+      <li class="nav-item {{ active_class(['manage/client']) }}">
         <a href="{{ url('/manage/client') }}" class="nav-link">
           <i class="link-icon" data-feather="users"></i>
           <span class="link-title">Client management</span>
         </a>
       </li>
-      <li class="nav-item {{ active_class(['/manage/case']) }}">
-        <a href="{{ url('/manage/client') }}" class="nav-link">
+      <li class="nav-item {{ active_class(['manage/case']) }}">
+        <a href="{{ url('/manage/case') }}" class="nav-link">
           <i class="link-icon" data-feather="book-open"></i>
           <span class="link-title">Case management</span>
         </a>
       </li>
-      <li class="nav-item {{ active_class(['/manage/task']) }}">
-        <a href="{{ url('/manage/client') }}" class="nav-link">
+      <li class="nav-item {{ active_class(['manage/task']) }}">
+        <a href="{{ url('/manage/task') }}" class="nav-link">
           <i class="link-icon" data-feather="check-square"></i>
           <span class="link-title">Task management</span>
         </a>
       </li>
-      <li class="nav-item {{ active_class(['/calendar-scheduling']) }}">
+      <li class="nav-item {{ active_class(['calendar-scheduling']) }}">
         <a href="{{ url('/manage/client') }}" class="nav-link">
           <i class="link-icon" data-feather="calendar"></i>
           <span class="link-title">Calendar & scheduling</span>
         </a>
       </li>
-      <li class="nav-item {{ active_class(['/billing']) }}">
+      <li class="nav-item {{ active_class(['billing']) }}">
         <a href="{{ url('/manage/client') }}" class="nav-link">
           <i class="link-icon" data-feather="dollar-sign"></i>
           <span class="link-title">Billing & invoicing</span>
         </a>
       </li>
-      <li class="nav-item {{ active_class(['/report']) }}">
+
+      <li class="nav-item nav-category">Analytics</li>
+      <li class="nav-item {{ active_class(['report']) }}">
         <a href="{{ url('/manage/client') }}" class="nav-link">
           <i class="link-icon" data-feather="trending-up"></i>
           <span class="link-title">Report</span>

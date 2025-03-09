@@ -43,7 +43,16 @@
     <div class="page-wrapper">
       @include('lawyer.layout.partials.header')
       <div class="page-content">
-        @yield('content')
+
+        @if (!Auth::user()->is_profile_completed && !Request::is('profile'))
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Action required</strong> Please complete your profile to get listed
+            <a class="text-decoration-underline" href="{{route('lawyer.profile')}}">click here to goto profile page</a>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close"></button>
+          </div>
+        @endif
+
+        {{$slot}}
       </div>
       @include('lawyer.layout.partials.footer')
     </div>
@@ -61,6 +70,7 @@
 
     <!-- common js -->
     <script src="{{ asset('assets/js/template.js') }}"></script>
+    <script src="{{ asset('assets/js/lawyer-notification.js') }}"></script>
     <!-- end common js -->
 
     @stack('custom-scripts')

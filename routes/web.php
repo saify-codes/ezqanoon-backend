@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\Lawyer\AppointmentController;
 use App\Http\Controllers\Lawyer\AuthController;
+use App\Http\Controllers\Lawyer\NotificationController;
+use App\Http\Controllers\Lawyer\ProfileController;
+use App\Http\Controllers\Lawyer\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,7 +32,35 @@ Route::group(['middleware' => 'admin.auth'], function(){
 
 Route::group(['middleware' => 'lawyer.auth'], function(){
     Route::view('/', 'lawyer.dashboard')->name('lawyer.dashboard');
+    
+    Route::get('/profile', [ProfileController::class, 'profile'])->name('lawyer.profile');
+    Route::put('/profile', [ProfileController::class, 'update']);
+    Route::put('/profile/reset-password', [ResetPasswordController::class, 'update'])->name('lawyer.reset-password');
+
     Route::get('/signout', [AuthController::class, 'signout'])->name('lawyer.signout');
+
+
+    // Management routes
+    Route::resource('/manage/appointments', AppointmentController::class, [
+        'names' => [
+            'index'   => 'lawyer.appointment.index',
+            'create'  => 'lawyer.appointment.create',
+            'store'   => 'lawyer.appointment.store',
+            'show'    => 'lawyer.appointment.show',
+            'edit'    => 'lawyer.appointment.edit',
+            'update'  => 'lawyer.appointment.update',
+            'destroy' => 'lawyer.appointment.destroy',
+        ]
+    ]);
+
+
+
+    // notifications
+    Route::get('/notification', [NotificationController::class, 'getNotifications']);
+    Route::patch('/notification/{notification}', [NotificationController::class, 'markRead']);
+
+    
+
 });
 
 Route::group(['middleware' => 'lawyer.guest'], function(){
@@ -50,6 +82,7 @@ Route::group(['middleware' => 'lawyer.guest'], function(){
     Route::get('/verification/resend', [AuthController::class, 'sendVerificationLink'])->name('lawyer.verification.resend');
 
 });    
+
 
 
 

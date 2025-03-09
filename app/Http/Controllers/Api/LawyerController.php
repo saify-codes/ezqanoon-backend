@@ -18,7 +18,7 @@ class LawyerController extends Controller
      * @return void
      */
     public function getLawyers(){
-        $lawyers = LawyerRatingView::paginate(10)->toArray();
+        $lawyers = LawyerRatingView::where('is_profile_completed', true)->paginate(10)->toArray();
         return $this->successResponse('laywers data', $lawyers);
 
     }    
