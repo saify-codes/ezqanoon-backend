@@ -125,7 +125,7 @@ $(function () {
           type: "PATCH",
           dataType: "json",
           data: {
-            _token: "{{ csrf_token() }}",
+            _token: document.querySelector('meta[name="_token"]').content,
           },
           error(xhr, status, error) {
             console.error("Error marking notification as read:", error);
