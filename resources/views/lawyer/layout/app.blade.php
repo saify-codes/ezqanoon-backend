@@ -24,6 +24,7 @@
   <!-- plugin css -->
   <link href="{{ asset('assets/fonts/feather-font/css/iconfont.css') }}" rel="stylesheet" />
   <link href="{{ asset('assets/plugins/perfect-scrollbar/perfect-scrollbar.css') }}" rel="stylesheet" />
+  <link href="{{ asset('assets/plugins/tostify/tostify.min.css') }}" rel="stylesheet" />
   <!-- end plugin css -->
 
   @stack('plugin-styles')
@@ -62,6 +63,7 @@
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('assets/plugins/feather-icons/feather.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/tostify/tostify.min.js') }}"></script>
     <!-- end base js -->
 
     <!-- plugin js -->

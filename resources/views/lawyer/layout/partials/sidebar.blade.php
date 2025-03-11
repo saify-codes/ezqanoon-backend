@@ -32,8 +32,8 @@
           <span class="link-title">Client management</span>
         </a>
       </li>
-      <li class="nav-item {{ active_class(['manage/case']) }}">
-        <a href="{{ url('/manage/case') }}" class="nav-link">
+      <li class="nav-item {{ active_class(['manage/cases']) }}">
+        <a href="{{ url('/manage/cases') }}" class="nav-link">
           <i class="link-icon" data-feather="book-open"></i>
           <span class="link-title">Case management</span>
         </a>

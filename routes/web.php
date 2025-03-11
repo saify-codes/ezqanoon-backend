@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Lawyer\CasesController;
 use App\Http\Controllers\Lawyer\AppointmentController;
 use App\Http\Controllers\Lawyer\AuthController;
 use App\Http\Controllers\Lawyer\NotificationController;
@@ -52,6 +53,19 @@ Route::group(['middleware' => 'lawyer.auth'], function(){
             'destroy' => 'lawyer.appointment.destroy',
         ]
     ]);
+    
+    Route::resource('/manage/cases', CasesController::class, [
+        'names' => [
+            'index'   => 'lawyer.cases.index',
+            'create'  => 'lawyer.cases.create',
+            'store'   => 'lawyer.cases.store',
+            'show'    => 'lawyer.cases.show',
+            'edit'    => 'lawyer.cases.edit',
+            'update'  => 'lawyer.cases.update',
+            'destroy' => 'lawyer.cases.destroy',
+        ]
+    ]);
+    
 
 
 
