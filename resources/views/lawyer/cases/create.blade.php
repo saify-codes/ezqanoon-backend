@@ -1,4 +1,10 @@
 <x-lawyer.app>
+    <div>
+        <a href="{{ route('lawyer.cases.index') }}" class="btn btn-dark btn-icon-text mb-3">
+            <i class="btn-icon-prepend" data-feather="list"></i>
+            List
+        </a>
+    </div>
     <div class="card">
         <div class="card-body">
             <h4 class="card-title mb-4">Create New Case</h4>
@@ -101,23 +107,23 @@
 
                 <!-- Your Party Details -->
                 <div class="mb-3">
-                    <label for="your_party_details" class="form-label">Your Party Details (optional)</label>
-                    <textarea class="form-control" id="your_party_details" name="your_party_details" rows="3"
+                    <label for="your_party_details_editor" class="form-label">Your Party Details (optional)</label>
+                    <textarea class="form-control" id="your_party_details_editor" name="your_party_details" rows="3"
                         placeholder="Enter your client's details">{{ old('your_party_details') }}</textarea>
                 </div>
 
                 <!-- Opposite Party Details -->
                 <div class="mb-3">
-                    <label for="opposite_party_details" class="form-label">Opposite Party Details (optional)</label>
-                    <textarea class="form-control" id="opposite_party_details" name="opposite_party_details" rows="3"
+                    <label for="opposite_party_details_editor" class="form-label">Opposite Party Details (optional)</label>
+                    <textarea class="form-control" id="opposite_party_details_editor" name="opposite_party_details" rows="3"
                         placeholder="Enter opposite party details">{{ old('opposite_party_details') }}</textarea>
                 </div>
 
                 <!-- Opposite Party Advocate Details -->
                 <div class="mb-3">
-                    <label for="opposite_party_advocate_details" class="form-label">Opposite Party Advocate Details
+                    <label for="opposite_party_advocate_details_editor" class="form-label">Opposite Party Advocate Details
                         (optional)</label>
-                    <textarea class="form-control" id="opposite_party_advocate_details" name="opposite_party_advocate_details"
+                    <textarea class="form-control" id="opposite_party_advocate_details_editor" name="opposite_party_advocate_details"
                         rows="3" placeholder="Enter opposite party advocate details">{{ old('opposite_party_advocate_details') }}</textarea>
                 </div>
 
@@ -136,7 +142,7 @@
                             value="{{ old('deadlines') }}">
                     </div>
                     <div class="col-md-6">
-                        <label for="payment_status" class="form-label">Payment Status (optional)</label>
+                        <label for="payment_status" class="form-label">Payment Status</label>
                         <select class="form-select" id="payment_status" name="payment_status">
                             <option value="PENDING" {{ old('payment_status') === 'PENDING' ? 'selected' : '' }}>
                                 PENDING</option>
@@ -168,6 +174,10 @@
             </form>
         </div>
     </div>
+
+    @push('plugin-scripts')
+        <script src="https://cdn.ckeditor.com/ckeditor5/35.3.0/classic/ckeditor.js"></script>
+    @endpush
 
     @push('custom-scripts')
         <script>
@@ -215,6 +225,41 @@
                         }
                     }
                 });
+
+                // Common configuration for allowed toolbar tools
+                const editorConfig = {
+                    toolbar: ['bold', 'italic', 'bulletedList', 'numberedList', 'link']
+                };
+
+                // Initialize CKEditor for Your Party Details
+                ClassicEditor
+                    .create(document.querySelector('#your_party_details_editor'), editorConfig)
+                    .then(editor => {
+                        editor.ui.view.editable.element.style.minHeight = '300px';
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+
+                // Initialize CKEditor for Opposite Party Details
+                ClassicEditor
+                    .create(document.querySelector('#opposite_party_details_editor'), editorConfig)
+                    .then(editor => {
+                        editor.ui.view.editable.element.style.minHeight = '300px';
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+
+                // Initialize CKEditor for Opposite Party Advocate Details
+                ClassicEditor
+                    .create(document.querySelector('#opposite_party_advocate_details_editor'), editorConfig)
+                    .then(editor => {
+                        editor.ui.view.editable.element.style.minHeight = '300px';
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
 
             });
         </script>

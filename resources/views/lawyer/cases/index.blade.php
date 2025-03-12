@@ -1,10 +1,13 @@
 <x-lawyer.app>
+    <div>
+        <a href="{{route('lawyer.cases.create')}}" class="btn btn-primary btn-icon-text mb-3">
+            <i class="btn-icon-prepend" data-feather="plus"></i>
+            Create case
+        </a>
+    </div>
+
     <div class="card">
         <div class="card-body">
-            <a href="{{route('lawyer.cases.create')}}" class="btn btn-primary btn-icon-text mb-3">
-                <i class="btn-icon-prepend" data-feather="plus"></i>
-                Create case
-            </a>
 
             @session('success')
                 <div class="alert alert-success alert-dismissible fade show" role="alert">

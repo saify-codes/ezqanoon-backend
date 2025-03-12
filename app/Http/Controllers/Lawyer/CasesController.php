@@ -144,7 +144,6 @@ class CasesController extends Controller
             'case_information'               => $validated['case_information'] ?? null,
             'deadlines'                      => $validated['deadlines'] ?? null,
             'payment_status'                 => $validated['payment_status'] ?? 'PENDING',
-            // 'status' defaults to OPEN per migration, so no need to set explicitly
         ]);
 
         if ($request->hasFile('attachments')) {
@@ -168,7 +167,13 @@ class CasesController extends Controller
      */
     public function show(string $id)
     {
-        
+        // Retrieve the case that belongs to the authenticated lawyer or fail
+        $case = Cases::where('id', $id)
+            ->where('lawyer_id', Auth::id())
+            ->firstOrFail();
+
+        // Return the view with the case data
+        return view('lawyer.cases.show', compact('case'));
     }
 
     /**
@@ -185,7 +190,94 @@ class CasesController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $case = Cases::where('lawyer_id', Auth::id())->findOrFail($id);
+
+        $validated = $request->validate([
+            'name'               => ['required', 'string', 'max:255'],
+            'type'               => ['required', 'string', 'max:255'],
+            'urgency'            => ['nullable', 'in:HIGH,MEDIUM,CRITICAL'],
+            'court_name'         => ['required', 'string', 'max:255'],
+            'court_case_number'  => ['required', 'string', 'max:255'],
+            'judge_name'         => ['nullable', 'string', 'max:255'],
+            'under_acts'         => ['nullable', 'string', 'max:255'],
+            'under_sections'     => ['nullable', 'string', 'max:255'],
+            'fir_number'         => ['nullable', 'string', 'max:255'],
+            'fir_year'           => ['nullable', 'string', 'max:255'],
+            'police_station'     => ['nullable', 'string', 'max:255'],
+            'your_party_details' => ['nullable', 'string'],
+            'opposite_party_details'          => ['nullable', 'string'],
+            'opposite_party_advocate_details' => ['nullable', 'string'],
+            'case_information'   => ['nullable', 'string'],
+            'deadlines'          => ['nullable', 'date'],
+            'payment_status'     => ['nullable', 'in:PENDING,PAID,OVERDUE'],
+            'status'             => ['nullable', 'in:OPEN,IN PROGRESS,CLOSED'],
+
+            'attachments'   => ['array', 'max:10'],
+            'attachments.*' => [
+                'file',
+                function ($_, $file, $fail) {
+                    $allowedImages = ['image/png', 'image/jpeg', 'image/webp'];
+                    $allowedDocs   = [
+                        'application/pdf',
+                        'application/msword',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    ];
+
+                    $mimeType = $file->getMimeType();
+                    $fileSize = $file->getSize();
+
+                    if (in_array($mimeType, $allowedImages) && $fileSize > 2 * 1024 * 1024) {
+                        return $fail("The image {$file->getClientOriginalName()} exceeds the 2 MB limit.");
+                    } elseif (in_array($mimeType, $allowedDocs) && $fileSize > 10 * 1024 * 1024) {
+                        return $fail("The file {$file->getClientOriginalName()} exceeds the 10 MB limit.");
+                    } elseif (!in_array($mimeType, array_merge($allowedImages, $allowedDocs))) {
+                        return $fail("The file {$file->getClientOriginalName()} is not an allowed format.");
+                    }
+                }
+            ],
+        ]);
+
+        // Update the case fields
+        $case->update([
+            'name'                            => $validated['name'],
+            'type'                            => $validated['type'],
+            'court_name'                      => $validated['court_name'],
+            'court_case_number'               => $validated['court_case_number'],
+            'urgency'                         => $validated['urgency']                          ?? null,
+            'judge_name'                      => $validated['judge_name']                       ?? null,
+            'under_acts'                      => $validated['under_acts']                       ?? null,
+            'under_sections'                  => $validated['under_sections']                   ?? null,
+            'fir_number'                      => $validated['fir_number']                       ?? null,
+            'fir_year'                        => $validated['fir_year']                         ?? null,
+            'police_station'                  => $validated['police_station']                   ?? null,
+            'your_party_details'              => $validated['your_party_details']               ?? null,
+            'opposite_party_details'          => $validated['opposite_party_details']           ?? null,
+            'opposite_party_advocate_details' => $validated['opposite_party_advocate_details']  ?? null,
+            'case_information'                => $validated['case_information']                 ?? null,
+            'deadlines'                       => $validated['deadlines']                        ?? null,
+            'payment_status'                  => $validated['payment_status']                   ?? 'PENDING',
+            'status'                          => $validated['status']                           ?? 'OPEN',
+        ]);
+
+        // Handle file attachments
+        if ($request->hasFile('attachments')) {
+
+            // remove old attachments
+            $case->attachments()->where('case_id', $case->id)->delete();        
+
+            foreach ($request->file('attachments') as $file) {
+                $storedPath = $file->store("cases/{$case->id}", 'public');
+                $case->attachments()->create([
+                    'file_path'     => $storedPath,
+                    'original_name' => $file->getClientOriginalName(),
+                    'mime_type'     => $file->getMimeType(),
+                ]);
+            }
+        }
+
+        return redirect()
+            ->route('lawyer.cases.index')
+            ->with('success', 'Case updated successfully!');
     }
 
     /**

@@ -32,7 +32,7 @@
           <span class="link-title">Client management</span>
         </a>
       </li>
-      <li class="nav-item {{ active_class(['manage/cases']) }}">
+      <li class="nav-item {{ active_class(['manage/cases*']) }}">
         <a href="{{ url('/manage/cases') }}" class="nav-link">
           <i class="link-icon" data-feather="book-open"></i>
           <span class="link-title">Case management</span>
