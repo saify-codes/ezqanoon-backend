@@ -95,7 +95,12 @@ Route::group(['middleware' => 'lawyer.guest'], function(){
     
     Route::get('/verification/resend', [AuthController::class, 'sendVerificationLink'])->name('lawyer.verification.resend');
 
-});    
+}); 
+
+
+Route::any('/info', function(){
+    phpinfo();
+});
 
 
 
