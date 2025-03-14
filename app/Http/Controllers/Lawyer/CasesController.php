@@ -7,6 +7,7 @@ use App\Models\Cases;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class CasesController extends Controller
 {
@@ -91,41 +92,39 @@ class CasesController extends Controller
             'deadlines'                       => ['nullable', 'array'],
             'deadlines.*.description'         => ['nullable', 'string', 'max:255'],
             'deadlines.*.date'                => ['nullable', 'date'],
+            'attachments'                     => ['array', 'max:10'],
+            // 'attachments.*' => [
+            //     'file', // ensures it's an actual file
+            //     function ($_, $file, $fail) {
+            //         // Allowed MIME types
+            //         $allowedImages = ['image/png', 'image/jpeg', 'image/webp'];
+            //         $allowedDocs   = [
+            //             'application/pdf',
+            //             'application/msword',
+            //             'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            //         ];
 
-            // Attachments: up to 10, each validated by a custom callback
-            'attachments'   => ['array', 'max:10'],
-            'attachments.*' => [
-                'file', // ensures it's an actual file
-                function ($_, $file, $fail) {
-                    // Allowed MIME types
-                    $allowedImages = ['image/png', 'image/jpeg', 'image/webp'];
-                    $allowedDocs   = [
-                        'application/pdf',
-                        'application/msword',
-                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                    ];
+            //         $mimeType = $file->getMimeType();
+            //         $fileSize = $file->getSize(); // bytes
 
-                    $mimeType = $file->getMimeType();
-                    $fileSize = $file->getSize(); // bytes
-
-                    // Images => max 2 MB
-                    if (in_array($mimeType, $allowedImages)) {
-                        if ($fileSize > 2 * 1024 * 1024) {
-                            return $fail("The image {$file->getClientOriginalName()} exceeds the 2 MB limit.");
-                        }
-                    }
-                    // Docs => max 10 MB
-                    elseif (in_array($mimeType, $allowedDocs)) {
-                        if ($fileSize > 10 * 1024 * 1024) {
-                            return $fail("The file {$file->getClientOriginalName()} exceeds the 10 MB limit for documents/PDFs.");
-                        }
-                    }
-                    // Otherwise => not an allowed file type
-                    else {
-                        return $fail("The file {$file->getClientOriginalName()} is not an allowed format (png,jpg,webp,pdf,doc,docx).");
-                    }
-                }
-            ],
+            //         // Images => max 2 MB
+            //         if (in_array($mimeType, $allowedImages)) {
+            //             if ($fileSize > 2 * 1024 * 1024) {
+            //                 return $fail("The image {$file->getClientOriginalName()} exceeds the 2 MB limit.");
+            //             }
+            //         }
+            //         // Docs => max 10 MB
+            //         elseif (in_array($mimeType, $allowedDocs)) {
+            //             if ($fileSize > 10 * 1024 * 1024) {
+            //                 return $fail("The file {$file->getClientOriginalName()} exceeds the 10 MB limit for documents/PDFs.");
+            //             }
+            //         }
+            //         // Otherwise => not an allowed file type
+            //         else {
+            //             return $fail("The file {$file->getClientOriginalName()} is not an allowed format (png,jpg,webp,pdf,doc,docx).");
+            //         }
+            //     }
+            // ],
         ]);
 
         $case = Cases::create([
@@ -149,16 +148,30 @@ class CasesController extends Controller
             'payment_status'                 => $validated['payment_status']                    ?? 'PENDING',
         ]);
 
-        if ($request->hasFile('attachments')) {
-            foreach ($request->file('attachments') as $file) {
-                $storedPath = $file->store("cases/{$case->id}", 'public');
-                $case->attachments()->create([
-                    'file_path'     => $storedPath,
-                    'original_name' => $file->getClientOriginalName(),
-                    'mime_type'     => $file->getMimeType(),
-                ]);
-            }
-        }
+
+
+        // if ($request->hasFile('attachments')) {
+        //     foreach ($request->input('attachments') as $file) {
+                
+                
+        //         $case->attachments()->create([
+        //             'file_path'     => $storedPath,
+        //             'original_name' => $file->getClientOriginalName(),
+        //             'mime_type'     => $file->getMimeType(),
+        //         ]);
+        //     }
+        // }
+
+        // if ($request->hasFile('attachments')) {
+        //     foreach ($request->file('attachments') as $file) {
+        //         $storedPath = $file->store("cases/{$case->id}", 'public');
+        //         $case->attachments()->create([
+        //             'file_path'     => $storedPath,
+        //             'original_name' => $file->getClientOriginalName(),
+        //             'mime_type'     => $file->getMimeType(),
+        //         ]);
+        //     }
+        // }
 
         return redirect()
             ->route('lawyer.cases.index')
@@ -309,23 +322,31 @@ class CasesController extends Controller
      */
     public function upload(Request $request)
     {
-        // Validate the file. Note: max is in kilobytes (10 MB = 10240 KB)
-        $validatedData = $request->validate([
-            'file' => 'required|file|max:10240|mimes:jpeg,jpg,png,webp,pdf',
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|file|mimetypes:image/jpeg,image/png,image/webp,application/pdf|max:10240',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Upload failed',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
 
         // Check if the file exists in the request.
         if ($request->hasFile('file')) {
+
             $file = $request->file('file');
-            // Create a unique file name.
-            $filename = time() . '_' . $file->getClientOriginalName();
-            // Store the file in the "uploads" folder on the "public" disk.
-            $path = $file->storeAs('uploads', $filename, 'public');
+            $path = $file->store("tmp");
 
             return $this->successResponse('Upload successful', [
-                'file' => $filename,
-                'path' => $path,
+                'file'          => basename($path),
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type'     => $file->getMimeType(),
+                'file_path'     => $path,
             ]);
+
         }
 
         return $this->errorResponse('No file uploaded');

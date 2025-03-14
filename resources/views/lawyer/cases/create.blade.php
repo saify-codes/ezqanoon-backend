@@ -47,8 +47,7 @@
                             <option value="">-- Select Urgency --</option>
                             <option value="HIGH" {{ old('urgency') === 'HIGH' ? 'selected' : '' }}>HIGH</option>
                             <option value="MEDIUM" {{ old('urgency') === 'MEDIUM' ? 'selected' : '' }}>MEDIUM</option>
-                            <option value="CRITICAL" {{ old('urgency') === 'CRITICAL' ? 'selected' : '' }}>CRITICAL
-                            </option>
+                            <option value="CRITICAL" {{ old('urgency') === 'CRITICAL' ? 'selected' : '' }}>CRITICAL</option>
                         </select>
                     </div>
                     <div class="col-md-6">
@@ -61,8 +60,7 @@
                 <!-- Court Case Number & Judge Name -->
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="court_case_number" class="form-label">Court Case Number <span
-                                class="text-danger">*</span></label>
+                        <label for="court_case_number" class="form-label">Court Case Number <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="court_case_number" name="court_case_number"
                             value="{{ old('court_case_number') }}" placeholder="Enter court case number" required>
                     </div>
@@ -122,8 +120,7 @@
 
                 <!-- Opposite Party Advocate Details -->
                 <div class="mb-3">
-                    <label for="opposite-party-advocate-details-editor" class="form-label">Opposite Party Advocate
-                        Details</label>
+                    <label for="opposite-party-advocate-details-editor" class="form-label">Opposite Party Advocate Details</label>
                     <textarea class="form-control" id="opposite-party-advocate-details-editor" name="opposite_party_advocate_details"
                         rows="3" placeholder="Enter opposite party advocate details">{{ old('opposite_party_advocate_details') }}</textarea>
                 </div>
@@ -153,11 +150,9 @@
                 <div class="mb-3">
                     <label for="payment_status" class="form-label">Payment Status</label>
                     <select class="form-select" id="payment_status" name="payment_status">
-                        <option value="PENDING" {{ old('payment_status') === 'PENDING' ? 'selected' : '' }}>PENDING
-                        </option>
+                        <option value="PENDING" {{ old('payment_status') === 'PENDING' ? 'selected' : '' }}>PENDING</option>
                         <option value="PAID" {{ old('payment_status') === 'PAID' ? 'selected' : '' }}>PAID</option>
-                        <option value="OVERDUE" {{ old('payment_status') === 'OVERDUE' ? 'selected' : '' }}>OVERDUE
-                        </option>
+                        <option value="OVERDUE" {{ old('payment_status') === 'OVERDUE' ? 'selected' : '' }}>OVERDUE</option>
                     </select>
                 </div>
 
@@ -165,12 +160,8 @@
                 <div class="mb-3">
                     <label for="attachments" class="form-label">Attachments (optional)</label>
                     {{-- <input type="file" class="form-control" id="attachments" name="attachments[]" multiple> --}}
-
-                    <div id="dropzone" class="dropzone"></div>
-
-                    <div id="fileList" class="file-list"></div>
-
-                    <!-- Important: Explanation/Note for users -->
+                    <div id="aerodrop" class="aerodrop mb-3"></div>
+                    <!-- Note for users -->
                     <small class="text-muted d-block mt-1">
                         - Maximum <strong>10 files</strong> allowed.<br>
                         - Allowed file types: <strong>PNG, JPG, WEBP, PDF, DOC, DOCX</strong>.<br>
@@ -179,9 +170,8 @@
                     </small>
                 </div>
 
-
-                <!-- Submit button -->
-                <button type="submit" class="btn btn-primary">
+                <!-- Submit button (with an ID for enabling/disabling) -->
+                <button type="submit" class="btn btn-primary" id="submitBtn">
                     Save Case
                 </button>
             </form>
@@ -189,28 +179,22 @@
     </div>
 
     @push('plugin-styles')
-        <link href="{{ asset('assets/plugins/dropzone/dropzone.min.css') }}" rel="stylesheet"></link>
+        <link href="{{ asset('assets/plugins/aerodrop/aerodrop.min.css') }}" rel="stylesheet">
     @endpush
-    @push('plugin-scripts')
-        <script src="https://cdn.ckeditor.com/ckeditor5/35.3.0/classic/ckeditor.js"></script>
-        <script src="{{ asset('assets/plugins/dropzone/dropzone.min.js') }}"></script>
 
+    @push('plugin-scripts')
+        <script src="{{ asset('assets/plugins/aerodrop/aerodrop.min.js') }}"></script>
+        <script src="https://cdn.ckeditor.com/ckeditor5/35.3.0/classic/ckeditor.js"></script>
     @endpush
 
     @push('custom-scripts')
         <script>
-            //configurations
-            Dropzone.autoDiscover = false;
-
-
             $(document).ready(function() {
 
                 $(document).on('click', '.add-deadline', function() {
-
                     // Determine the index based on rows that already have a name attribute.
                     const index = $('#deadlines-container .deadline-date').length - 1;
                     const $row = $(this).closest('.deadline-row');
-
 
                     // Mark inputs as required and set name attributes with the current index
                     $row.find('.deadline-description, .deadline-date').prop('required', true);
@@ -233,7 +217,6 @@
                         </button>
                     </div>
                     `);
-
                 });
 
                 // Remove the row when the minus button is clicked
@@ -241,6 +224,7 @@
                     $(this).closest('.deadline-row').remove();
                 });
 
+                // File input validation (if used elsewhere)
                 $('#attachments').on('change', function(e) {
                     const files = e.target.files;
 
@@ -265,20 +249,20 @@
                         if (allowedImages.includes(file.type)) {
                             // This is an image => max 2 MB
                             if (file.size > 2 * 1024 * 1024) {
-                                errorMessage(`Image "${file.name}" exceeds 2 MB limit.`);
+                                alert(`Image "${file.name}" exceeds 2 MB limit.`);
                                 $(this).val('');
                                 return;
                             }
                         } else if (allowedDocs.includes(file.type)) {
                             // This is a doc/pdf => max 10 MB
                             if (file.size > 10 * 1024 * 1024) {
-                                errorMessage(`File "${file.name}" exceeds 10 MB limit for PDFs/docs.`);
+                                alert(`File "${file.name}" exceeds 10 MB limit for PDFs/docs.`);
                                 $(this).val('');
                                 return;
                             }
                         } else {
                             // Not a recognized image or doc type
-                            errorMessage(`File "${file.name}" is not an allowed format.`);
+                            alert(`File "${file.name}" is not an allowed format.`);
                             $(this).val('');
                             return;
                         }
@@ -330,39 +314,35 @@
                         console.error(error);
                     });
 
-                // rerender icons on dom change
+                // Re-render icons on DOM change
                 new MutationObserver(() => feather.replace()).observe(document.getElementById('deadlines-container'), {
                     childList: true
-                })
+                });
 
-                // Dropzone
-                const dropzone = new Dropzone("#dropzone", {
-                    url: "/upload", // Replace with your actual file upload endpoint
-                    paramName: "attachments", // The parameter name for your files
+                // AeroDrop initialization with upload state management.
+                let totalUploads = 0;
+                let completedUploads = 0;
+
+                const aerodrop = new AeroDrop(document.querySelector('#aerodrop'), {
+                    name: 'attachments',
+                    uploadURL: '/upload',
                     maxFiles: 10,
-                    acceptedFiles: ".png,.jpg,.jpeg,.webp,.pdf,.doc,.docx",
-                    addRemoveLinks: true,
-                    autoProcessQueue: false, // Change to true if you want auto-upload on file add
-                    // Custom validation for file size based on file type
-                    accept: function(file, done) {
-                        if (file.type.startsWith("image/")) {
-                            if (file.size > 2097152) { // 2MB in bytes
-                                return done("Image file must not exceed 2MB.");
-                            }
-                        } else {
-                            if (file.size > 10485760) { // 10MB in bytes
-                                return done("Document/PDF file must not exceed 10MB.");
-                            }
-                        }
-                        done();
-                    }
+                    maxFileSize: 10 * 1024 * 1024,
+                    allowedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+                    },
                 });
 
-                // Optionally, add event listeners for further customizations
-                dropzone.on("error", function(file, errorMessage) {
-                    console.error("File upload error:", errorMessage);
-                });
+               
 
+                aerodrop.onupload = function(res) {
+                    console.log("Upload successful:", res);
+                };
+
+                aerodrop.onerror = function(error) {
+                    console.error("Upload error:", error);
+                };
             });
         </script>
     @endpush

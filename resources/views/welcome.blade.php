@@ -1,5 +1,3 @@
-<script src="{{ asset('assets/plugins/aerodrop/aerodrop.min.js') }}"></script>
-<link href="{{ asset('assets/plugins/aerodrop/aerodrop.min.css') }}" rel="stylesheet"></link>
 
 <x-lawyer.app>
    
