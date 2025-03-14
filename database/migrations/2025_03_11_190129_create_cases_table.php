@@ -30,7 +30,7 @@ return new class extends Migration
             $table->text('opposite_party_advocate_details')->nullable();
             $table->text('case_information')->nullable();
             $table->enum('status', ['OPEN', 'IN PROGRESS', 'CLOSED'])->default('OPEN'); 
-            $table->date('deadlines')->nullable();
+            $table->json('deadlines')->nullable();
             $table->enum('payment_status', ['PENDING', 'PAID', 'OVERDUE'])->default('PENDING');
             $table->text('attachments')->nullable();
             $table->timestamps();

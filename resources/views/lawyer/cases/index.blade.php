@@ -27,6 +27,7 @@
                             <th>Urgency</th>
                             <th>Status</th>
                             <th>Payment</th>
+                            <th>Date created</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -126,6 +127,10 @@
                         }
                     },
                     {
+                        data: 'created_at'
+                    },
+                    {
+                        sortable: false,
                         data: function(row) {
                             // Build URLs
                             const showUrl   = `{{ route('lawyer.cases.show', ':id') }}`.replace(':id', row.id);

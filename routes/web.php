@@ -98,9 +98,8 @@ Route::group(['middleware' => 'lawyer.guest'], function(){
 }); 
 
 
-Route::any('/info', function(){
-    phpinfo();
-});
+Route::view('/foo', 'welcome');
+Route::post('/upload', [CasesController::class, 'upload']);
 
 
 

@@ -28,12 +28,12 @@
                 <!-- Case Name & Type -->
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="name" class="form-label">Case Name</label>
+                        <label for="name" class="form-label">Case Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="name" name="name"
                             value="{{ old('name') }}" placeholder="Enter case name" required>
                     </div>
                     <div class="col-md-6">
-                        <label for="type" class="form-label">Case Type</label>
+                        <label for="type" class="form-label">Case Type <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="type" name="type"
                             value="{{ old('type') }}" placeholder="e.g. Criminal, Civil" required>
                     </div>
@@ -52,7 +52,7 @@
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <label for="court_name" class="form-label">Court Name</label>
+                        <label for="court_name" class="form-label">Court Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="court_name" name="court_name"
                             value="{{ old('court_name') }}" placeholder="e.g. Supreme Court, District Court" required>
                     </div>
@@ -61,12 +61,13 @@
                 <!-- Court Case Number & Judge Name -->
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="court_case_number" class="form-label">Court Case Number</label>
+                        <label for="court_case_number" class="form-label">Court Case Number <span
+                                class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="court_case_number" name="court_case_number"
                             value="{{ old('court_case_number') }}" placeholder="Enter court case number" required>
                     </div>
                     <div class="col-md-6">
-                        <label for="judge_name" class="form-label">Judge Name (optional)</label>
+                        <label for="judge_name" class="form-label">Judge Name</label>
                         <input type="text" class="form-control" id="judge_name" name="judge_name"
                             value="{{ old('judge_name') }}" placeholder="Enter judge name">
                     </div>
@@ -75,12 +76,12 @@
                 <!-- Under Acts & Under Sections -->
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="under_acts" class="form-label">Under Acts (optional)</label>
+                        <label for="under_acts" class="form-label">Under Acts</label>
                         <input type="text" class="form-control" id="under_acts" name="under_acts"
                             value="{{ old('under_acts') }}" placeholder="e.g. CPC, IPC">
                     </div>
                     <div class="col-md-6">
-                        <label for="under_sections" class="form-label">Under Sections (optional)</label>
+                        <label for="under_sections" class="form-label">Under Sections</label>
                         <input type="text" class="form-control" id="under_sections" name="under_sections"
                             value="{{ old('under_sections') }}" placeholder="e.g. Section 302">
                     </div>
@@ -89,17 +90,17 @@
                 <!-- FIR Number, FIR Year, Police Station -->
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <label for="fir_number" class="form-label">FIR Number (optional)</label>
+                        <label for="fir_number" class="form-label">FIR Number</label>
                         <input type="text" class="form-control" id="fir_number" name="fir_number"
                             value="{{ old('fir_number') }}" placeholder="Enter FIR number">
                     </div>
                     <div class="col-md-4">
-                        <label for="fir_year" class="form-label">FIR Year (optional)</label>
-                        <input type="text" class="form-control" id="fir_year" name="fir_year"
-                            value="{{ old('fir_year') }}" placeholder="e.g. 2023">
+                        <label for="fir_year" class="form-label">FIR Year</label>
+                        <input type="number" class="form-control" id="fir_year" name="fir_year"
+                            value="{{ old('fir_year') }}" placeholder="e.g. 2025">
                     </div>
                     <div class="col-md-4">
-                        <label for="police_station" class="form-label">Police Station (optional)</label>
+                        <label for="police_station" class="form-label">Police Station</label>
                         <input type="text" class="form-control" id="police_station" name="police_station"
                             value="{{ old('police_station') }}" placeholder="Enter the police station">
                     </div>
@@ -107,57 +108,68 @@
 
                 <!-- Your Party Details -->
                 <div class="mb-3">
-                    <label for="your_party_details_editor" class="form-label">Your Party Details (optional)</label>
-                    <textarea class="form-control" id="your_party_details_editor" name="your_party_details" rows="3"
+                    <label for="your-party-details-editor" class="form-label">Your Party Details</label>
+                    <textarea class="form-control" id="your-party-details-editor" name="your_party_details" rows="3"
                         placeholder="Enter your client's details">{{ old('your_party_details') }}</textarea>
                 </div>
 
                 <!-- Opposite Party Details -->
                 <div class="mb-3">
-                    <label for="opposite_party_details_editor" class="form-label">Opposite Party Details (optional)</label>
-                    <textarea class="form-control" id="opposite_party_details_editor" name="opposite_party_details" rows="3"
+                    <label for="opposite-party-details-editor" class="form-label">Opposite Party Details</label>
+                    <textarea class="form-control" id="opposite-party-details-editor" name="opposite_party_details" rows="3"
                         placeholder="Enter opposite party details">{{ old('opposite_party_details') }}</textarea>
                 </div>
 
                 <!-- Opposite Party Advocate Details -->
                 <div class="mb-3">
-                    <label for="opposite_party_advocate_details_editor" class="form-label">Opposite Party Advocate Details
-                        (optional)</label>
-                    <textarea class="form-control" id="opposite_party_advocate_details_editor" name="opposite_party_advocate_details"
+                    <label for="opposite-party-advocate-details-editor" class="form-label">Opposite Party Advocate
+                        Details</label>
+                    <textarea class="form-control" id="opposite-party-advocate-details-editor" name="opposite_party_advocate_details"
                         rows="3" placeholder="Enter opposite party advocate details">{{ old('opposite_party_advocate_details') }}</textarea>
                 </div>
 
                 <!-- Case Information -->
                 <div class="mb-3">
-                    <label for="case_information" class="form-label">Case Information (optional)</label>
-                    <textarea class="form-control" id="case_information" name="case_information" rows="3"
+                    <label for="case-information-editor" class="form-label">Case Information</label>
+                    <textarea class="form-control" id="case-information-editor" name="case_information" rows="3"
                         placeholder="Describe the case in detail">{{ old('case_information') }}</textarea>
                 </div>
 
-                <!-- Deadlines & Payment Status -->
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="deadlines" class="form-label">Deadlines (optional)</label>
-                        <input type="date" class="form-control" id="deadlines" name="deadlines"
-                            value="{{ old('deadlines') }}">
+                <!-- Deadlines -->
+                <div class="mb-3">
+                    <label for="deadlines" class="form-label">Deadlines</label>
+                    <div id="deadlines-container">
+                        <div class="deadline-row d-flex gap-4 mb-3">
+                            <input type="text" class="form-control deadline-description"
+                                placeholder="Deadline description">
+                            <input type="date" class="form-control deadline-date">
+                            <button type="button" class="btn btn-sm btn-success add-deadline"><i
+                                    data-feather="plus"></i></button>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label for="payment_status" class="form-label">Payment Status</label>
-                        <select class="form-select" id="payment_status" name="payment_status">
-                            <option value="PENDING" {{ old('payment_status') === 'PENDING' ? 'selected' : '' }}>
-                                PENDING</option>
-                            <option value="PAID" {{ old('payment_status') === 'PAID' ? 'selected' : '' }}>PAID
-                            </option>
-                            <option value="OVERDUE" {{ old('payment_status') === 'OVERDUE' ? 'selected' : '' }}>
-                                OVERDUE</option>
-                        </select>
-                    </div>
+                </div>
+
+                <!-- Payment Status -->
+                <div class="mb-3">
+                    <label for="payment_status" class="form-label">Payment Status</label>
+                    <select class="form-select" id="payment_status" name="payment_status">
+                        <option value="PENDING" {{ old('payment_status') === 'PENDING' ? 'selected' : '' }}>PENDING
+                        </option>
+                        <option value="PAID" {{ old('payment_status') === 'PAID' ? 'selected' : '' }}>PAID</option>
+                        <option value="OVERDUE" {{ old('payment_status') === 'OVERDUE' ? 'selected' : '' }}>OVERDUE
+                        </option>
+                    </select>
                 </div>
 
                 <!-- Attachments -->
                 <div class="mb-3">
                     <label for="attachments" class="form-label">Attachments (optional)</label>
-                    <input type="file" class="form-control" id="attachments" name="attachments[]" multiple>
+                    {{-- <input type="file" class="form-control" id="attachments" name="attachments[]" multiple> --}}
+
+                    <div id="dropzone" class="dropzone"></div>
+
+                    <div id="fileList" class="file-list"></div>
+
                     <!-- Important: Explanation/Note for users -->
                     <small class="text-muted d-block mt-1">
                         - Maximum <strong>10 files</strong> allowed.<br>
@@ -167,6 +179,7 @@
                     </small>
                 </div>
 
+
                 <!-- Submit button -->
                 <button type="submit" class="btn btn-primary">
                     Save Case
@@ -175,13 +188,59 @@
         </div>
     </div>
 
+    @push('plugin-styles')
+        <link href="{{ asset('assets/plugins/dropzone/dropzone.min.css') }}" rel="stylesheet"></link>
+    @endpush
     @push('plugin-scripts')
         <script src="https://cdn.ckeditor.com/ckeditor5/35.3.0/classic/ckeditor.js"></script>
+        <script src="{{ asset('assets/plugins/dropzone/dropzone.min.js') }}"></script>
+
     @endpush
 
     @push('custom-scripts')
         <script>
+            //configurations
+            Dropzone.autoDiscover = false;
+
+
             $(document).ready(function() {
+
+                $(document).on('click', '.add-deadline', function() {
+
+                    // Determine the index based on rows that already have a name attribute.
+                    const index = $('#deadlines-container .deadline-date').length - 1;
+                    const $row = $(this).closest('.deadline-row');
+
+
+                    // Mark inputs as required and set name attributes with the current index
+                    $row.find('.deadline-description, .deadline-date').prop('required', true);
+                    $row.find('.deadline-description').attr('name', 'deadlines[' + index + '][description]');
+                    $row.find('.deadline-date').attr('name', 'deadlines[' + index + '][date]');
+
+                    // Change button from add (plus) to remove (minus)
+                    $(this)
+                        .removeClass('btn-success add-deadline')
+                        .addClass('btn-danger remove-deadline')
+                        .html('<i data-feather="minus"></i>');
+
+                    // Append a new blank row (without name attributes)
+                    $('#deadlines-container').append(`
+                    <div class="deadline-row d-flex gap-4 mb-3">
+                        <input type="text" class="form-control deadline-description" placeholder="Deadline description">
+                        <input type="date" class="form-control deadline-date">
+                        <button type="button" class="btn btn-sm btn-success add-deadline">
+                            <i data-feather="plus"></i>
+                        </button>
+                    </div>
+                    `);
+
+                });
+
+                // Remove the row when the minus button is clicked
+                $(document).on('click', '.remove-deadline', function() {
+                    $(this).closest('.deadline-row').remove();
+                });
+
                 $('#attachments').on('change', function(e) {
                     const files = e.target.files;
 
@@ -233,7 +292,7 @@
 
                 // Initialize CKEditor for Your Party Details
                 ClassicEditor
-                    .create(document.querySelector('#your_party_details_editor'), editorConfig)
+                    .create(document.querySelector('#your-party-details-editor'), editorConfig)
                     .then(editor => {
                         editor.ui.view.editable.element.style.minHeight = '300px';
                     })
@@ -243,7 +302,7 @@
 
                 // Initialize CKEditor for Opposite Party Details
                 ClassicEditor
-                    .create(document.querySelector('#opposite_party_details_editor'), editorConfig)
+                    .create(document.querySelector('#opposite-party-details-editor'), editorConfig)
                     .then(editor => {
                         editor.ui.view.editable.element.style.minHeight = '300px';
                     })
@@ -253,13 +312,56 @@
 
                 // Initialize CKEditor for Opposite Party Advocate Details
                 ClassicEditor
-                    .create(document.querySelector('#opposite_party_advocate_details_editor'), editorConfig)
+                    .create(document.querySelector('#opposite-party-advocate-details-editor'), editorConfig)
                     .then(editor => {
                         editor.ui.view.editable.element.style.minHeight = '300px';
                     })
                     .catch(error => {
                         console.error(error);
                     });
+
+                // Initialize CKEditor for Case Information
+                ClassicEditor
+                    .create(document.querySelector('#case-information-editor'), editorConfig)
+                    .then(editor => {
+                        editor.ui.view.editable.element.style.minHeight = '300px';
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+
+                // rerender icons on dom change
+                new MutationObserver(() => feather.replace()).observe(document.getElementById('deadlines-container'), {
+                    childList: true
+                })
+
+                // Dropzone
+                const dropzone = new Dropzone("#dropzone", {
+                    url: "/upload", // Replace with your actual file upload endpoint
+                    paramName: "attachments", // The parameter name for your files
+                    maxFiles: 10,
+                    acceptedFiles: ".png,.jpg,.jpeg,.webp,.pdf,.doc,.docx",
+                    addRemoveLinks: true,
+                    autoProcessQueue: false, // Change to true if you want auto-upload on file add
+                    // Custom validation for file size based on file type
+                    accept: function(file, done) {
+                        if (file.type.startsWith("image/")) {
+                            if (file.size > 2097152) { // 2MB in bytes
+                                return done("Image file must not exceed 2MB.");
+                            }
+                        } else {
+                            if (file.size > 10485760) { // 10MB in bytes
+                                return done("Document/PDF file must not exceed 10MB.");
+                            }
+                        }
+                        done();
+                    }
+                });
+
+                // Optionally, add event listeners for further customizations
+                dropzone.on("error", function(file, errorMessage) {
+                    console.error("File upload error:", errorMessage);
+                });
 
             });
         </script>

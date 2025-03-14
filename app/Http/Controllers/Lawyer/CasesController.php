@@ -19,7 +19,7 @@ class CasesController extends Controller
         if ($request->ajax()) {
 
             // DataTables columns to map for ordering:
-            $columns            = ['id', 'name', 'type', 'status', 'payment', 'created_at'];
+            $columns            = ['id', 'name', 'type', 'urgency', 'status', 'payment_status', 'created_at'];
             $draw               = $request->input('draw');
             $start              = $request->input('start');        // skip
             $length             = $request->input('length');       // rows per page
@@ -70,24 +70,27 @@ class CasesController extends Controller
      */
     public function store(Request $request)
     {
+
         $validated = $request->validate([
-            'name'               => ['required', 'string', 'max:255'],
-            'type'               => ['required', 'string', 'max:255'],
-            'urgency'            => ['nullable', 'in:HIGH,MEDIUM,CRITICAL'],
-            'court_name'         => ['required', 'string', 'max:255'],
-            'court_case_number'  => ['required', 'string', 'max:255'],
-            'judge_name'         => ['nullable', 'string', 'max:255'],
-            'under_acts'         => ['nullable', 'string', 'max:255'],
-            'under_sections'     => ['nullable', 'string', 'max:255'],
-            'fir_number'         => ['nullable', 'string', 'max:255'],
-            'fir_year'           => ['nullable', 'string', 'max:255'],
-            'police_station'     => ['nullable', 'string', 'max:255'],
-            'your_party_details' => ['nullable', 'string'],
+            'name'                            => ['required', 'string', 'max:255'],
+            'type'                            => ['required', 'string', 'max:255'],
+            'urgency'                         => ['nullable', 'in:HIGH,MEDIUM,CRITICAL'],
+            'court_name'                      => ['required', 'string', 'max:255'],
+            'court_case_number'               => ['required', 'string', 'max:255'],
+            'judge_name'                      => ['nullable', 'string', 'max:255'],
+            'under_acts'                      => ['nullable', 'string', 'max:255'],
+            'under_sections'                  => ['nullable', 'string', 'max:255'],
+            'fir_number'                      => ['nullable', 'string', 'max:255'],
+            'fir_year'                        => ['nullable', 'string', 'max:255'],
+            'police_station'                  => ['nullable', 'string', 'max:255'],
+            'your_party_details'              => ['nullable', 'string'],
             'opposite_party_details'          => ['nullable', 'string'],
             'opposite_party_advocate_details' => ['nullable', 'string'],
-            'case_information'   => ['nullable', 'string'],
-            'deadlines'          => ['nullable', 'date'],
-            'payment_status'     => ['nullable', 'in:PENDING,PAID,OVERDUE'],
+            'case_information'                => ['nullable', 'string'],
+            'payment_status'                  => ['nullable', 'in:PENDING,PAID,OVERDUE'],
+            'deadlines'                       => ['nullable', 'array'],
+            'deadlines.*.description'         => ['nullable', 'string', 'max:255'],
+            'deadlines.*.date'                => ['nullable', 'date'],
 
             // Attachments: up to 10, each validated by a custom callback
             'attachments'   => ['array', 'max:10'],
@@ -129,21 +132,21 @@ class CasesController extends Controller
             'lawyer_id'                      => Auth::id(),  // or auth()->id()
             'name'                           => $validated['name'],
             'type'                           => $validated['type'],
-            'urgency'                        => $validated['urgency'] ?? null,
             'court_name'                     => $validated['court_name'],
             'court_case_number'              => $validated['court_case_number'],
-            'judge_name'                     => $validated['judge_name'] ?? null,
-            'under_acts'                     => $validated['under_acts'] ?? null,
-            'under_sections'                 => $validated['under_sections'] ?? null,
-            'fir_number'                     => $validated['fir_number'] ?? null,
-            'fir_year'                       => $validated['fir_year'] ?? null,
-            'police_station'                 => $validated['police_station'] ?? null,
-            'your_party_details'             => $validated['your_party_details'] ?? null,
-            'opposite_party_details'         => $validated['opposite_party_details'] ?? null,
-            'opposite_party_advocate_details' => $validated['opposite_party_advocate_details'] ?? null,
-            'case_information'               => $validated['case_information'] ?? null,
-            'deadlines'                      => $validated['deadlines'] ?? null,
-            'payment_status'                 => $validated['payment_status'] ?? 'PENDING',
+            'urgency'                        => $validated['urgency']                           ?? null,
+            'judge_name'                     => $validated['judge_name']                        ?? null,
+            'under_acts'                     => $validated['under_acts']                        ?? null,
+            'under_sections'                 => $validated['under_sections']                    ?? null,
+            'fir_number'                     => $validated['fir_number']                        ?? null,
+            'fir_year'                       => $validated['fir_year']                          ?? null,
+            'police_station'                 => $validated['police_station']                    ?? null,
+            'your_party_details'             => $validated['your_party_details']                ?? null,
+            'opposite_party_details'         => $validated['opposite_party_details']            ?? null,
+            'opposite_party_advocate_details' => $validated['opposite_party_advocate_details']   ?? null,
+            'case_information'               => $validated['case_information']                  ?? null,
+            'deadlines'                      => $validated['deadlines']                         ?? null,
+            'payment_status'                 => $validated['payment_status']                    ?? 'PENDING',
         ]);
 
         if ($request->hasFile('attachments')) {
@@ -193,24 +196,26 @@ class CasesController extends Controller
         $case = Cases::where('lawyer_id', Auth::id())->findOrFail($id);
 
         $validated = $request->validate([
-            'name'               => ['required', 'string', 'max:255'],
-            'type'               => ['required', 'string', 'max:255'],
-            'urgency'            => ['nullable', 'in:HIGH,MEDIUM,CRITICAL'],
-            'court_name'         => ['required', 'string', 'max:255'],
-            'court_case_number'  => ['required', 'string', 'max:255'],
-            'judge_name'         => ['nullable', 'string', 'max:255'],
-            'under_acts'         => ['nullable', 'string', 'max:255'],
-            'under_sections'     => ['nullable', 'string', 'max:255'],
-            'fir_number'         => ['nullable', 'string', 'max:255'],
-            'fir_year'           => ['nullable', 'string', 'max:255'],
-            'police_station'     => ['nullable', 'string', 'max:255'],
-            'your_party_details' => ['nullable', 'string'],
-            'opposite_party_details'          => ['nullable', 'string'],
-            'opposite_party_advocate_details' => ['nullable', 'string'],
-            'case_information'   => ['nullable', 'string'],
-            'deadlines'          => ['nullable', 'date'],
-            'payment_status'     => ['nullable', 'in:PENDING,PAID,OVERDUE'],
-            'status'             => ['nullable', 'in:OPEN,IN PROGRESS,CLOSED'],
+            'name'                              => ['required', 'string', 'max:255'],
+            'type'                              => ['required', 'string', 'max:255'],
+            'urgency'                           => ['nullable', 'in:HIGH,MEDIUM,CRITICAL'],
+            'court_name'                        => ['required', 'string', 'max:255'],
+            'court_case_number'                 => ['required', 'string', 'max:255'],
+            'judge_name'                        => ['nullable', 'string', 'max:255'],
+            'under_acts'                        => ['nullable', 'string', 'max:255'],
+            'under_sections'                    => ['nullable', 'string', 'max:255'],
+            'fir_number'                        => ['nullable', 'string', 'max:255'],
+            'fir_year'                          => ['nullable', 'string', 'max:255'],
+            'police_station'                    => ['nullable', 'string', 'max:255'],
+            'your_party_details'                => ['nullable', 'string'],
+            'opposite_party_details'            => ['nullable', 'string'],
+            'opposite_party_advocate_details'   => ['nullable', 'string'],
+            'case_information'                  => ['nullable', 'string'],
+            'payment_status'                    => ['nullable', 'in:PENDING,PAID,OVERDUE'],
+            'status'                            => ['nullable', 'in:OPEN,IN PROGRESS,CLOSED'],
+            'deadlines'                         => ['nullable', 'array'],
+            'deadlines.*.description'           => ['nullable', 'string', 'max:255'],
+            'deadlines.*.date'                  => ['nullable', 'date'],
 
             'attachments'   => ['array', 'max:10'],
             'attachments.*' => [
@@ -263,7 +268,7 @@ class CasesController extends Controller
         if ($request->hasFile('attachments')) {
 
             // remove old attachments
-            $case->attachments()->where('case_id', $case->id)->delete();        
+            $case->attachments()->where('case_id', $case->id)->delete();
 
             foreach ($request->file('attachments') as $file) {
                 $storedPath = $file->store("cases/{$case->id}", 'public');
@@ -294,5 +299,35 @@ class CasesController extends Controller
 
         // Return response or redirect as needed
         return redirect()->route('lawyer.cases.index')->with('success', 'Case deleted successfully.');
+    }
+
+    /**
+     * Handle the file upload from AeroDrop.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function upload(Request $request)
+    {
+        // Validate the file. Note: max is in kilobytes (10 MB = 10240 KB)
+        $validatedData = $request->validate([
+            'file' => 'required|file|max:10240|mimes:jpeg,jpg,png,webp,pdf',
+        ]);
+
+        // Check if the file exists in the request.
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            // Create a unique file name.
+            $filename = time() . '_' . $file->getClientOriginalName();
+            // Store the file in the "uploads" folder on the "public" disk.
+            $path = $file->storeAs('uploads', $filename, 'public');
+
+            return $this->successResponse('Upload successful', [
+                'file' => $filename,
+                'path' => $path,
+            ]);
+        }
+
+        return $this->errorResponse('No file uploaded');
     }
 }
