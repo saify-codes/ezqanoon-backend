@@ -184,7 +184,7 @@
 
     @push('plugin-scripts')
         <script src="{{ asset('assets/plugins/aerodrop/aerodrop.min.js') }}"></script>
-        <script src="https://cdn.ckeditor.com/ckeditor5/35.3.0/classic/ckeditor.js"></script>
+        <script src="{{ asset('assets/plugins/ckeditor/ckeditor.min.js') }}"></script>
     @endpush
 
     @push('custom-scripts')
@@ -205,7 +205,7 @@
                     $(this)
                         .removeClass('btn-success add-deadline')
                         .addClass('btn-danger remove-deadline')
-                        .html('<i data-feather="minus"></i>');
+                        .html('<i data-feather="trash"></i>');
 
                     // Append a new blank row (without name attributes)
                     $('#deadlines-container').append(`
@@ -222,51 +222,6 @@
                 // Remove the row when the minus button is clicked
                 $(document).on('click', '.remove-deadline', function() {
                     $(this).closest('.deadline-row').remove();
-                });
-
-                // File input validation (if used elsewhere)
-                $('#attachments').on('change', function(e) {
-                    const files = e.target.files;
-
-                    // 1) Restrict to max 10 files
-                    if (files.length > 10) {
-                        alert('You can only upload a maximum of 10 files.');
-                        $(this).val(''); // Reset the file input
-                        return;
-                    }
-
-                    // Allowed MIME types
-                    const allowedImages = ['image/png', 'image/jpeg', 'image/webp'];
-                    const allowedDocs = [
-                        'application/pdf',
-                        'application/msword',
-                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                    ];
-
-                    // 2) Validate each file using for...of
-                    for (const file of files) {
-                        // Check file type
-                        if (allowedImages.includes(file.type)) {
-                            // This is an image => max 2 MB
-                            if (file.size > 2 * 1024 * 1024) {
-                                alert(`Image "${file.name}" exceeds 2 MB limit.`);
-                                $(this).val('');
-                                return;
-                            }
-                        } else if (allowedDocs.includes(file.type)) {
-                            // This is a doc/pdf => max 10 MB
-                            if (file.size > 10 * 1024 * 1024) {
-                                alert(`File "${file.name}" exceeds 10 MB limit for PDFs/docs.`);
-                                $(this).val('');
-                                return;
-                            }
-                        } else {
-                            // Not a recognized image or doc type
-                            alert(`File "${file.name}" is not an allowed format.`);
-                            $(this).val('');
-                            return;
-                        }
-                    }
                 });
 
                 // Common configuration for allowed toolbar tools
@@ -320,27 +275,27 @@
                 });
 
                 // AeroDrop initialization with upload state management.
-                let totalUploads = 0;
-                let completedUploads = 0;
-
                 const aerodrop = new AeroDrop(document.querySelector('#aerodrop'), {
                     name: 'attachments',
                     uploadURL: '/upload',
                     maxFiles: 10,
-                    maxFileSize: 10 * 1024 * 1024,
                     allowedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
+                    fileSizeRules: [
+                        { types: ['image/jpeg', 'image/png', 'image/webp'], maxSize: 2 * 1024 * 1024, error: "Image file too big" },
+                        { types: ['application/pdf'], maxSize: 10 * 1024 * 1024, error: "PDF file too big" }
+                    ],
+                    fallbackError: "File too big",
                     beforeSend: function(xhr) {
                         xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
                     },
                 });
-
-               
 
                 aerodrop.onupload = function(res) {
                     console.log("Upload successful:", res);
                 };
 
                 aerodrop.onerror = function(error) {
+                    errorMessage(error) 
                     console.error("Upload error:", error);
                 };
             });

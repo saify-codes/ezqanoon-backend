@@ -1,34 +1,30 @@
 
 <x-lawyer.app>
+
    
-
-    <div class="card">
-        <div class="card-body">
-            <div id="aerodrop" class="aerodrop mb-3"></div>
-        </div>
-    </div>
-
-    @push('custom-scripts')
-        <script>
-            const aerodrop = new AeroDrop(document.querySelector('#aerodrop'), {
-                name: 'attachments',
-                uploadURL: '/upload',
-                maxFileSize: 10 * 1024 * 1024, // 5 MB limit
-                allowedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
-                },
-            });
-
-            aerodrop.onupload = (res) => {
-                console.log(res);
-            };
-
-            aerodrop.onerror = (error) => {
-                console.log(error);
-            };
-        </script>
-    @endpush
-
+      <h1>GLightbox Example</h1>
+      
+      <!-- Image link (grouped with data-gallery for a gallery effect) -->
+      <a href="https://via.placeholder.com/800x600" class="glightbox" data-gallery="gallery1">
+        <img src="https://via.placeholder.com/150x100" alt="Placeholder Image">
+      </a>
+    
+      <!-- Another image in the same gallery -->
+      <a href="https://via.placeholder.com/800x600?text=Second" class="glightbox" data-gallery="gallery1">
+        <img src="https://via.placeholder.com/150x100?text=Second" alt="Second Placeholder Image">
+      </a>
+    
+      <!-- Video link -->
+      <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="glightbox">
+        Watch Video
+      </a>
+    
+      <!-- GLightbox JS from CDN -->
+      <script>
+        // Initialize GLightbox
+        const lightbox = GLightbox({
+          selector: '.glightbox'
+        });
+      </script> 
 
 </x-lawyer.app>

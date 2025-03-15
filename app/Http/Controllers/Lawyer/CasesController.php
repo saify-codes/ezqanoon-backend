@@ -7,7 +7,9 @@ use App\Models\Cases;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use League\Flysystem\StorageAttributes;
 
 class CasesController extends Controller
 {
@@ -93,6 +95,7 @@ class CasesController extends Controller
             'deadlines.*.description'         => ['nullable', 'string', 'max:255'],
             'deadlines.*.date'                => ['nullable', 'date'],
             'attachments'                     => ['array', 'max:10'],
+        
             // 'attachments.*' => [
             //     'file', // ensures it's an actual file
             //     function ($_, $file, $fail) {
@@ -148,20 +151,31 @@ class CasesController extends Controller
             'payment_status'                 => $validated['payment_status']                    ?? 'PENDING',
         ]);
 
+        if ($request->has('attachments')) {
 
+            // Decode the attachment JSON data
+            $attachments = array_map(fn($attachment) => json_decode($attachment), $request->attachments);
 
-        // if ($request->hasFile('attachments')) {
-        //     foreach ($request->input('attachments') as $file) {
-                
-                
-        //         $case->attachments()->create([
-        //             'file_path'     => $storedPath,
-        //             'original_name' => $file->getClientOriginalName(),
-        //             'mime_type'     => $file->getMimeType(),
-        //         ]);
-        //     }
-        // }
+            // Process each decoded attachment
+            foreach ($attachments as $attachment) {
 
+                // Check if the file exists in the public directory
+                if (Storage::disk('public')->exists($attachment->file_path)) {
+                    $mimeType = Storage::disk('public')->mimeType($attachment->file_path);
+
+                    if (Storage::disk('public')->move($attachment->file_path, "cases/$case->id/$attachment->file")) {
+                        // Save the attachment details to the database
+                        $case->attachments()->create([
+                            'file'          => $attachment->file,
+                            'original_name' => $attachment->original_name,
+                            'mime_type'     => $mimeType,  // Save the MIME type fetched from the file
+                        ]);
+                    }
+                }
+            }
+        }
+
+        // old approach
         // if ($request->hasFile('attachments')) {
         //     foreach ($request->file('attachments') as $file) {
         //         $storedPath = $file->store("cases/{$case->id}", 'public');
@@ -189,7 +203,7 @@ class CasesController extends Controller
             ->firstOrFail();
 
         // Return the view with the case data
-        return view('lawyer.cases.show', compact('case'));
+        return view('lawyer.cases.show')->with('case', $case);
     }
 
     /**
@@ -229,30 +243,8 @@ class CasesController extends Controller
             'deadlines'                         => ['nullable', 'array'],
             'deadlines.*.description'           => ['nullable', 'string', 'max:255'],
             'deadlines.*.date'                  => ['nullable', 'date'],
-
-            'attachments'   => ['array', 'max:10'],
-            'attachments.*' => [
-                'file',
-                function ($_, $file, $fail) {
-                    $allowedImages = ['image/png', 'image/jpeg', 'image/webp'];
-                    $allowedDocs   = [
-                        'application/pdf',
-                        'application/msword',
-                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                    ];
-
-                    $mimeType = $file->getMimeType();
-                    $fileSize = $file->getSize();
-
-                    if (in_array($mimeType, $allowedImages) && $fileSize > 2 * 1024 * 1024) {
-                        return $fail("The image {$file->getClientOriginalName()} exceeds the 2 MB limit.");
-                    } elseif (in_array($mimeType, $allowedDocs) && $fileSize > 10 * 1024 * 1024) {
-                        return $fail("The file {$file->getClientOriginalName()} exceeds the 10 MB limit.");
-                    } elseif (!in_array($mimeType, array_merge($allowedImages, $allowedDocs))) {
-                        return $fail("The file {$file->getClientOriginalName()} is not an allowed format.");
-                    }
-                }
-            ],
+            'attachments'                       => ['array', 'max:10'],
+            
         ]);
 
         // Update the case fields
@@ -278,18 +270,29 @@ class CasesController extends Controller
         ]);
 
         // Handle file attachments
-        if ($request->hasFile('attachments')) {
+        if ($request->has('attachments')) {
 
             // remove old attachments
             $case->attachments()->where('case_id', $case->id)->delete();
 
-            foreach ($request->file('attachments') as $file) {
-                $storedPath = $file->store("cases/{$case->id}", 'public');
-                $case->attachments()->create([
-                    'file_path'     => $storedPath,
-                    'original_name' => $file->getClientOriginalName(),
-                    'mime_type'     => $file->getMimeType(),
-                ]);
+            // Decode the attachment JSON data
+            $attachments = array_map(fn($attachment) => json_decode($attachment), $request->attachments);
+
+            // Process each decoded attachment
+            foreach ($attachments as $attachment) {
+                // Check if the file exists in the public directory
+                if (Storage::disk('public')->exists($attachment->file_path)) {
+                    $mimeType = Storage::disk('public')->mimeType($attachment->file_path);
+
+                    if (Storage::disk('public')->move($attachment->file_path, "cases/$case->id/$attachment->file")) {
+                        // Save the attachment details to the database
+                        $case->attachments()->create([
+                            'file' => $attachment->file,
+                            'original_name' => $attachment->original_name,
+                            'mime_type' => $mimeType,  // Save the MIME type fetched from the file
+                        ]);
+                    }
+                }
             }
         }
 
@@ -338,7 +341,9 @@ class CasesController extends Controller
         if ($request->hasFile('file')) {
 
             $file = $request->file('file');
-            $path = $file->store("tmp");
+
+            // Store the file in public storage
+            $path = $file->store('aerodrop', 'public');
 
             return $this->successResponse('Upload successful', [
                 'file'          => basename($path),
@@ -346,7 +351,6 @@ class CasesController extends Controller
                 'mime_type'     => $file->getMimeType(),
                 'file_path'     => $path,
             ]);
-
         }
 
         return $this->errorResponse('No file uploaded');

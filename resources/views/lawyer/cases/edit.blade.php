@@ -46,24 +46,30 @@
                         <label for="urgency" class="form-label">Urgency</label>
                         <select class="form-select" id="urgency" name="urgency">
                             <option value="">-- Select Urgency --</option>
-                            <option value="HIGH" {{ old('urgency', $case->urgency) === 'HIGH' ? 'selected' : '' }}>HIGH</option>
-                            <option value="MEDIUM" {{ old('urgency', $case->urgency) === 'MEDIUM' ? 'selected' : '' }}>MEDIUM</option>
-                            <option value="CRITICAL" {{ old('urgency', $case->urgency) === 'CRITICAL' ? 'selected' : '' }}>CRITICAL</option>
+                            <option value="HIGH" {{ old('urgency', $case->urgency) === 'HIGH' ? 'selected' : '' }}>
+                                HIGH</option>
+                            <option value="MEDIUM" {{ old('urgency', $case->urgency) === 'MEDIUM' ? 'selected' : '' }}>
+                                MEDIUM</option>
+                            <option value="CRITICAL"
+                                {{ old('urgency', $case->urgency) === 'CRITICAL' ? 'selected' : '' }}>CRITICAL</option>
                         </select>
                     </div>
                     <div class="col-md-6">
                         <label for="court_name" class="form-label">Court Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="court_name" name="court_name"
-                            value="{{ old('court_name', $case->court_name) }}" placeholder="e.g. Supreme Court, District Court" required>
+                            value="{{ old('court_name', $case->court_name) }}"
+                            placeholder="e.g. Supreme Court, District Court" required>
                     </div>
                 </div>
 
                 <!-- Court Case Number & Judge Name -->
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="court_case_number" class="form-label">Court Case Number <span class="text-danger">*</span></label>
+                        <label for="court_case_number" class="form-label">Court Case Number <span
+                                class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="court_case_number" name="court_case_number"
-                            value="{{ old('court_case_number', $case->court_case_number) }}" placeholder="Enter court case number" required>
+                            value="{{ old('court_case_number', $case->court_case_number) }}"
+                            placeholder="Enter court case number" required>
                     </div>
                     <div class="col-md-6">
                         <label for="judge_name" class="form-label">Judge Name</label>
@@ -101,7 +107,8 @@
                     <div class="col-md-4">
                         <label for="police_station" class="form-label">Police Station</label>
                         <input type="text" class="form-control" id="police_station" name="police_station"
-                            value="{{ old('police_station', $case->police_station) }}" placeholder="Enter the police station">
+                            value="{{ old('police_station', $case->police_station) }}"
+                            placeholder="Enter the police station">
                     </div>
                 </div>
 
@@ -121,7 +128,8 @@
 
                 <!-- Opposite Party Advocate Details -->
                 <div class="mb-3">
-                    <label for="opposite-party-advocate-details-editor" class="form-label">Opposite Party Advocate Details</label>
+                    <label for="opposite-party-advocate-details-editor" class="form-label">Opposite Party Advocate
+                        Details</label>
                     <textarea class="form-control" id="opposite-party-advocate-details-editor" name="opposite_party_advocate_details"
                         rows="3" placeholder="Enter opposite party advocate details">{{ old('opposite_party_advocate_details', $case->opposite_party_advocate_details) }}</textarea>
                 </div>
@@ -133,6 +141,7 @@
                         placeholder="Describe the case in detail">{{ old('case_information', $case->case_information) }}</textarea>
                 </div>
 
+                
                 <!-- Deadlines -->
                 <div class="mb-3">
                     <label for="deadlines" class="form-label">Deadlines</label>
@@ -141,17 +150,24 @@
                             $deadlines = old('deadline', $case->deadlines) ?? [];
                         @endphp
 
-                        @foreach($deadlines as $index => $deadline)
+                        @foreach ($deadlines as $index => $deadline)
                             <div class="deadline-row d-flex gap-4 mb-3">
-                                <input type="text" class="form-control deadline-description" name="deadline[{{ $index }}][description]" placeholder="Deadline description" value="{{ old("deadline.$index.description", $deadline['description'] ?? '') }}" required>
-                                <input type="date" class="form-control deadline-date" name="deadline[{{ $index }}][date]" value="{{ old("deadline.$index.date", $deadline['date'] ?? '') }}" required>
+                                <input type="text" class="form-control deadline-description"
+                                    name="deadlines[{{ $index }}][description]"
+                                    placeholder="Deadline description"
+                                    value="{{ old("deadlines.$index.description", $deadline['description'] ?? '') }}"
+                                    required>
+                                <input type="date" class="form-control deadline-date"
+                                    name="deadlines[{{ $index }}][date]"
+                                    value="{{ old("deadlines.$index.date", $deadline['date'] ?? '') }}" required>
                                 <button type="button" class="btn btn-sm btn-danger remove-deadline">
-                                    <i data-feather="minus"></i>
+                                    <i data-feather="trash"></i>
                                 </button>
                             </div>
                         @endforeach
                         <div class="deadline-row d-flex gap-4 mb-3">
-                            <input type="text" class="form-control deadline-description" placeholder="Deadline description">
+                            <input type="text" class="form-control deadline-description"
+                                placeholder="Deadline description">
                             <input type="date" class="form-control deadline-date">
                             <button type="button" class="btn btn-sm btn-success add-deadline">
                                 <i data-feather="plus"></i>
@@ -160,21 +176,29 @@
 
                     </div>
                 </div>
-                
+
                 <!-- Payment Status -->
                 <div class="mb-3">
                     <label for="payment_status" class="form-label">Payment Status</label>
                     <select class="form-select" id="payment_status" name="payment_status">
-                        <option value="PENDING" {{ old('payment_status', $case->payment_status) === 'PENDING' ? 'selected' : '' }}>PENDING</option>
-                        <option value="PAID" {{ old('payment_status', $case->payment_status) === 'PAID' ? 'selected' : '' }}>PAID</option>
-                        <option value="OVERDUE" {{ old('payment_status', $case->payment_status) === 'OVERDUE' ? 'selected' : '' }}>OVERDUE</option>
+                        <option value="PENDING"
+                            {{ old('payment_status', $case->payment_status) === 'PENDING' ? 'selected' : '' }}>PENDING
+                        </option>
+                        <option value="PAID"
+                            {{ old('payment_status', $case->payment_status) === 'PAID' ? 'selected' : '' }}>PAID
+                        </option>
+                        <option value="OVERDUE"
+                            {{ old('payment_status', $case->payment_status) === 'OVERDUE' ? 'selected' : '' }}>OVERDUE
+                        </option>
                     </select>
                 </div>
 
                 <!-- Attachments -->
                 <div class="mb-3">
                     <label for="attachments" class="form-label">Attachments (optional)</label>
-                    <input type="file" class="form-control" id="attachments" name="attachments[]" multiple>
+                    {{-- <input type="file" class="form-control" id="attachments" name="attachments[]" multiple> --}}
+                    <div id="aerodrop" class="aerodrop mb-3"></div>
+                    <!-- Note for users -->
                     <small class="text-muted d-block mt-1">
                         - Maximum <strong>10 files</strong> allowed.<br>
                         - Allowed file types: <strong>PNG, JPG, WEBP, PDF, DOC, DOCX</strong>.<br>
@@ -192,12 +216,12 @@
     </div>
 
     @push('plugin-styles')
+        <link href="{{ asset('assets/plugins/aerodrop/aerodrop.min.css') }}" rel="stylesheet">
     @endpush
 
     @push('plugin-scripts')
-        <script src="https://cdn.ckeditor.com/ckeditor5/35.3.0/classic/ckeditor.js"></script>
-        <script src="{{ asset('assets/plugins/tostify/tostify.min.js') }}"></script>
-
+        <script src="{{ asset('assets/plugins/aerodrop/aerodrop.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/ckeditor/ckeditor.min.js') }}"></script>
     @endpush
 
     @push('custom-scripts')
@@ -206,14 +230,14 @@
 
                 $(document).on('click', '.add-deadline', function() {
                     const index = $('#deadlines-container .deadline-date').length - 1;
-                    const $row  = $(this).closest('.deadline-row');
+                    const $row = $(this).closest('.deadline-row');
                     $row.find('.deadline-description, .deadline-date').prop('required', true);
                     $row.find('.deadline-description').attr('name', 'deadlines[' + index + '][description]');
                     $row.find('.deadline-date').attr('name', 'deadlines[' + index + '][date]');
                     $(this)
                         .removeClass('btn-success add-deadline')
                         .addClass('btn-danger remove-deadline')
-                        .html('<i data-feather="minus"></i>');
+                        .html('<i data-feather="trash"></i>');
                     $('#deadlines-container').append(`
                         <div class="deadline-row d-flex gap-4 mb-3">
                             <input type="text" class="form-control deadline-description" placeholder="Deadline description">
@@ -229,44 +253,45 @@
                     $(this).closest('.deadline-row').remove();
                 });
 
-                $('#attachments').on('change', function(e) {
-                    const files = e.target.files;
-                    if (files.length > 10) {
-                        alert('You can only upload a maximum of 10 files.');
-                        $(this).val('');
-                        return;
-                    }
-                    const allowedImages = ['image/png', 'image/jpeg', 'image/webp'];
-                    const allowedDocs = [
-                        'application/pdf',
-                        'application/msword',
-                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                    ];
-                    for (const file of files) {
-                        if (allowedImages.includes(file.type)) {
-                            if (file.size > 2 * 1024 * 1024) {
-                                errorMessage(`Image "${file.name}" exceeds 2 MB limit.`);
-                                $(this).val('');
-                                return;
-                            }
-                        } else if (allowedDocs.includes(file.type)) {
-                            if (file.size > 10 * 1024 * 1024) {
-                                errorMessage(`File "${file.name}" exceeds 10 MB limit for PDFs/docs.`);
-                                $(this).val('');
-                                return;
-                            }
-                        } else {
-                            errorMessage(`File "${file.name}" is not an allowed format.`);
-                            $(this).val('');
-                            return;
-                        }
-                    }
-                });
+                // $('#attachments').on('change', function(e) {
+                //     const files = e.target.files;
+                //     if (files.length > 10) {
+                //         alert('You can only upload a maximum of 10 files.');
+                //         $(this).val('');
+                //         return;
+                //     }
+                //     const allowedImages = ['image/png', 'image/jpeg', 'image/webp'];
+                //     const allowedDocs = [
+                //         'application/pdf',
+                //         'application/msword',
+                //         'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                //     ];
+                //     for (const file of files) {
+                //         if (allowedImages.includes(file.type)) {
+                //             if (file.size > 2 * 1024 * 1024) {
+                //                 errorMessage(`Image "${file.name}" exceeds 2 MB limit.`);
+                //                 $(this).val('');
+                //                 return;
+                //             }
+                //         } else if (allowedDocs.includes(file.type)) {
+                //             if (file.size > 10 * 1024 * 1024) {
+                //                 errorMessage(`File "${file.name}" exceeds 10 MB limit for PDFs/docs.`);
+                //                 $(this).val('');
+                //                 return;
+                //             }
+                //         } else {
+                //             errorMessage(`File "${file.name}" is not an allowed format.`);
+                //             $(this).val('');
+                //             return;
+                //         }
+                //     }
+                // });
 
                 const editorConfig = {
                     toolbar: ['bold', 'italic', 'bulletedList', 'numberedList', 'link']
                 };
 
+                // Initialize CKEditor for Your Party Details
                 ClassicEditor
                     .create(document.querySelector('#your-party-details-editor'), editorConfig)
                     .then(editor => {
@@ -276,6 +301,7 @@
                         console.error(error);
                     });
 
+                // Initialize CKEditor for Opposite Party Details
                 ClassicEditor
                     .create(document.querySelector('#opposite-party-details-editor'), editorConfig)
                     .then(editor => {
@@ -285,6 +311,7 @@
                         console.error(error);
                     });
 
+                // Initialize CKEditor for Opposite Party Advocate Details
                 ClassicEditor
                     .create(document.querySelector('#opposite-party-advocate-details-editor'), editorConfig)
                     .then(editor => {
@@ -294,6 +321,7 @@
                         console.error(error);
                     });
 
+                // Initialize CKEditor for Case Information
                 ClassicEditor
                     .create(document.querySelector('#case-information-editor'), editorConfig)
                     .then(editor => {
@@ -303,7 +331,43 @@
                         console.error(error);
                     });
 
-                new MutationObserver(() => feather.replace()).observe(document.getElementById('deadlines-container'), {childList: true});
+                // Re-render icons on DOM change
+                new MutationObserver(() => feather.replace()).observe(document.getElementById('deadlines-container'), {
+                    childList: true
+                });
+
+                // AeroDrop initialization with upload state management.
+                const aerodrop = new AeroDrop(document.querySelector('#aerodrop'), {
+                    name: 'attachments',
+                    uploadURL: '/upload',
+                    maxFiles: 10,
+                    allowedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
+                    fileSizeRules: [{
+                            types: ['image/jpeg', 'image/png', 'image/webp'],
+                            maxSize: 2 * 1024 * 1024,
+                            error: "Image file too big"
+                        },
+                        {
+                            types: ['application/pdf'],
+                            maxSize: 10 * 1024 * 1024,
+                            error: "PDF file too big"
+                        }
+                    ],
+                    fallbackError: "File too big",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+                    },
+                });
+
+                aerodrop.onupload = function(res) {
+                    console.log("Upload successful:", res);
+                };
+
+                aerodrop.onerror = function(error) {
+                    errorMessage(error)
+                    console.error("Upload error:", error);
+                };
+
             });
         </script>
     @endpush

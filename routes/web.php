@@ -3,10 +3,12 @@
 use App\Http\Controllers\Lawyer\CasesController;
 use App\Http\Controllers\Lawyer\AppointmentController;
 use App\Http\Controllers\Lawyer\AuthController;
+use App\Http\Controllers\Lawyer\CaseAttachmentController;
 use App\Http\Controllers\Lawyer\NotificationController;
 use App\Http\Controllers\Lawyer\ProfileController;
 use App\Http\Controllers\Lawyer\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,15 +68,20 @@ Route::group(['middleware' => 'lawyer.auth'], function(){
         ]
     ]);
     
-
-
+    Route::resource('/manage/cases/{case}/attachment', CaseAttachmentController::class, [
+        'names' => [
+            'destroy' => 'lawyer.cases.attachments.destroy',
+        ]
+    ]);
 
     // notifications
     Route::get('/notification', [NotificationController::class, 'getNotifications']);
     Route::patch('/notification/{notification}', [NotificationController::class, 'markRead']);
 
-    
+    // aerodrop
+    Route::post('/upload', [CasesController::class, 'upload']);
 
+    Route::view('/foo', 'welcome');
 });
 
 Route::group(['middleware' => 'lawyer.guest'], function(){
@@ -96,10 +103,6 @@ Route::group(['middleware' => 'lawyer.guest'], function(){
     Route::get('/verification/resend', [AuthController::class, 'sendVerificationLink'])->name('lawyer.verification.resend');
 
 }); 
-
-
-Route::view('/foo', 'welcome');
-Route::post('/upload', [CasesController::class, 'upload']);
 
 
 
