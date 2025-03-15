@@ -208,7 +208,7 @@
                 </div>
 
                 <!-- Submit button -->
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" id="submitBtn">
                     Update Case
                 </button>
             </form>
@@ -252,40 +252,6 @@
                 $(document).on('click', '.remove-deadline', function() {
                     $(this).closest('.deadline-row').remove();
                 });
-
-                // $('#attachments').on('change', function(e) {
-                //     const files = e.target.files;
-                //     if (files.length > 10) {
-                //         alert('You can only upload a maximum of 10 files.');
-                //         $(this).val('');
-                //         return;
-                //     }
-                //     const allowedImages = ['image/png', 'image/jpeg', 'image/webp'];
-                //     const allowedDocs = [
-                //         'application/pdf',
-                //         'application/msword',
-                //         'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                //     ];
-                //     for (const file of files) {
-                //         if (allowedImages.includes(file.type)) {
-                //             if (file.size > 2 * 1024 * 1024) {
-                //                 errorMessage(`Image "${file.name}" exceeds 2 MB limit.`);
-                //                 $(this).val('');
-                //                 return;
-                //             }
-                //         } else if (allowedDocs.includes(file.type)) {
-                //             if (file.size > 10 * 1024 * 1024) {
-                //                 errorMessage(`File "${file.name}" exceeds 10 MB limit for PDFs/docs.`);
-                //                 $(this).val('');
-                //                 return;
-                //             }
-                //         } else {
-                //             errorMessage(`File "${file.name}" is not an allowed format.`);
-                //             $(this).val('');
-                //             return;
-                //         }
-                //     }
-                // });
 
                 const editorConfig = {
                     toolbar: ['bold', 'italic', 'bulletedList', 'numberedList', 'link']
@@ -331,11 +297,6 @@
                         console.error(error);
                     });
 
-                // Re-render icons on DOM change
-                new MutationObserver(() => feather.replace()).observe(document.getElementById('deadlines-container'), {
-                    childList: true
-                });
-
                 // AeroDrop initialization with upload state management.
                 const aerodrop = new AeroDrop(document.querySelector('#aerodrop'), {
                     name: 'attachments',
@@ -369,6 +330,17 @@
                 };
 
             });
+
+            // Re-render icons on DOM change
+            new MutationObserver(() => feather.replace()).observe(document.getElementById('deadlines-container'), {
+                childList: true
+            });
+
+            // Disable form untill all pending upload processed
+            new MutationObserver(function(mutationsList, observer) {
+                $('#submitBtn').prop('disabled', $('#aerodrop').attr('data-loading') === 'true')
+            }).observe($('#aerodrop')[0], { attributes: true, attributeFilter: ['data-loading'] });
+ 
         </script>
     @endpush
 </x-lawyer.app>

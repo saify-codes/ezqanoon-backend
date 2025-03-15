@@ -268,12 +268,7 @@
                     .catch(error => {
                         console.error(error);
                     });
-
-                // Re-render icons on DOM change
-                new MutationObserver(() => feather.replace()).observe(document.getElementById('deadlines-container'), {
-                    childList: true
-                });
-
+                
                 // AeroDrop initialization with upload state management.
                 const aerodrop = new AeroDrop(document.querySelector('#aerodrop'), {
                     name: 'attachments',
@@ -299,6 +294,17 @@
                     console.error("Upload error:", error);
                 };
             });
+
+            // Re-render icons on DOM change
+            new MutationObserver(() => feather.replace()).observe(document.getElementById('deadlines-container'), {
+                childList: true
+            });
+
+            // Disable form untill all pending upload processed
+            new MutationObserver(function(mutationsList, observer) {
+                $('#submitBtn').prop('disabled', $('#aerodrop').attr('data-loading') === 'true')
+            }).observe($('#aerodrop')[0], { attributes: true, attributeFilter: ['data-loading'] });
+ 
         </script>
     @endpush
 </x-lawyer.app>
