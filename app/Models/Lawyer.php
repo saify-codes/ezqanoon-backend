@@ -62,7 +62,7 @@ class Lawyer extends Authenticatable
      */
     public function getAvatarAttribute($value): ?string
     {
-        return empty($value) ? asset("/storage/avatar.jpg") : asset("/storage/$value");
+        return empty($value) ? asset("/storage/avatar.jpg") : asset("/storage/users/$this->id/avatars/$value");
     }
 
     /**

@@ -36,11 +36,12 @@ Route::group(['middleware' => 'admin.auth'], function(){
 Route::group(['middleware' => 'lawyer.auth'], function(){
     Route::view('/', 'lawyer.dashboard')->name('lawyer.dashboard');
     
-    Route::get('/profile', [ProfileController::class, 'profile'])->name('lawyer.profile');
-    Route::put('/profile', [ProfileController::class, 'update']);
-    Route::put('/profile/reset-password', [ResetPasswordController::class, 'update'])->name('lawyer.reset-password');
-
-    Route::get('/signout', [AuthController::class, 'signout'])->name('lawyer.signout');
+    Route::get('/profile',                  [ProfileController::class, 'profile'])->name('lawyer.profile');
+    Route::put('/profile',                  [ProfileController::class, 'update']);
+    Route::post('/profile/avatar',          [ProfileController::class, 'uploadAvatar'])->name('lawyer.avatar.upload');
+    Route::delete('/profile/avatar',        [ProfileController::class, 'deleteAvatar'])->name('lawyer.avatar.delete');
+    Route::put('/profile/reset-password',   [ResetPasswordController::class, 'update'])->name('lawyer.reset-password');
+    Route::get('/signout',                  [AuthController::class, 'signout'])->name('lawyer.signout');
 
 
     // Management routes
@@ -75,8 +76,8 @@ Route::group(['middleware' => 'lawyer.auth'], function(){
     ]);
 
     // notifications
-    Route::get('/notification', [NotificationController::class, 'getNotifications']);
-    Route::patch('/notification/{notification}', [NotificationController::class, 'markRead']);
+    Route::get('/notification',                     [NotificationController::class, 'getNotifications']);
+    Route::patch('/notification/{notification}',    [NotificationController::class, 'markRead']);
 
     // aerodrop
     Route::post('/upload', [CasesController::class, 'upload']);
