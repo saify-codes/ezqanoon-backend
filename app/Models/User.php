@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Utils\PhoneFormatter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -72,7 +73,7 @@ class User extends Authenticatable
      */
     public function getPhoneAttribute($value): ?string
     {
-        return $this->convertToLocalFormat($value);
+        return PhoneFormatter::convertToLocalFormat($value);
     }
 
     /**
@@ -82,55 +83,8 @@ class User extends Authenticatable
      */
     public function setPhoneAttribute($value)
     {
-        $this->attributes['phone'] = $this->convertToInternationalFormat($value);
+        $this->attributes['phone'] = PhoneFormatter::convertToInternationalFormat($value);
     }
 
-    /**
-     * Convert phone number from international format (+92 312 345 6789) to local (0312 345 6789).
-     *
-     * @param string|null $phone
-     * @param string|null $countryCode
-     * @return string|null
-     */
-    private function convertToLocalFormat(?string $phone, ?string $countryCode = '92'): ?string
-    {
-        if (!$phone) {
-            return null;
-        }
-
-        // Remove all non-digit characters
-        $cleanedPhone = preg_replace('/\D+/', '', $phone);
-
-        // If it starts with the country code, strip it and add '0'
-        if (strpos($cleanedPhone, $countryCode) === 0) {
-            $localNumber = '0' . substr($cleanedPhone, strlen($countryCode));
-            return $localNumber;
-        }
-
-        return $cleanedPhone;
-    }
-
-    /**
-     * Convert phone number from local format (0312 345 6789) to international (+923123456789).
-     *
-     * @param string|null $phone
-     * @param string|null $countryCode
-     * @return string|null
-     */
-    private function convertToInternationalFormat(?string $phone, ?string $countryCode = '92'): ?string
-    {
-        if (!$phone) {
-            return null;
-        }
-
-        // Remove all non-digit characters
-        $cleanedPhone = preg_replace('/\D+/', '', $phone);
-
-        // If it starts with 0, remove it before adding country code
-        if (strpos($cleanedPhone, '0') === 0) {
-            $cleanedPhone = substr($cleanedPhone, 1);
-        }
-
-        return "+" . $countryCode . $cleanedPhone;
-    }
+   
 }

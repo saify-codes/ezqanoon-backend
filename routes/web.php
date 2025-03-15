@@ -4,6 +4,7 @@ use App\Http\Controllers\Lawyer\CasesController;
 use App\Http\Controllers\Lawyer\AppointmentController;
 use App\Http\Controllers\Lawyer\AuthController;
 use App\Http\Controllers\Lawyer\CaseAttachmentController;
+use App\Http\Controllers\Lawyer\ClientController;
 use App\Http\Controllers\Lawyer\NotificationController;
 use App\Http\Controllers\Lawyer\ProfileController;
 use App\Http\Controllers\Lawyer\ResetPasswordController;
@@ -66,6 +67,18 @@ Route::group(['middleware' => 'lawyer.auth'], function(){
             'edit'    => 'lawyer.cases.edit',
             'update'  => 'lawyer.cases.update',
             'destroy' => 'lawyer.cases.destroy',
+        ]
+    ]);
+    
+    Route::resource('/manage/client', ClientController::class, [
+        'names' => [
+            'index'   => 'lawyer.client.index',
+            'create'  => 'lawyer.client.create',
+            'store'   => 'lawyer.client.store',
+            'show'    => 'lawyer.client.show',
+            'edit'    => 'lawyer.client.edit',
+            'update'  => 'lawyer.client.update',
+            'destroy' => 'lawyer.client.destroy',
         ]
     ]);
     
