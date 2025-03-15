@@ -18,6 +18,6 @@ class Cases extends Model
     }
 
     public function getCreatedAtAttribute($createdAt){
-        return Carbon::parse($createdAt)->format('Y-m-d h:m:i A');
+        return Carbon::parse($createdAt)->format('Y-m-d h:i:s A');
     }
 }
