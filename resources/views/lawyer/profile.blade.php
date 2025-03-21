@@ -314,7 +314,7 @@
                 function renderPreview(src) {
                     const previewHTML = `
                         <div class="preview position-relative">
-                            <img src="${src}" class="img-fluid">
+                            <img src="${src}" style="height: 100%">
                             <button type="button" id="discard-btn" class="btn btn-danger btn-sm" style="position: absolute; top: 5px; right: 5px;">
                                 <i data-feather="trash"></i>
                             </button>
