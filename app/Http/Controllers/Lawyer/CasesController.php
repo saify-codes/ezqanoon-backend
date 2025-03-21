@@ -8,8 +8,6 @@ use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use League\Flysystem\StorageAttributes;
 
 class CasesController extends Controller
 {
@@ -34,7 +32,8 @@ class CasesController extends Controller
             $totalRecords       = $query->count();
 
             if (!empty($searchValue)) {
-                $query->where('name', 'like', "%{$searchValue}%")->orWhere('court_case_number', 'like', "%{$searchValue}%");
+                $query->where('name', 'like', "%{$searchValue}%")
+                      ->orWhere('court_case_number', 'like', "%{$searchValue}%");
             }
 
             $totalRecordsFiltered = $query->count();
@@ -73,61 +72,27 @@ class CasesController extends Controller
      */
     public function store(Request $request)
     {
-
         $validated = $request->validate([
-            'name'                            => ['required', 'string', 'max:255'],
-            'type'                            => ['required', 'string', 'max:255'],
-            'urgency'                         => ['nullable', 'in:HIGH,MEDIUM,CRITICAL'],
-            'court_name'                      => ['required', 'string', 'max:255'],
-            'court_case_number'               => ['required', 'string', 'max:255'],
-            'judge_name'                      => ['nullable', 'string', 'max:255'],
-            'under_acts'                      => ['nullable', 'string', 'max:255'],
-            'under_sections'                  => ['nullable', 'string', 'max:255'],
-            'fir_number'                      => ['nullable', 'string', 'max:255'],
-            'fir_year'                        => ['nullable', 'string', 'max:255'],
-            'police_station'                  => ['nullable', 'string', 'max:255'],
-            'your_party_details'              => ['nullable', 'string'],
-            'opposite_party_details'          => ['nullable', 'string'],
-            'opposite_party_advocate_details' => ['nullable', 'string'],
-            'case_information'                => ['nullable', 'string'],
-            'payment_status'                  => ['nullable', 'in:PENDING,PAID,OVERDUE'],
-            'deadlines'                       => ['nullable', 'array'],
-            'deadlines.*.description'         => ['nullable', 'string', 'max:255'],
-            'deadlines.*.date'                => ['nullable', 'date'],
-            'attachments'                     => ['array', 'max:10'],
-        
-            // 'attachments.*' => [
-            //     'file', // ensures it's an actual file
-            //     function ($_, $file, $fail) {
-            //         // Allowed MIME types
-            //         $allowedImages = ['image/png', 'image/jpeg', 'image/webp'];
-            //         $allowedDocs   = [
-            //             'application/pdf',
-            //             'application/msword',
-            //             'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            //         ];
-
-            //         $mimeType = $file->getMimeType();
-            //         $fileSize = $file->getSize(); // bytes
-
-            //         // Images => max 2 MB
-            //         if (in_array($mimeType, $allowedImages)) {
-            //             if ($fileSize > 2 * 1024 * 1024) {
-            //                 return $fail("The image {$file->getClientOriginalName()} exceeds the 2 MB limit.");
-            //             }
-            //         }
-            //         // Docs => max 10 MB
-            //         elseif (in_array($mimeType, $allowedDocs)) {
-            //             if ($fileSize > 10 * 1024 * 1024) {
-            //                 return $fail("The file {$file->getClientOriginalName()} exceeds the 10 MB limit for documents/PDFs.");
-            //             }
-            //         }
-            //         // Otherwise => not an allowed file type
-            //         else {
-            //             return $fail("The file {$file->getClientOriginalName()} is not an allowed format (png,jpg,webp,pdf,doc,docx).");
-            //         }
-            //     }
-            // ],
+            'name'                            => 'required|string|max:255',
+            'type'                            => 'required|string|max:255',
+            'urgency'                         => 'nullable|in:HIGH,MEDIUM,CRITICAL',
+            'court_name'                      => 'required|string|max:255',
+            'court_case_number'               => 'required|string|max:255',
+            'judge_name'                      => 'nullable|string|max:255',
+            'under_acts'                      => 'nullable|string|max:255',
+            'under_sections'                  => 'nullable|string|max:255',
+            'fir_number'                      => 'nullable|string|max:255',
+            'fir_year'                        => 'nullable|string|max:255',
+            'police_station'                  => 'nullable|string|max:255',
+            'your_party_details'              => 'nullable|string',
+            'opposite_party_details'          => 'nullable|string',
+            'opposite_party_advocate_details' => 'nullable|string',
+            'case_information'                => 'nullable|string',
+            'payment_status'                  => 'nullable|in:PENDING,PAID,OVERDUE',
+            'deadlines'                       => 'nullable|array',
+            'deadlines.*.description'         => 'nullable|string|max:255',
+            'deadlines.*.date'                => 'nullable|date',
+            'attachments'                     => 'array|max:10',
         ]);
 
         $case = Cases::create([
@@ -145,20 +110,18 @@ class CasesController extends Controller
             'police_station'                 => $validated['police_station']                    ?? null,
             'your_party_details'             => $validated['your_party_details']                ?? null,
             'opposite_party_details'         => $validated['opposite_party_details']            ?? null,
-            'opposite_party_advocate_details' => $validated['opposite_party_advocate_details']   ?? null,
+            'opposite_party_advocate_details'=> $validated['opposite_party_advocate_details']   ?? null,
             'case_information'               => $validated['case_information']                  ?? null,
             'deadlines'                      => $validated['deadlines']                         ?? null,
             'payment_status'                 => $validated['payment_status']                    ?? 'PENDING',
         ]);
 
         if ($request->has('attachments')) {
-
             // Decode the attachment JSON data
             $attachments = array_map(fn($attachment) => json_decode($attachment), $request->attachments);
 
             // Process each decoded attachment
             foreach ($attachments as $attachment) {
-
                 // Check if the file exists in the public directory
                 if (Storage::disk('public')->exists($attachment->file_path)) {
                     $mimeType = Storage::disk('public')->mimeType($attachment->file_path);
@@ -168,24 +131,12 @@ class CasesController extends Controller
                         $case->attachments()->create([
                             'file'          => $attachment->file,
                             'original_name' => $attachment->original_name,
-                            'mime_type'     => $mimeType,  // Save the MIME type fetched from the file
+                            'mime_type'     => $mimeType,
                         ]);
                     }
                 }
             }
         }
-
-        // old approach
-        // if ($request->hasFile('attachments')) {
-        //     foreach ($request->file('attachments') as $file) {
-        //         $storedPath = $file->store("cases/{$case->id}", 'public');
-        //         $case->attachments()->create([
-        //             'file_path'     => $storedPath,
-        //             'original_name' => $file->getClientOriginalName(),
-        //             'mime_type'     => $file->getMimeType(),
-        //         ]);
-        //     }
-        // }
 
         return redirect()
             ->route('lawyer.cases.index')
@@ -202,7 +153,6 @@ class CasesController extends Controller
             ->where('lawyer_id', Auth::id())
             ->firstOrFail();
 
-        // Return the view with the case data
         return view('lawyer.cases.show')->with('case', $case);
     }
 
@@ -211,7 +161,9 @@ class CasesController extends Controller
      */
     public function edit(string $id)
     {
-        $case = Cases::where('id', $id)->where('lawyer_id', Auth::user()->id)->firstOrFail();
+        $case = Cases::where('id', $id)
+            ->where('lawyer_id', Auth::user()->id)
+            ->firstOrFail();
         return view('lawyer.cases.edit')->with('case', $case);
     }
 
@@ -223,56 +175,53 @@ class CasesController extends Controller
         $case = Cases::where('lawyer_id', Auth::id())->findOrFail($id);
 
         $validated = $request->validate([
-            'name'                              => ['required', 'string', 'max:255'],
-            'type'                              => ['required', 'string', 'max:255'],
-            'urgency'                           => ['nullable', 'in:HIGH,MEDIUM,CRITICAL'],
-            'court_name'                        => ['required', 'string', 'max:255'],
-            'court_case_number'                 => ['required', 'string', 'max:255'],
-            'judge_name'                        => ['nullable', 'string', 'max:255'],
-            'under_acts'                        => ['nullable', 'string', 'max:255'],
-            'under_sections'                    => ['nullable', 'string', 'max:255'],
-            'fir_number'                        => ['nullable', 'string', 'max:255'],
-            'fir_year'                          => ['nullable', 'string', 'max:255'],
-            'police_station'                    => ['nullable', 'string', 'max:255'],
-            'your_party_details'                => ['nullable', 'string'],
-            'opposite_party_details'            => ['nullable', 'string'],
-            'opposite_party_advocate_details'   => ['nullable', 'string'],
-            'case_information'                  => ['nullable', 'string'],
-            'payment_status'                    => ['nullable', 'in:PENDING,PAID,OVERDUE'],
-            'status'                            => ['nullable', 'in:OPEN,IN PROGRESS,CLOSED'],
-            'deadlines'                         => ['nullable', 'array'],
-            'deadlines.*.description'           => ['nullable', 'string', 'max:255'],
-            'deadlines.*.date'                  => ['nullable', 'date'],
-            'attachments'                       => ['array', 'max:10'],
-            
+            'name'                              => 'required|string|max:255',
+            'type'                              => 'required|string|max:255',
+            'urgency'                           => 'nullable|in:HIGH,MEDIUM,CRITICAL',
+            'court_name'                        => 'required|string|max:255',
+            'court_case_number'                 => 'required|string|max:255',
+            'judge_name'                        => 'nullable|string|max:255',
+            'under_acts'                        => 'nullable|string|max:255',
+            'under_sections'                    => 'nullable|string|max:255',
+            'fir_number'                        => 'nullable|string|max:255',
+            'fir_year'                          => 'nullable|string|max:255',
+            'police_station'                    => 'nullable|string|max:255',
+            'your_party_details'                => 'nullable|string',
+            'opposite_party_details'            => 'nullable|string',
+            'opposite_party_advocate_details'   => 'nullable|string',
+            'case_information'                  => 'nullable|string',
+            'payment_status'                    => 'nullable|in:PENDING,PAID,OVERDUE',
+            'status'                            => 'nullable|in:OPEN,IN PROGRESS,CLOSED',
+            'deadlines'                         => 'nullable|array',
+            'deadlines.*.description'           => 'nullable|string|max:255',
+            'deadlines.*.date'                  => 'nullable|date',
+            'attachments'                       => 'array|max:10',
         ]);
 
-        // Update the case fields
         $case->update([
             'name'                            => $validated['name'],
             'type'                            => $validated['type'],
             'court_name'                      => $validated['court_name'],
             'court_case_number'               => $validated['court_case_number'],
-            'urgency'                         => $validated['urgency']                          ?? null,
-            'judge_name'                      => $validated['judge_name']                       ?? null,
-            'under_acts'                      => $validated['under_acts']                       ?? null,
-            'under_sections'                  => $validated['under_sections']                   ?? null,
-            'fir_number'                      => $validated['fir_number']                       ?? null,
-            'fir_year'                        => $validated['fir_year']                         ?? null,
-            'police_station'                  => $validated['police_station']                   ?? null,
-            'your_party_details'              => $validated['your_party_details']               ?? null,
-            'opposite_party_details'          => $validated['opposite_party_details']           ?? null,
-            'opposite_party_advocate_details' => $validated['opposite_party_advocate_details']  ?? null,
-            'case_information'                => $validated['case_information']                 ?? null,
-            'deadlines'                       => $validated['deadlines']                        ?? null,
-            'payment_status'                  => $validated['payment_status']                   ?? 'PENDING',
-            'status'                          => $validated['status']                           ?? 'OPEN',
+            'urgency'                         => $validated['urgency']                         ?? null,
+            'judge_name'                      => $validated['judge_name']                      ?? null,
+            'under_acts'                      => $validated['under_acts']                      ?? null,
+            'under_sections'                  => $validated['under_sections']                  ?? null,
+            'fir_number'                      => $validated['fir_number']                      ?? null,
+            'fir_year'                        => $validated['fir_year']                        ?? null,
+            'police_station'                  => $validated['police_station']                  ?? null,
+            'your_party_details'              => $validated['your_party_details']              ?? null,
+            'opposite_party_details'          => $validated['opposite_party_details']          ?? null,
+            'opposite_party_advocate_details' => $validated['opposite_party_advocate_details'] ?? null,
+            'case_information'                => $validated['case_information']                ?? null,
+            'deadlines'                       => $validated['deadlines']                       ?? null,
+            'payment_status'                  => $validated['payment_status']                  ?? 'PENDING',
+            'status'                          => $validated['status']                          ?? 'OPEN',
         ]);
 
         // Handle file attachments
         if ($request->has('attachments')) {
-
-            // remove old attachments
+            // Remove old attachments
             $case->attachments()->where('case_id', $case->id)->delete();
 
             // Decode the attachment JSON data
@@ -280,16 +229,14 @@ class CasesController extends Controller
 
             // Process each decoded attachment
             foreach ($attachments as $attachment) {
-                // Check if the file exists in the public directory
                 if (Storage::disk('public')->exists($attachment->file_path)) {
                     $mimeType = Storage::disk('public')->mimeType($attachment->file_path);
 
                     if (Storage::disk('public')->move($attachment->file_path, "cases/$case->id/$attachment->file")) {
-                        // Save the attachment details to the database
                         $case->attachments()->create([
-                            'file' => $attachment->file,
+                            'file'          => $attachment->file,
                             'original_name' => $attachment->original_name,
-                            'mime_type' => $mimeType,  // Save the MIME type fetched from the file
+                            'mime_type'     => $mimeType,
                         ]);
                     }
                 }
@@ -313,46 +260,6 @@ class CasesController extends Controller
             return $this->successResponse('case deleted');
         }
 
-        // Return response or redirect as needed
         return redirect()->route('lawyer.cases.index')->with('success', 'Case deleted successfully.');
-    }
-
-    /**
-     * Handle the file upload from AeroDrop.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function upload(Request $request)
-    {
-        // Validate the request data
-        $validator = Validator::make($request->all(), [
-            'file' => 'required|file|mimetypes:image/jpeg,image/png,image/webp,application/pdf|max:10240',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Upload failed',
-                'errors'  => $validator->errors(),
-            ], 422);
-        }
-
-        // Check if the file exists in the request.
-        if ($request->hasFile('file')) {
-
-            $file = $request->file('file');
-
-            // Store the file in public storage
-            $path = $file->store('aerodrop', 'public');
-
-            return $this->successResponse('Upload successful', [
-                'file'          => basename($path),
-                'original_name' => $file->getClientOriginalName(),
-                'mime_type'     => $file->getMimeType(),
-                'file_path'     => $path,
-            ]);
-        }
-
-        return $this->errorResponse('No file uploaded');
     }
 }

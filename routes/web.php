@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\AeroDropController;
 use App\Http\Controllers\Lawyer\CasesController;
 use App\Http\Controllers\Lawyer\AppointmentController;
 use App\Http\Controllers\Lawyer\AuthController;
 use App\Http\Controllers\Lawyer\CaseAttachmentController;
+use App\Http\Controllers\Lawyer\ClientAttachmentController;
 use App\Http\Controllers\Lawyer\ClientController;
 use App\Http\Controllers\Lawyer\NotificationController;
 use App\Http\Controllers\Lawyer\ProfileController;
@@ -69,6 +71,7 @@ Route::group(['middleware' => 'lawyer.auth'], function(){
             'destroy' => 'lawyer.cases.destroy',
         ]
     ]);
+    Route::delete('/manage/cases/{case}/attachment/{attachment}', [CaseAttachmentController::class, 'destroy'])->name('lawyer.cases.attachments.destroy');
     
     Route::resource('/manage/client', ClientController::class, [
         'names' => [
@@ -81,19 +84,15 @@ Route::group(['middleware' => 'lawyer.auth'], function(){
             'destroy' => 'lawyer.client.destroy',
         ]
     ]);
-    
-    Route::resource('/manage/cases/{case}/attachment', CaseAttachmentController::class, [
-        'names' => [
-            'destroy' => 'lawyer.cases.attachments.destroy',
-        ]
-    ]);
+    Route::delete('/manage/client/{client}/attachment/{attachment}', [ClientAttachmentController::class, 'destroy'])->name('lawyer.client.attachments.destroy');
+
 
     // notifications
     Route::get('/notification',                     [NotificationController::class, 'getNotifications']);
     Route::patch('/notification/{notification}',    [NotificationController::class, 'markRead']);
 
     // aerodrop
-    Route::post('/upload', [CasesController::class, 'upload']);
+    Route::post('/upload', [AeroDropController::class, 'upload']);
 
     Route::view('/foo', 'welcome');
 });

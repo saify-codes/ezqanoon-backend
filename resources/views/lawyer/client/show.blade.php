@@ -71,11 +71,18 @@
                         <tr>
                             <th scope="row">Payment Methods</th>
                             <td>
-                                @if($client->payment_methods)
-                                    {{ implode(', ', $client->payment_methods) }}
+                                @php
+                                    $paymentMethods = $client->getPaymentMethods();
+                                @endphp
+
+                                @if($paymentMethods)
+                                    @foreach($paymentMethods as $paymentMethod)
+                                        <span class="badge bg-primary">{{ $paymentMethod }}</span>
+                                    @endforeach
                                 @else
                                     -
                                 @endif
+
                             </td>
                         </tr>
                         <tr>
@@ -91,9 +98,9 @@
                 <div class="mb-3">
                     <h6 class="mb-3">Notes:</h6>
                     <div class="border rounded p-3">
-                        @if(is_array($client->notes))
+                        @if (is_array($client->notes))
                             <ul class="mb-0">
-                                @foreach($client->notes as $note)
+                                @foreach ($client->notes as $note)
                                     <li>{{ $note }}</li>
                                 @endforeach
                             </ul>
@@ -123,6 +130,11 @@
                                     <img src="{{ $isImage ? $fileUrl : asset('assets/images/icons/file.png') }}"
                                         alt="{{ $attachment->original_name }}" class="rounded">
                                 </a>
+                                <!-- Delete Icon Button using AJAX -->
+                                <button type="button" class="delete-attachment-button"
+                                    data-url="{{ route('lawyer.client.attachments.destroy', [$client->id, $attachment->id]) }}">
+                                    <i data-feather="trash" style="width: 15px"></i>
+                                </button>
                                 <p class="text-sm text-muted text-center mt-1">{{ $attachment->original_name }}</p>
                             </div>
                         @endforeach
@@ -179,10 +191,63 @@
                 object-fit: contain;
                 object-position: center;
             }
+
+            .delete-attachment-button {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                width: 25px;
+                height: 25px;
+                background: transparent;
+                border: none;
+                border-radius: 50%;
+                padding: 0;
+                cursor: pointer;
+                color: #FFF;
+                background: var(--bs-danger)
+            }
         </style>
     @endpush
 
     @push('custom-scripts')
+        <script>
+            $(document).ready(function() {
+
+                $('.delete-attachment-button').on('click', function() {
+                    const button = $(this);
+                    const deleteUrl = button.data('url');
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "Are you sure you want to delete this attachment?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: 'var(--bs-primary)',
+                        cancelButtonColor: 'var(--bs-danger)',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: deleteUrl,
+                                type: 'DELETE',
+                                data: {
+                                    _token: '{{ csrf_token() }}'
+                                },
+                                success: function(response) {
+                                    button.closest('.attachment').remove();
+                                    successMessage('Attachment deleted successfully.');
+                                },
+                                error: function(xhr) {
+                                    Swal.fire('Error',
+                                        'An error occurred while deleting the attachment.',
+                                        'error');
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        </script>
         <script>
             const lightbox = GLightbox({
                 selector: '.glightbox',

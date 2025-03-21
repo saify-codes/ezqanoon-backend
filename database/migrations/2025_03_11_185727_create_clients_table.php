@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('company_name')->nullable();
             $table->string('company_website')->nullable();
             $table->string('communication_method')->nullable();
-            $table->string('contact_time')->nullable();
+            $table->time('contact_time')->nullable();
             $table->string('language')->nullable();
             $table->text('billing_address')->nullable();
             $table->json('payment_methods')->nullable();

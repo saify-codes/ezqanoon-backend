@@ -37,11 +37,20 @@ class Client extends Model
      *
      * @return string|null
      */
-    public function getPaymentMethodsAttribute($value)
+    public function getPaymentMethods()
     {
        
-        $tags = json_decode($value) ?? [];
-        return array_map(fn($tag)=> strtoupper(str_replace('_', ' ', $tag)), $tags);
+        return array_map(fn($tag)=> strtoupper(str_replace('_', ' ', $tag)),  $this->payment_methods ?? []);
+    }
+
+    /**
+     * Accessor: Convert international format to local format (0312 345 6789).
+     *
+     * @return string|null
+     */
+    public function getContactTimeAttribute($value): ?string
+    {
+        return Carbon::parse($value)->format('h:i A');
     }
 
     /**
