@@ -30,15 +30,6 @@
                 </div>
 
 
-                <!-- Preview Container -->
-                <div id="preview-container" style="position: relative; display: inline-block;">
-                    <img id="preview-image" src="" alt="Image Preview"
-                        style="max-width: 200px; display: none; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
-                    <button id="discard-btn" class="btn btn-danger btn-sm"
-                        style="position: absolute; top: 5px; right: 5px; display: none;">Discard</button>
-                </div>
-
-
                 {{-- Email (disabled) --}}
                 <div class="mb-3">
                     <label for="email" class="form-label">Email address</label>
