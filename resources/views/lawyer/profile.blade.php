@@ -328,9 +328,16 @@
                 function handleFile(file) {
                     const validTypes = ['image/png', 'image/jpeg', 'image/webp'];
                     if ($.inArray(file.type, validTypes) === -1) {
-                        alert('Invalid file type');
+                        errorMessage('Invalid file type');
                         return;
                     }
+
+                    const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+                    if (file.size > maxSize) {
+                        errorMessage('File size must be less than 2MB');
+                        return;
+                    }
+
                     uploadAvatar(file);
                 }
 
