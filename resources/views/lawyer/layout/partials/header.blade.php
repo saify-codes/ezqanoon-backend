@@ -96,7 +96,6 @@
                 { text: 'Cases',            keywords: ['cases', 'view cases', 'all cases', 'case list', 'manage cases'], url: '{{ route("lawyer.cases.index") }}', icon: 'briefcase' },
                 { text: 'Add Case',         keywords: ['new case', 'create case', 'add case'], url: '{{ route("lawyer.cases.create") }}', icon: 'file-plus' },
                 { text: 'Appointments',     keywords: ['appointments', 'view appointments', 'schedule'], url: '{{ route("lawyer.appointment.index") }}', icon: 'calendar' },
-                { text: 'Add Appointment',  keywords: ['new appointment', 'create appointment', 'schedule appointment'], url: '{{ route("lawyer.appointment.create") }}', icon: 'calendar-plus' },
                 { text: 'Profile',          keywords: ['my profile', 'account', 'profile settings'], url: '{{ route("lawyer.profile") }}', icon: 'user' },
             ];
             
