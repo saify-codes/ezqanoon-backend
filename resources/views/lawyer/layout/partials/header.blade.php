@@ -57,7 +57,7 @@
                                 <span>Profile</span>
                             </a>
                         </li>
-                        <li class="dropdown-item py-2">
+                        {{-- <li class="dropdown-item py-2">
                             <a href="javascript:;" class="text-body ms-0">
                                 <i class="me-2 icon-md" data-feather="edit"></i>
                                 <span>Edit Profile</span>
@@ -68,7 +68,7 @@
                                 <i class="me-2 icon-md" data-feather="repeat"></i>
                                 <span>Switch User</span>
                             </a>
-                        </li>
+                        </li> --}}
                         <li class="dropdown-item py-2">
                             <a href="{{ route('lawyer.signout') }}" class="text-body ms-0">
                                 <i class="me-2 icon-md" data-feather="log-out"></i>
