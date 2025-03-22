@@ -17,7 +17,7 @@
             @endsession
 
             <div class="table-responsive">
-                <table class="table table-hover" id="client-table">
+                <table class="table table-hover w-100" id="client-table">
                     <thead>
                         <tr>
                             <th>#</th>
