@@ -40,11 +40,13 @@
 
     @push('style')
         <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-net-bs5/dataTables.bootstrap5.css') }}">
+        <link href="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" />
     @endpush
 
     @push('plugin-scripts')
         <script src="{{ asset('assets/plugins/datatables-net/jquery.dataTables.js') }}"></script>
         <script src="{{ asset('assets/plugins/datatables-net-bs5/dataTables.bootstrap5.js') }}"></script>
+        <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
     @endpush
 
     @push('custom-scripts')
@@ -60,26 +62,33 @@
             /**
              * Function to handle the AJAX delete request.
              */
-            function deleteClient(caseId, deleteUrl) {
-                // Optional: Confirm before deleting
-                if(!confirm('Are you sure you want to delete this record?')) {
-                    return;
-                }
-
-                $.ajax({
-                    url: deleteUrl,
-                    method: 'DELETE',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        // Reload DataTable on success
-                        $('#client-table').DataTable().ajax.reload(null, false);
-                        successMessage('Case deleted');
-                    },
-                    error: function(xhr) {
-                        errorMessage('An error occurred while deleting the record.');
-                        console.error(xhr.responseText);
+            function deleteClient(clientId, deleteUrl) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Are you sure you want to delete this client?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: 'var(--bs-primary)',
+                    cancelButtonColor: 'var(--bs-danger)',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: deleteUrl,
+                            method: 'DELETE',
+                            data: {
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(response) {
+                                // Reload DataTable on success
+                                $('#client-table').DataTable().ajax.reload(null, false);
+                                successMessage('Client deleted');
+                            },
+                            error: function(xhr) {
+                                Swal.fire('Error', 'An error occurred while deleting the record.', 'error');
+                                console.error(xhr.responseText);
+                            }
+                        });
                     }
                 });
             }

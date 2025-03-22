@@ -41,9 +41,15 @@
         <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-net-bs5/dataTables.bootstrap5.css') }}">
     @endpush
 
+    @push('plugin-styles')
+        <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-net-bs5/dataTables.bootstrap5.css') }}">
+        <link href="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" />
+    @endpush
+
     @push('plugin-scripts')
         <script src="{{ asset('assets/plugins/datatables-net/jquery.dataTables.js') }}"></script>
         <script src="{{ asset('assets/plugins/datatables-net-bs5/dataTables.bootstrap5.js') }}"></script>
+        <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
     @endpush
 
     @push('custom-scripts')
@@ -60,25 +66,32 @@
              * Function to handle the AJAX delete request.
              */
             function deleteCase(caseId, deleteUrl) {
-                // Optional: Confirm before deleting
-                if(!confirm('Are you sure you want to delete this record?')) {
-                    return;
-                }
-
-                $.ajax({
-                    url: deleteUrl,
-                    method: 'DELETE',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        // Reload DataTable on success
-                        $('#cases-table').DataTable().ajax.reload(null, false);
-                        successMessage('Case deleted');
-                    },
-                    error: function(xhr) {
-                        errorMessage('An error occurred while deleting the record.');
-                        console.error(xhr.responseText);
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Are you sure you want to delete this case?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: 'var(--bs-primary)',
+                    cancelButtonColor: 'var(--bs-danger)',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: deleteUrl,
+                            method: 'DELETE',
+                            data: {
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(response) {
+                                // Reload DataTable on success
+                                $('#cases-table').DataTable().ajax.reload(null, false);
+                                successMessage('Case deleted');
+                            },
+                            error: function(xhr) {
+                                Swal.fire('Error', 'An error occurred while deleting the record.', 'error');
+                                console.error(xhr.responseText);
+                            }
+                        });
                     }
                 });
             }
