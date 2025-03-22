@@ -10,7 +10,7 @@
                 </div>
                 <input type="text" class="form-control" id="navbarSearch" placeholder="Search features...">
             </div>
-            <div id="searchResults" class="position-absolute bg-white shadow-sm rounded w-100 d-none" style="top: 100%; left: 0; z-index: 1000; max-height: 300px; overflow-y: auto;"></div>
+            <div id="searchResults" class="position-absolute bg-white rounded-3 w-100 d-none shadow" style="top: 100%; left: 0; z-index: 1000; max-height: 350px; overflow-y: auto; border: 1px solid rgba(0,0,0,.08);"></div>
         </div>
         <ul class="navbar-nav">
 
@@ -88,16 +88,16 @@
             const searchInput   = $('#navbarSearch');
             const searchResults = $('#searchResults');
             
-            // Define searchable items with their routes
+            // Define searchable items with their routes and icons
             const searchableItems = [
-                { text: 'Dashboard', keywords: ['home', 'main', 'dashboard'], url: '{{ route("lawyer.dashboard") }}' },
-                { text: 'Client List', keywords: ['clients', 'view clients', 'all clients', 'client list', 'manage clients'], url: '{{ route("lawyer.client.index") }}' },
-                { text: 'Add Client', keywords: ['new client', 'create client', 'add client'], url: '{{ route("lawyer.client.create") }}' },
-                { text: 'Cases', keywords: ['cases', 'view cases', 'all cases', 'case list', 'manage cases'], url: '{{ route("lawyer.cases.index") }}' },
-                { text: 'Add Case', keywords: ['new case', 'create case', 'add case'], url: '{{ route("lawyer.cases.create") }}' },
-                { text: 'Appointments', keywords: ['appointments', 'view appointments', 'schedule'], url: '{{ route("lawyer.appointment.index") }}' },
-                { text: 'Add Appointment', keywords: ['new appointment', 'create appointment', 'schedule appointment'], url: '{{ route("lawyer.appointment.create") }}' },
-                { text: 'Profile', keywords: ['my profile', 'account', 'profile settings'], url: '{{ route("lawyer.profile") }}' },
+                { text: 'Dashboard', keywords: ['home', 'main', 'dashboard'], url: '{{ route("lawyer.dashboard") }}', icon: 'home' },
+                { text: 'Client List', keywords: ['clients', 'view clients', 'all clients', 'client list', 'manage clients'], url: '{{ route("lawyer.client.index") }}', icon: 'users' },
+                { text: 'Add Client', keywords: ['new client', 'create client', 'add client'], url: '{{ route("lawyer.client.create") }}', icon: 'user-plus' },
+                { text: 'Cases', keywords: ['cases', 'view cases', 'all cases', 'case list', 'manage cases'], url: '{{ route("lawyer.cases.index") }}', icon: 'briefcase' },
+                { text: 'Add Case', keywords: ['new case', 'create case', 'add case'], url: '{{ route("lawyer.cases.create") }}', icon: 'file-plus' },
+                { text: 'Appointments', keywords: ['appointments', 'view appointments', 'schedule'], url: '{{ route("lawyer.appointment.index") }}', icon: 'calendar' },
+                { text: 'Add Appointment', keywords: ['new appointment', 'create appointment', 'schedule appointment'], url: '{{ route("lawyer.appointment.create") }}', icon: 'calendar-plus' },
+                { text: 'Profile', keywords: ['my profile', 'account', 'profile settings'], url: '{{ route("lawyer.profile") }}', icon: 'user' },
             ];
             
             function showSearchResults() {
@@ -115,26 +115,73 @@
                 });
                 
                 if (filteredItems.length > 0) {
+                    // Add header
+                    $('<div>')
+                        .addClass('p-3 border-bottom search-header')
+                        .html('<strong>Search Results</strong>')
+                        .appendTo(searchResults);
+                    
                     filteredItems.forEach(item => {
-                        $('<div>')
-                            .addClass('p-2 border-bottom search-item')
-                            .text(item.text)
-                            .css('cursor', 'pointer')
-                            .on('click', function() {
-                                // window.location.href = item.url;
-                            })
-                            .hover(
-                                function() { $(this).addClass('bg-light'); },
-                                function() { $(this).removeClass('bg-light'); }
-                            )
-                            .appendTo(searchResults);
+                        // Create result item with icon
+                        const resultItem = $('<a>')
+                            .attr('href', item.url)
+                            .addClass('search-item d-flex align-items-center p-3 border-bottom text-decoration-none text-dark')
+                            .css('transition', 'background-color 0.2s ease');
+                            
+                        // Add icon container
+                        const iconContainer = $('<div>')
+                            .addClass('me-3 d-flex align-items-center justify-content-center rounded-circle bg-light')
+                            .css({
+                                'width': '40px',
+                                'height': '40px'
+                            });
+                            
+                        // Create icon element
+                        const icon = document.createElement('i');
+                        $(icon).attr('data-feather', item.icon);
+                        iconContainer.append(icon);
+                        
+                        // Add content
+                        const content = $('<div>')
+                            .addClass('d-flex flex-column')
+                            
+                        const title = $('<div>')
+                            .addClass('fw-medium')
+                            .text(item.text);
+                            
+                        const description = $('<div>')
+                            .addClass('small text-muted')
+                            .text(item.keywords[0]);
+                            
+                        content.append(title, description);
+                        resultItem.append(iconContainer, content);
+                        
+                        // Add hover effect
+                        resultItem.hover(
+                            function() { $(this).addClass('bg-light'); },
+                            function() { $(this).removeClass('bg-light'); }
+                        );
+                        
+                        searchResults.append(resultItem);
                     });
+                    
+                    // Initialize feather icons for the new elements
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                    
                     searchResults.removeClass('d-none');
                 } else {
                     $('<div>')
-                        .addClass('p-2 text-muted')
-                        .text('No results found')
+                        .addClass('p-4 text-center text-muted')
+                        .html('<i data-feather="alert-circle" class="mb-2"></i><p class="mb-0">No results found</p>')
                         .appendTo(searchResults);
+                        
+                    // Initialize feather icons for the new elements
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                    
                     searchResults.removeClass('d-none');
                 }
             }
