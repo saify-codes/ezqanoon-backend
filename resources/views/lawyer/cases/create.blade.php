@@ -172,7 +172,7 @@
 
                 <!-- Submit button (with an ID for enabling/disabling) -->
                 <button type="submit" class="btn btn-primary" id="submitBtn">
-                    Save Case
+                    Add Case
                 </button>
             </form>
         </div>
