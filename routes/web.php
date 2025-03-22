@@ -4,6 +4,7 @@ use App\Http\Controllers\AeroDropController;
 use App\Http\Controllers\Lawyer\CasesController;
 use App\Http\Controllers\Lawyer\AppointmentController;
 use App\Http\Controllers\Lawyer\AuthController;
+use App\Http\Controllers\Lawyer\CalendarController;
 use App\Http\Controllers\Lawyer\CaseAttachmentController;
 use App\Http\Controllers\Lawyer\ClientAttachmentController;
 use App\Http\Controllers\Lawyer\ClientController;
@@ -86,6 +87,9 @@ Route::group(['middleware' => 'lawyer.auth'], function(){
     ]);
     Route::delete('/manage/client/{client}/attachment/{attachment}', [ClientAttachmentController::class, 'destroy'])->name('lawyer.client.attachments.destroy');
 
+    // Event calendar
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('lawyer.calendar.index');
+    Route::get('/calendar/events', [CalendarController::class, 'events'])->name('lawyer.calendar.events');
 
     // notifications
     Route::get('/notification',                     [NotificationController::class, 'getNotifications']);

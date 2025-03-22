@@ -46,8 +46,8 @@
           <span class="link-title">Task management</span>
         </a>
       </li>
-      <li class="nav-item {{ active_class(['calendar-scheduling']) }}">
-        <a href="{{ url('/manage/client') }}" class="nav-link">
+      <li class="nav-item {{ active_class(['calendar']) }}">
+        <a href="{{ url('/calendar') }}" class="nav-link">
           <i class="link-icon" data-feather="calendar"></i>
           <span class="link-title">Calendar & scheduling</span>
         </a>
