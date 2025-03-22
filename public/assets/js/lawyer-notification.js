@@ -121,7 +121,7 @@ $(function () {
       // Marks a notification as read.
       markAsRead(notificationId) {
         $.ajax({
-          url: `notification/${notificationId}`,
+          url: `/notification/${notificationId}`,
           type: "PATCH",
           dataType: "json",
           data: {

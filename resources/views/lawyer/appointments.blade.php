@@ -83,12 +83,16 @@
                         data: 'created_at',
                     },
                     {
+                        sortable: false,
                         data: (data) => {
-                            return `<button class="btn btn-sm btn-warning" onclick='viewCase(${JSON.stringify(data)})'>View</button>`;
+                            return `<button class="btn btn-inverse-secondary btn-icon" onclick='viewCase(${JSON.stringify(data)})'><i data-feather="eye"></i></button>`;
                         },
                     },
 
-                ]
+                ],
+                drawCallback: function(settings) {
+                    feather.replace();
+                }
             });
 
             function viewCase(data) {
