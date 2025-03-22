@@ -10,7 +10,7 @@
                 </div>
                 <input type="text" class="form-control" id="navbarSearch" placeholder="Search features...">
             </div>
-            <div id="searchResults" class="position-absolute bg-white rounded-3 w-100 d-none shadow" style="top: 100%; left: 0; z-index: 1000; max-height: 350px; overflow-y: auto; border: 1px solid rgba(0,0,0,.08);"></div>
+            <div id="searchResults" class="position-absolute bg-white rounded w-100 d-none shadow mt-2 top-100 start-0 overflow-auto" style="max-height: 350px;"></div>
         </div>
         <ul class="navbar-nav">
 

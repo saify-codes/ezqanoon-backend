@@ -227,7 +227,6 @@
                 border: none;
                 background: none;
                 color: #FFF;
-                z-index: 999;
                 top: 50%;
                 transition: 0.5s ease;
                 opacity: 0;
