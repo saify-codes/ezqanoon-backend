@@ -14,14 +14,50 @@ class LawyerController extends Controller
     
     /**
      * getLawyers
-     *
+     * 
+     * @param Request $request
      * @return void
      */
-    public function getLawyers(){
-        $lawyers = LawyerRatingView::where('is_profile_completed', true)->paginate(10)->toArray();
-        return $this->successResponse('laywers data', $lawyers);
+    public function getLawyers(Request $request){
+        $query = LawyerRatingView::where('is_profile_completed', true);
 
-    }    
+        // Filter by city/location
+        if ($request->has('city')) {
+            $query->where('location', 'like', '%' . $request->city . '%');
+        }
+
+        // Filter by availability time range
+        if ($request->has('start_time') && $request->has('end_time')) {
+            $query->where('availability_from', '<=', $request->start_time)
+                  ->where('availability_to', '>=', $request->end_time);
+        }
+
+        // Filter by price range
+        if ($request->has('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+        if ($request->has('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        // Filter by years of experience
+        if ($request->has('min_experience')) {
+            $query->where('experience', '>=', $request->min_experience);
+        }
+
+        // Filter by specialization
+        if ($request->has('specialization')) {
+            $query->where('specialization', 'like', '%' . $request->specialization . '%');
+        }
+
+        // Filter by name
+        if ($request->has('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        $lawyers = $query->paginate(10)->toArray();
+        return $this->successResponse('lawyers data', $lawyers);
+    }
     /**
      * getReviews
      *
