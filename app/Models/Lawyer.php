@@ -55,6 +55,15 @@ class Lawyer extends Authenticatable
         return $this->hasMany(Rating::class, 'lawyer_id');
     }
 
+    public function subscription()
+    {
+        if($this->role == 'USER'){
+            return Lawyer::find($this->lawyer_id)->hasOne(Subscription::class, 'id', 'subscription_id');
+        }
+        
+        return $this->hasOne(Subscription::class, 'id', 'subscription_id');
+    }
+
     /**
      * Accessor: get avatar absolute url.
      *

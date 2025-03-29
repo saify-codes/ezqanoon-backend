@@ -153,7 +153,7 @@ class CasesController extends Controller
             ->where('lawyer_id', Auth::id())
             ->firstOrFail();
 
-        return view('lawyer.cases.show')->with('case', $case);
+        return view('lawyer.cases.show', compact('case'));
     }
 
     /**
@@ -164,7 +164,7 @@ class CasesController extends Controller
         $case = Cases::where('id', $id)
             ->where('lawyer_id', Auth::user()->id)
             ->firstOrFail();
-        return view('lawyer.cases.edit')->with('case', $case);
+        return view('lawyer.cases.edit', compact('case'));
     }
 
     /**

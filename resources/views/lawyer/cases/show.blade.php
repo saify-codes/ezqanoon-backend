@@ -171,12 +171,10 @@
 
     @push('plugin-styles')
         <link href="{{ asset('assets/plugins/glightbox/glightbox.min.css') }}" rel="stylesheet" />
-        <link href="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" />
     @endpush
 
     @push('plugin-scripts')
         <script src="{{ asset('assets/plugins/glightbox/glightbox.min.js') }}"></script>
-        <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
     @endpush
 
     @push('style')

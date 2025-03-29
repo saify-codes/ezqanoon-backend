@@ -25,6 +25,7 @@
   <link href="{{ asset('assets/fonts/feather-font/css/iconfont.css') }}" rel="stylesheet" />
   <link href="{{ asset('assets/plugins/perfect-scrollbar/perfect-scrollbar.css') }}" rel="stylesheet" />
   <link href="{{ asset('assets/plugins/tostify/tostify.min.css') }}" rel="stylesheet" />
+  <link href="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" />
   <!-- end plugin css -->
 
   @stack('plugin-styles')
@@ -46,7 +47,7 @@
       @include('lawyer.layout.partials.header')
       <div class="page-content">
 
-        @if (!Auth::user()->is_profile_completed && !Request::is('profile'))
+        @if (Auth::user()->role == 'ADMIN' && !Auth::user()->is_profile_completed && !Request::is('profile'))
           <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>Action required</strong> Please complete your profile to get listed
             <a class="text-decoration-underline" href="{{route('lawyer.profile')}}">click here to goto profile page</a>
@@ -65,6 +66,9 @@
     <script src="{{ asset('assets/plugins/feather-icons/feather.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/tostify/tostify.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/tostify/tostify.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+
     <!-- end base js -->
 
     <!-- plugin js -->
@@ -77,5 +81,15 @@
     <!-- end common js -->
 
     @stack('custom-scripts')
+
+    @if (session('subscription_success'))
+      <script>
+        Swal.fire({
+          title: 'Success',
+          text: '{{ session('subscription_success') }}',
+          icon: 'success'
+        });
+      </script>
+    @endif
 </body>
 </html>

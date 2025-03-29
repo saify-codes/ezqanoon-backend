@@ -43,13 +43,11 @@
 
     @push('plugin-styles')
         <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-net-bs5/dataTables.bootstrap5.css') }}">
-        <link href="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" />
     @endpush
 
     @push('plugin-scripts')
         <script src="{{ asset('assets/plugins/datatables-net/jquery.dataTables.js') }}"></script>
         <script src="{{ asset('assets/plugins/datatables-net-bs5/dataTables.bootstrap5.js') }}"></script>
-        <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
     @endpush
 
     @push('custom-scripts')

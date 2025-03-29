@@ -239,14 +239,6 @@
         </style>
     @endpush
 
-    @push('plugin-styles')
-        <link href="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" />
-    @endpush
-
-    @push('plugin-scripts')
-        <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-    @endpush
-
     @push('custom-scripts')
         <script>
             $(document).ready(function() {
@@ -313,7 +305,7 @@
                 function renderPreview(src) {
                     const previewHTML = `
                         <div class="preview position-relative">
-                            <img src="${src}" style="height: 100%">
+                            <img src="${src}" style="width: 100%; height: 100%; object-fit: contain;">
                             <button type="button" id="discard-btn" class="btn btn-danger btn-sm" style="position: absolute; top: 5px; right: 5px;">
                                 <i data-feather="trash"></i>
                             </button>

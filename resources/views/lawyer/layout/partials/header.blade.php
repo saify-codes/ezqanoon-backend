@@ -42,9 +42,15 @@
                 </a>
                 <div class="dropdown-menu p-0" aria-labelledby="profileDropdown">
                     <div class="d-flex flex-column align-items-center border-bottom px-5 py-3">
+
                         <div class="mb-3">
                             <img class="wd-80 ht-80 rounded-circle" src="{{ Auth::user()->avatar }}" alt="">
                         </div>
+
+                        <span class="badge bg-primary mb-3">
+                            {{ Auth::user()->subscription->name }}
+                        </span>
+
                         <div class="text-center">
                             <p class="tx-16 fw-bolder">{{Auth::user()->name}}</p>
                             <p class="tx-12 text-muted">{{Auth::user()->email}}</p>

@@ -156,7 +156,7 @@ class ClientController extends Controller
     public function edit(string $id)
     {
         $client = Client::where('id', $id)->where('lawyer_id', Auth::user()->id)->firstOrFail();
-        return view('lawyer.client.edit')->with('client', $client);
+        return view('lawyer.client.edit', compact('client'));
     }
 
     /**
@@ -257,7 +257,7 @@ class ClientController extends Controller
             ->firstOrFail();
 
         // Return the view with the case data
-        return view('lawyer.client.show')->with('client', $client);
+        return view('lawyer.client.show', compact('client'));
     }
 
     /**

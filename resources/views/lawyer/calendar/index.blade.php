@@ -14,12 +14,7 @@
         </div>
     </div>
 
-    @push('style')
-        <link href="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" />
-    @endpush
-
     @push('plugin-scripts')
-        <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
         <script src="{{ asset('assets/plugins/fullcalendar/index.global.min.js') }}"></script>
     @endpush
 
