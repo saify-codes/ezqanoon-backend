@@ -140,11 +140,14 @@
                                     <img src="{{ $isImage ? $fileUrl : asset('assets/images/icons/file.png') }}"
                                         alt="{{ $attachment->original_name }}" class="rounded">
                                 </a>
-                                <!-- Delete Icon Button using AJAX -->
-                                <button type="button" class="delete-attachment-button"
-                                    data-url="{{ route('lawyer.cases.attachments.destroy', [$case->id, $attachment->id]) }}">
-                                    <i data-feather="trash" style="width: 15px"></i>
-                                </button>
+                                
+                                @if (Auth::user()->hasPermission('cases:delete'))
+                                    <button type="button" class="delete-attachment-button"
+                                        data-url="{{ route('lawyer.cases.attachments.destroy', [$case->id, $attachment->id]) }}">
+                                        <i data-feather="trash" style="width: 15px"></i>
+                                    </button>
+                                @endif
+                                
                                 <p class="text-sm text-muted text-center mt-1">{{ $attachment->original_name }}</p>
                             </div>
                         @endforeach
@@ -156,17 +159,21 @@
 
     <!-- Action Buttons -->
     <div class="d-flex">
-        <a href="{{ route('lawyer.cases.edit', $case->id) }}" class="btn btn-primary btn-icon-text me-3">
-            <i data-feather="edit-2"></i> Edit Case
-        </a>
-        <form action="{{ route('lawyer.cases.destroy', $case->id) }}" method="POST"
-            onsubmit="return confirm('Are you sure you want to delete this case?');">
-            @csrf
+        @if (Auth::user()->hasPermission('cases:edit'))
+            <a href="{{ route('lawyer.cases.edit', $case->id) }}" class="btn btn-primary btn-icon-text me-3">
+                <i data-feather="edit-2"></i> Edit Case
+            </a>
+        @endif
+        @if (Auth::user()->hasPermission('cases:delete'))   
+            <form action="{{ route('lawyer.cases.destroy', $case->id) }}" method="POST"
+                onsubmit="return confirm('Are you sure you want to delete this case?');">
+                @csrf
             @method('DELETE')
             <button type="submit" class="btn btn-danger btn-icon-text">
                 <i data-feather="trash"></i> Delete Case
             </button>
         </form>
+        @endif
     </div>
 
     @push('plugin-styles')
@@ -246,9 +253,7 @@
                                     successMessage('Attachment deleted successfully.');
                                 },
                                 error: function(xhr) {
-                                    Swal.fire('Error',
-                                        'An error occurred while deleting the attachment.',
-                                        'error');
+                                    Swal.fire('Error',xhr.responseJSON.message ?? 'An error occurred while deleting the attachment.', 'error');
                                 }
                             });
                         }

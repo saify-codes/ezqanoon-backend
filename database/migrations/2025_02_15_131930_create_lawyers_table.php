@@ -34,6 +34,7 @@ return new class extends Migration
             $table->unsignedBigInteger('lawyer_id')->nullable();
             $table->date('subscription_expires_at')->nullable();
             $table->enum('role', ['ADMIN', 'USER'])->default('ADMIN');
+            $table->json('permissions')->nullable();
             $table->rememberToken();
             $table->timestamps();
 

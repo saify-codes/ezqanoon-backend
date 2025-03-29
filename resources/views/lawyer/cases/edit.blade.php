@@ -177,21 +177,41 @@
                     </div>
                 </div>
 
-                <!-- Payment Status -->
-                <div class="mb-3">
-                    <label for="payment_status" class="form-label">Payment Status</label>
-                    <select class="form-select" id="payment_status" name="payment_status">
-                        <option value="PENDING"
-                            {{ old('payment_status', $case->payment_status) === 'PENDING' ? 'selected' : '' }}>PENDING
-                        </option>
-                        <option value="PAID"
-                            {{ old('payment_status', $case->payment_status) === 'PAID' ? 'selected' : '' }}>PAID
-                        </option>
-                        <option value="OVERDUE"
-                            {{ old('payment_status', $case->payment_status) === 'OVERDUE' ? 'selected' : '' }}>OVERDUE
-                        </option>
-                    </select>
+                <div class="row mb-3">
+                    <!-- Payment Status -->
+                    <div class="col-md-6">
+                        <label for="payment_status" class="form-label">Payment Status</label>
+                        <select class="form-select" id="payment_status" name="payment_status">
+                            <option value="PENDING"
+                                {{ old('payment_status', $case->payment_status) === 'PENDING' ? 'selected' : '' }}>PENDING
+                            </option>
+                            <option value="PAID"
+                                {{ old('payment_status', $case->payment_status) === 'PAID' ? 'selected' : '' }}>PAID
+                            </option>
+                            <option value="OVERDUE"
+                                {{ old('payment_status', $case->payment_status) === 'OVERDUE' ? 'selected' : '' }}>OVERDUE
+                            </option>
+                        </select>
+                    </div>
+                   
+                    <!-- Case Status -->
+                    <div class="col-md-6">
+                        <label for="status" class="form-label">Case Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="OPEN"
+                                {{ old('status', $case->status) === 'OPEN' ? 'selected' : '' }}>OPEN
+                            </option>
+                            <option value="IN PROGRESS"
+                                {{ old('status', $case->status) === 'IN PROGRESS' ? 'selected' : '' }}>IN PROGRESS
+                            </option>
+                            <option value="CLOSED"
+                                {{ old('status', $case->status) === 'CLOSED' ? 'selected' : '' }}>CLOSED
+                            </option>
+                        </select>
+                    </div>
+
                 </div>
+                
 
                 <!-- Attachments -->
                 <div class="mb-3">

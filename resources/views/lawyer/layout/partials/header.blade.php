@@ -58,7 +58,7 @@
                     </div>
                     <ul class="list-unstyled p-1">
                         <li class="dropdown-item py-2">
-                            <a href="{{ route('lawyer.profile') }}" class="text-body ms-0">
+                            <a href="{{ route('lawyer.profile') }}" class="d-block text-body ms-0">
                                 <i class="me-2 icon-md" data-feather="user"></i>
                                 <span>Profile</span>
                             </a>
@@ -76,7 +76,7 @@
                             </a>
                         </li> --}}
                         <li class="dropdown-item py-2">
-                            <a href="{{ route('lawyer.signout') }}" class="text-body ms-0">
+                            <a href="{{ route('lawyer.signout') }}" class="d-block text-body ms-0">
                                 <i class="me-2 icon-md" data-feather="log-out"></i>
                                 <span>Sign Out</span>
                             </a>

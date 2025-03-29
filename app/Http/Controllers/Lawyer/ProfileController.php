@@ -18,30 +18,31 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
+        switch(Auth::user()->role) {
+            case 'ADMIN':
+                $validated = $request->validate([
+                    'name'              => 'required|string|max:255',
+                    'phone'             => 'nullable|phone:PK', 
+                    'location'          => 'required|string|max:255',
+                    'specialization'    => 'required|string|max:255',
+                    'qualification'     => 'required|string|max:255',
+                    'experience'        => 'required|integer|min:0',
+                    'price'             => 'required|integer|min:0',
+                    'availability_from' => 'required',
+                    'availability_to'   => 'required',
+                    'description'       => 'required|string',
+                ]);
+                Auth::user()->update([...$validated, 'is_profile_completed' => true]);
+                break;
 
-        $validated = $request->validate([
-            'name'              => 'required|string|max:255',
-            'location'          => 'required|string|max:255',
-            'specialization'    => 'required|string|max:255',
-            'qualification'     => 'required|string|max:255',
-            'experience'        => 'required|integer|min:0',
-            'price'             => 'required|integer|min:0',
-            'availability_from' => 'required',
-            'availability_to'   => 'required',
-            'description'       => 'required|string',
-            'avatar'            => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-        ]);
-
-        // If remove_avatar flag is set, nullify the avatar field.
-        if ($request->input('remove_avatar') == 1) {
-            $validated['avatar'] = null;
-        } elseif ($request->hasFile('avatar')) {
-            $avatarPath = $request->file('avatar')->store('users/' . Auth::user()->id . '/avatars', 'public');
-            $validated['avatar'] = basename($avatarPath);
+            case 'USER':
+                $validated = $request->validate([
+                    'name'  => 'required|string|max:255',
+                    'phone' => 'nullable|phone:PK',
+                ]);
+                Auth::user()->update($validated);
+                break;
         }
-
-        // Update the authenticated user's profile with validated data
-        Auth::user()->update([...$validated, 'is_profile_completed' => true]);
 
         return redirect()->back()->with('success', 'Profile updated successfully!');
     }

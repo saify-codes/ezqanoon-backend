@@ -37,6 +37,7 @@ class Lawyer extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
+            'permissions'       => 'array',
         ];
     }
     
@@ -62,6 +63,16 @@ class Lawyer extends Authenticatable
         }
         
         return $this->hasOne(Subscription::class, 'id', 'subscription_id');
+    }
+
+    public function hasPermission($permission)
+    {
+        switch ($this->role) {
+            case 'USER':
+                return in_array($permission, $this->permissions ?? []);
+            case 'ADMIN':
+                return true;
+        }
     }
 
     /**

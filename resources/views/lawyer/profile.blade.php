@@ -234,6 +234,7 @@
                 top: 50%;
                 transition: 0.5s ease;
                 opacity: 0;
+                z-index: 1;
             }
 
             .avatar .preview:hover #discard-btn {

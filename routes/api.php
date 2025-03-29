@@ -14,7 +14,7 @@ Route::get('/user', function (Request $request) {
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/profile',          [ProfileController::class, 'getProfile']);
     Route::put('/profile',          [ProfileController::class, 'updateProfile']);
-    Route::put('/password',  [ProfileController::class, 'updatePassword']);
+    Route::put('/password',         [ProfileController::class, 'updatePassword']);
     Route::post('/upload/avatar',   [ProfileController::class, 'uploadAvatar']);
     Route::get('/appointment',      [AppointmentController::class, 'getAppointments']);
     Route::post('/appointment',     [AppointmentController::class, 'makeAppointment']);

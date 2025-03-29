@@ -16,9 +16,18 @@ class NoSubscriptionMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(Auth::user()->subscription){
-            return redirect()->route('lawyer.dashboard');
+        $user = Auth::user();
+
+        if (!$user->subscription) {
+           
+            if ($user->role == 'USER') {
+                abort(403, 'Unauthorized');
+            }
+
+            return $next($request);
+            
         }
-        return $next($request);
+
+        return redirect()->route('lawyer.dashboard');
     }
 }

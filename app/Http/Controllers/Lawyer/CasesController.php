@@ -28,7 +28,7 @@ class CasesController extends Controller
             $orderColumnIndex   = $request->input('order.0.column'); // which column index is being sorted
             $orderDirection     = $request->input('order.0.dir');    // asc or desc
 
-            $query              = Cases::where('lawyer_id', Auth::user()->id);
+            $query              = Cases::where('lawyer_id', getLawyerId());
             $totalRecords       = $query->count();
 
             if (!empty($searchValue)) {
@@ -64,6 +64,10 @@ class CasesController extends Controller
      */
     public function create()
     {
+        if(!Auth::user()->hasPermission('cases:create')){
+            abort(403, 'Unauthorized');
+        }
+
         return view('lawyer.cases.create');
     }
 
@@ -72,6 +76,10 @@ class CasesController extends Controller
      */
     public function store(Request $request)
     {
+        if(!Auth::user()->hasPermission('cases:create')){
+            abort(403, 'Unauthorized');
+        }
+
         $validated = $request->validate([
             'name'                            => 'required|string|max:255',
             'type'                            => 'required|string|max:255',
@@ -148,9 +156,12 @@ class CasesController extends Controller
      */
     public function show(string $id)
     {
+        if(!Auth::user()->hasPermission('cases:view')){
+            abort(403, 'Unauthorized');
+        }
         // Retrieve the case that belongs to the authenticated lawyer or fail
         $case = Cases::where('id', $id)
-            ->where('lawyer_id', Auth::id())
+            ->where('lawyer_id', getLawyerId())
             ->firstOrFail();
 
         return view('lawyer.cases.show', compact('case'));
@@ -161,8 +172,12 @@ class CasesController extends Controller
      */
     public function edit(string $id)
     {
+        if(!Auth::user()->hasPermission('cases:edit')){
+            abort(403, 'Unauthorized');
+        }
+
         $case = Cases::where('id', $id)
-            ->where('lawyer_id', Auth::user()->id)
+            ->where('lawyer_id', getLawyerId())
             ->firstOrFail();
         return view('lawyer.cases.edit', compact('case'));
     }
@@ -172,7 +187,11 @@ class CasesController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $case = Cases::where('lawyer_id', Auth::id())->findOrFail($id);
+        if(!Auth::user()->hasPermission('cases:edit')){
+            abort(403, 'Unauthorized');
+        }
+
+        $case = Cases::where('lawyer_id', getLawyerId())->findOrFail($id);
 
         $validated = $request->validate([
             'name'                              => 'required|string|max:255',
@@ -253,8 +272,11 @@ class CasesController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        $case = Cases::where('lawyer_id', Auth::id())->findOrFail($id);
-        $case->delete();
+        if(!Auth::user()->hasPermission('cases:delete')){
+            abort(403, 'Unauthorized');
+        }
+
+        Cases::where('lawyer_id', getLawyerId())->findOrFail($id)->delete();
 
         if ($request->ajax()) {
             return $this->successResponse('case deleted');

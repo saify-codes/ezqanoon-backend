@@ -150,22 +150,23 @@
 
                             return `
                                 <div>
-                                    <!-- View button -->
-                                    <a href="${showUrl}" class="btn btn-inverse-secondary btn-icon">
-                                        <i data-feather="eye"></i>
-                                    </a>
+                                    @if(Auth::user()->hasPermission('cases:view'))
+                                        <a href="${showUrl}" class="btn btn-inverse-secondary btn-icon">
+                                            <i data-feather="eye"></i>
+                                        </a>
+                                    @endif
 
-                                    <!-- Edit button -->
-                                    <a href="${editUrl}" class="btn btn-inverse-success btn-icon">
-                                        <i data-feather="edit-3"></i>
-                                    </a>
+                                    @if(Auth::user()->hasPermission('cases:edit'))
+                                        <a href="${editUrl}" class="btn btn-inverse-success btn-icon">
+                                            <i data-feather="edit-3"></i>
+                                        </a>
+                                    @endif
 
-                                    <!-- AJAX Delete button -->
-                                    <button type="button"
-                                            class="btn btn-inverse-danger btn-icon"
-                                            onclick="deleteCase(${row.id}, '${deleteUrl}')">
-                                        <i data-feather="trash"></i>
-                                    </button>
+                                    @if(Auth::user()->hasPermission('cases:delete'))
+                                        <button type="button" class="btn btn-inverse-danger btn-icon" onclick="deleteCase(${row.id}, '${deleteUrl}')">
+                                            <i data-feather="trash"></i>
+                                        </button>
+                                    @endif
                                 </div>
                             `;
                         }
