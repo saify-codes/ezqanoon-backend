@@ -60,89 +60,93 @@
                     @enderror
                 </div>
 
-                {{-- Location --}}
-                <div class="mb-3">
-                    <label for="location" class="form-label">Office location</label>
-                    <input type="text" class="form-control" id="location" name="location"
-                        value="{{ old('location', $lawyer->location) }}" required>
-                    @error('location')
-                        <small class="d-block text-danger mt-1">{{ $message }}</small>
-                    @enderror
-                </div>
+                @if (Auth::user()->role === 'ADMIN')
+                    
+                    {{-- Location --}}
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Office location</label>
+                        <input type="text" class="form-control" id="location" name="location"
+                            value="{{ old('location', $lawyer->location) }}" required>
+                        @error('location')
+                            <small class="d-block text-danger mt-1">{{ $message }}</small>
+                        @enderror
+                    </div>
 
-                {{-- Specialization --}}
-                <div class="mb-3">
-                    <label for="specialization" class="form-label">Specialization</label>
-                    <input type="text" class="form-control" id="specialization" name="specialization"
-                        value="{{ old('specialization', $lawyer->specialization) }}" required>
-                    @error('specialization')
-                        <small class="d-block text-danger mt-1">{{ $message }}</small>
-                    @enderror
-                </div>
+                    {{-- Specialization --}}
+                    <div class="mb-3">
+                        <label for="specialization" class="form-label">Specialization</label>
+                        <input type="text" class="form-control" id="specialization" name="specialization"
+                            value="{{ old('specialization', $lawyer->specialization) }}" required>
+                        @error('specialization')
+                            <small class="d-block text-danger mt-1">{{ $message }}</small>
+                        @enderror
+                    </div>
 
-                {{-- Qualification --}}
-                <div class="mb-3">
-                    <label for="qualification" class="form-label">Qualification</label>
-                    <input type="text" class="form-control" id="qualification" name="qualification"
-                        value="{{ old('qualification', $lawyer->qualification) }}" required>
-                    @error('qualification')
-                        <small class="d-block text-danger mt-1">{{ $message }}</small>
-                    @enderror
-                </div>
+                    {{-- Qualification --}}
+                    <div class="mb-3">
+                        <label for="qualification" class="form-label">Qualification</label>
+                        <input type="text" class="form-control" id="qualification" name="qualification"
+                            value="{{ old('qualification', $lawyer->qualification) }}" required>
+                        @error('qualification')
+                            <small class="d-block text-danger mt-1">{{ $message }}</small>
+                        @enderror
+                    </div>
 
-                {{-- Experience --}}
-                <div class="mb-3">
-                    <label for="experience" class="form-label">Experience in years</label>
-                    <input type="number" min="0" class="form-control" id="experience" name="experience"
-                        value="{{ old('experience', $lawyer->experience) }}" required>
-                    @error('experience')
-                        <small class="d-block text-danger mt-1">{{ $message }}</small>
-                    @enderror
-                </div>
+                    {{-- Experience --}}
+                    <div class="mb-3">
+                        <label for="experience" class="form-label">Experience in years</label>
+                        <input type="number" min="0" class="form-control" id="experience" name="experience"
+                            value="{{ old('experience', $lawyer->experience) }}" required>
+                        @error('experience')
+                            <small class="d-block text-danger mt-1">{{ $message }}</small>
+                        @enderror
+                    </div>
 
-                {{-- Consulting Price --}}
-                <div class="mb-3">
-                    <label for="price" class="form-label">Consulting price</label>
-                    <input type="number" min="0" class="form-control" id="price" name="price"
-                        value="{{ old('price', $lawyer->price) }}" required>
-                    @error('price')
-                        <small class="d-block text-danger mt-1">{{ $message }}</small>
-                    @enderror
-                </div>
+                    {{-- Consulting Price --}}
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Consulting price</label>
+                        <input type="number" min="0" class="form-control" id="price" name="price"
+                            value="{{ old('price', $lawyer->price) }}" required>
+                        @error('price')
+                            <small class="d-block text-danger mt-1">{{ $message }}</small>
+                        @enderror
+                    </div>
 
-                {{-- Availability --}}
-                <div class="row">
-                    <h6 class="card-title">Availability</h6>
-                    <div class="col-sm-6">
-                        <div class="mb-3">
-                            <label for="availability_from" class="form-label">From</label>
-                            <input type="time" name="availability_from" class="form-control"
-                                value="{{ old('availability_from', $lawyer->availability_from) }}" required>
-                            @error('availability_from')
-                                <small class="d-block text-danger mt-1">{{ $message }}</small>
-                            @enderror
+                    {{-- Availability --}}
+                    <div class="row">
+                        <h6 class="card-title">Availability</h6>
+                        <div class="col-sm-6">
+                            <div class="mb-3">
+                                <label for="availability_from" class="form-label">From</label>
+                                <input type="time" name="availability_from" class="form-control"
+                                    value="{{ old('availability_from', $lawyer->availability_from) }}" required>
+                                @error('availability_from')
+                                    <small class="d-block text-danger mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="mb-3">
+                                <label for="availability_to" class="form-label">To</label>
+                                <input type="time" name="availability_to" class="form-control"
+                                    value="{{ old('availability_to', $lawyer->availability_to) }}" required>
+                                @error('availability_to')
+                                    <small class="d-block text-danger mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
                         </div>
                     </div>
-                    <div class="col-sm-6">
-                        <div class="mb-3">
-                            <label for="availability_to" class="form-label">To</label>
-                            <input type="time" name="availability_to" class="form-control"
-                                value="{{ old('availability_to', $lawyer->availability_to) }}" required>
-                            @error('availability_to')
-                                <small class="d-block text-danger mt-1">{{ $message }}</small>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
 
-                {{-- Description --}}
-                <div class="mb-3">
-                    <label for="description" class="form-label">About</label>
-                    <textarea id="description" class="form-control" rows="5" name="description" required>{{ old('description', $lawyer->description) }}</textarea>
-                    @error('description')
-                        <small class="d-block text-danger mt-1">{{ $message }}</small>
-                    @enderror
-                </div>
+                    {{-- Description --}}
+                    <div class="mb-3">
+                        <label for="description" class="form-label">About</label>
+                        <textarea id="description" class="form-control" rows="5" name="description" required>{{ old('description', $lawyer->description) }}</textarea>
+                        @error('description')
+                            <small class="d-block text-danger mt-1">{{ $message }}</small>
+                        @enderror
+                    </div>
+                @endif
+
 
                 <button type="submit" class="btn btn-primary me-2">Save</button>
             </form>
