@@ -76,49 +76,23 @@ class ProfileController extends Controller
      */
     public function updateProfile(Request $request)
     {
+        // Validate input
+        $request->validate([
+            'name'  => 'string',
+            'phone' => 'string',
+        ]);
+
         // Get the authenticated user
         $user = Auth::user();
 
-        if ($user->role === 'USER') {
+        // Update only the fields present in the request
+        $user->update($request->only('name', 'phone'));
 
-            $request->validate([
-                'name' => 'required|string|max:255'
-            ]);
-
-            $user->update($request->only('name'));
-
-        } else {
-            // For admin/lawyer users, validate all required fields
-            $request->validate([
-                'name'                  => 'required|string|max:255',
-                'email'                 => 'required|string|email|unique:lawyers,email',
-                'phone'                 => 'required|string',
-                'location'              => 'required|string',
-                'availability_from'     => 'required|date_format:H:i',
-                'availability_to'       => 'required|date_format:H:i',
-                'specialization'        => 'required|string',
-                'experience'            => 'required|integer',
-                'price'                 => 'required|numeric',
-                'qualification'         => 'required|string',
-                'description'           => 'required|string'
-            ]);
-
-            $user->update($request->only([
-                'name',                 
-                'email',                
-                'phone',                
-                'location',             
-                'availability_from',    
-                'availability_to',      
-                'specialization',       
-                'experience',           
-                'price',                
-                'qualification',        
-                'description',          
-            ]));
-        }
-
-        return $this->successResponse('Profile updated successfully');
+        // Return the updated user profile
+        return $this->successResponse(
+            'Profile updated successfully',
+            ['data' => $user->profile()]
+        );
     }
     
     /**
