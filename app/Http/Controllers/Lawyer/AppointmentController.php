@@ -47,15 +47,13 @@ class AppointmentController extends Controller
                 $query->orderBy('id', 'asc');
             }
 
-            $query->skip($start)->take($length);
-
-            $appointments = $query->get();
+            $data = $query->skip($start)->take($length)->get();
 
             return response()->json([
                 'draw'            => intval($draw),
                 'recordsTotal'    => $totalRecords,
                 'recordsFiltered' => $totalRecordsFiltered,
-                'data'            => $appointments,
+                'data'            => $data,
             ]);
         }
 

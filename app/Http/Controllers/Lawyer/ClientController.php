@@ -17,6 +17,10 @@ class ClientController extends Controller
      */
     public function index(Request $request)
     {
+        if (!Auth::user()->hasPermission('manage:client')) {
+            abort(403, 'Unauthorized');
+        }
+
         if ($request->ajax()) {
 
             // DataTables columns to map for ordering:
@@ -46,15 +50,13 @@ class ClientController extends Controller
                 $query->orderBy('id', 'asc');
             }
 
-            $query->skip($start)->take($length);
-
-            $appointments = $query->get();
+            $data = $query->skip($start)->take($length)->get();
 
             return response()->json([
                 'draw'            => intval($draw),
                 'recordsTotal'    => $totalRecords,
                 'recordsFiltered' => $totalRecordsFiltered,
-                'data'            => $appointments,
+                'data'            => $data,
             ]);
         }
 

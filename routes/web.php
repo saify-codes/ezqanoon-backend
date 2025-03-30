@@ -12,8 +12,8 @@ use App\Http\Controllers\Lawyer\NotificationController;
 use App\Http\Controllers\Lawyer\ProfileController;
 use App\Http\Controllers\Lawyer\ResetPasswordController;
 use App\Http\Controllers\Lawyer\SubscriptionController;
+use App\Http\Controllers\Lawyer\TeamController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -84,6 +84,18 @@ Route::group(['middleware' => 'lawyer.auth'], function(){
                 'destroy' => 'lawyer.client.destroy',
             ]
         ]);
+        Route::resource('/manage/team', TeamController::class, [
+            'names' => [
+                'index'             => 'lawyer.team.index',
+                'create'            => 'lawyer.team.create',
+                'store'             => 'lawyer.team.store',
+                'show'              => 'lawyer.team.show',
+                'edit'              => 'lawyer.team.edit',
+                'update'            => 'lawyer.team.update',
+                'destroy'           => 'lawyer.team.destroy',
+            ]
+        ]);
+        Route::put('/manage/team/{user}/change-password', [TeamController::class, 'changePassword'])->name('lawyer.team.change-password');
         Route::delete('/manage/cases/{case}/attachment/{attachment}', [CaseAttachmentController::class, 'destroy'])->name('lawyer.cases.attachments.destroy');
         Route::delete('/manage/client/{client}/attachment/{attachment}', [ClientAttachmentController::class, 'destroy'])->name('lawyer.client.attachments.destroy');
     

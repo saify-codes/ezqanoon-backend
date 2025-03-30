@@ -5,6 +5,17 @@
             List
         </a>
     </div>
+    <!-- Display validation errors (if any) -->
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Whoops!</strong> There were some problems with your input.
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <div class="card">
         <div class="card-body">
             <h4 class="card-title mb-4">Create New Case</h4>
@@ -12,18 +23,6 @@
             <!-- The form -->
             <form action="{{ route('lawyer.cases.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-
-                <!-- Display validation errors (if any) -->
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <strong>Whoops!</strong> There were some problems with your input.
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
 
                 <!-- Case Name & Type -->
                 <div class="row mb-3">

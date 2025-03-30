@@ -19,55 +19,85 @@
         </a>
       </li>
 
-      <li class="nav-item nav-category">Client & Case Management</li>
-      <li class="nav-item {{ activeClass(['manage/client*']) }}">
-        <a href="{{ url('/manage/client') }}" class="nav-link">
-          <i class="link-icon" data-feather="users"></i>
+      <li class="nav-item nav-category">Management</li>
+
+      @if (auth()->user()->hasPermission('manage:team'))
+        <li class="nav-item {{ activeClass(['manage/team*']) }}">
+          <a href="{{ url('/manage/team') }}" class="nav-link">
+            <i class="link-icon" data-feather="user-plus"></i>
+            <span class="link-title">My Team</span>
+          </a>
+        </li>
+      @endif
+
+      @if (auth()->user()->hasPermission('manage:client'))
+        <li class="nav-item {{ activeClass(['manage/client*']) }}">
+          <a href="{{ url('/manage/client') }}" class="nav-link">
+            <i class="link-icon" data-feather="users"></i>
           <span class="link-title">Client management</span>
-        </a>
-      </li>
-      <li class="nav-item {{ activeClass(['manage/cases*']) }}">
-        <a href="{{ url('/manage/cases') }}" class="nav-link">
-          <i class="link-icon" data-feather="book-open"></i>
-          <span class="link-title">Case management</span>
-        </a>
-      </li>
+          </a>
+        </li>
+      @endif
+
+      @if (auth()->user()->hasPermission('manage:case'))
+        <li class="nav-item {{ activeClass(['manage/cases*']) }}">
+          <a href="{{ url('/manage/cases') }}" class="nav-link">
+            <i class="link-icon" data-feather="book-open"></i>
+            <span class="link-title">Case management</span>
+          </a>
+        </li>
+      @endif
+
+      @if (auth()->user()->hasPermission('manage:appointment'))
+        <li class="nav-item {{ activeClass(['manage/appointments*']) }}">
+          <a href="{{ url('/manage/appointments') }}" class="nav-link">
+            <i class="link-icon" data-feather="calendar"></i>
+            <span class="link-title">Appointments</span>
+          </a>
+        </li>
+      @endif
 
       <li class="nav-item nav-category">Task & Schedule</li>
-      <li class="nav-item {{ activeClass(['manage/appointments']) }}">
-        <a href="{{ url('/manage/appointments') }}" class="nav-link">
-          <i class="link-icon" data-feather="clipboard"></i>
-          <span class="link-title">Appointments</span>
-        </a>
-      </li>
-      <li class="nav-item {{ activeClass(['manage/task']) }}">
-        <a href="{{ url('/manage/task') }}" class="nav-link">
-          <i class="link-icon" data-feather="check-square"></i>
-          <span class="link-title">Task management</span>
-        </a>
-      </li>
-      <li class="nav-item {{ activeClass(['calendar']) }}">
-        <a href="{{ url('/calendar') }}" class="nav-link">
-          <i class="link-icon" data-feather="calendar"></i>
-          <span class="link-title">Calendar & scheduling</span>
-        </a>
-      </li>
+
+      @if (auth()->user()->hasPermission('manage:task'))
+        <li class="nav-item {{ activeClass(['manage/task']) }}">
+          <a href="{{ url('/manage/task') }}" class="nav-link">
+            <i class="link-icon" data-feather="check-square"></i>
+            <span class="link-title">Task</span>
+          </a>
+        </li>
+      @endif
+
+      @if (auth()->user()->hasPermission('manage:calendar'))
+        <li class="nav-item {{ activeClass(['calendar']) }}">
+          <a href="{{ url('/calendar') }}" class="nav-link">
+            <i class="link-icon" data-feather="calendar"></i>
+            <span class="link-title">Calendar & scheduling</span>
+          </a>
+        </li>
+      @endif
 
       <li class="nav-item nav-category">Finance</li>
-      <li class="nav-item {{ activeClass(['billing']) }}">
-        <a href="{{ url('/manage/client') }}" class="nav-link">
-          <i class="link-icon" data-feather="dollar-sign"></i>
-          <span class="link-title">Billing & invoicing</span>
-        </a>
-      </li>
+
+      @if (auth()->user()->hasPermission('manage:billing'))
+        <li class="nav-item {{ activeClass(['billing']) }}">
+          <a href="{{ url('/manage/client') }}" class="nav-link">
+            <i class="link-icon" data-feather="dollar-sign"></i>
+            <span class="link-title">Billing & invoicing</span>
+          </a>
+        </li>
+      @endif
 
       <li class="nav-item nav-category">Reports & Analytics</li>
-      <li class="nav-item {{ activeClass(['report']) }}">
+
+      @if (auth()->user()->hasPermission('manage:report'))
+        <li class="nav-item {{ activeClass(['report']) }}">
         <a href="{{ url('/manage/client') }}" class="nav-link">
           <i class="link-icon" data-feather="trending-up"></i>
           <span class="link-title">Report</span>
-        </a>
-      </li>
+          </a>
+        </li>
+      @endif
     </ul>
   </div>
 </nav>
