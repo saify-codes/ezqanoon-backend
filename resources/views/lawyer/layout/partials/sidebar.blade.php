@@ -60,7 +60,7 @@
       <li class="nav-item nav-category">Task & Schedule</li>
 
       @if (auth()->user()->hasPermission('manage:task'))
-        <li class="nav-item {{ activeClass(['manage/task']) }}">
+        <li class="nav-item {{ activeClass(['manage/task*']) }}">
           <a href="{{ url('/manage/task') }}" class="nav-link">
             <i class="link-icon" data-feather="check-square"></i>
             <span class="link-title">Task</span>
