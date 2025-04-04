@@ -80,8 +80,8 @@
       <li class="nav-item nav-category">Finance</li>
 
       @if (auth()->user()->hasPermission('manage:billing'))
-        <li class="nav-item {{ activeClass(['billing']) }}">
-          <a href="{{ url('/manage/client') }}" class="nav-link">
+        <li class="nav-item {{ activeClass(['invoice*']) }}">
+          <a href="{{ url('/invoice') }}" class="nav-link">
             <i class="link-icon" data-feather="dollar-sign"></i>
             <span class="link-title">Billing & invoicing</span>
           </a>

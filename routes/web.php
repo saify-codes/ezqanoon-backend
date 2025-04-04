@@ -8,6 +8,7 @@ use App\Http\Controllers\Lawyer\CalendarController;
 use App\Http\Controllers\Lawyer\CaseAttachmentController;
 use App\Http\Controllers\Lawyer\ClientAttachmentController;
 use App\Http\Controllers\Lawyer\ClientController;
+use App\Http\Controllers\Lawyer\InvoiceController;
 use App\Http\Controllers\Lawyer\NotificationController;
 use App\Http\Controllers\Lawyer\ProfileController;
 use App\Http\Controllers\Lawyer\ResetPasswordController;
@@ -103,6 +104,18 @@ Route::group(['middleware' => 'lawyer.auth'], function(){
         Route::get('/calendar', [CalendarController::class, 'index'])->name('lawyer.calendar.index');
         Route::get('/calendar/events', [CalendarController::class, 'events'])->name('lawyer.calendar.events');
         
+        // Billing & Invoice
+        Route::resource('/invoice', InvoiceController::class, [
+            'names' => [
+                'index'             => 'lawyer.invoice.index',
+                'create'            => 'lawyer.invoice.create',
+                'store'             => 'lawyer.invoice.store',
+                'show'              => 'lawyer.invoice.show',
+                'edit'              => 'lawyer.invoice.edit',
+                'update'            => 'lawyer.invoice.update',
+                'destroy'           => 'lawyer.invoice.destroy',
+            ]
+        ]);
     });
 
     // notifications
