@@ -321,6 +321,7 @@
                 const aerodrop = new AeroDrop(document.querySelector('#aerodrop'), {
                     name: 'attachments',
                     uploadURL: '/upload',
+                    enableCamera: true,
                     maxFiles: 10,
                     allowedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
                     fileSizeRules: [{
