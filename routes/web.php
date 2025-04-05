@@ -13,6 +13,7 @@ use App\Http\Controllers\Lawyer\NotificationController;
 use App\Http\Controllers\Lawyer\ProfileController;
 use App\Http\Controllers\Lawyer\ResetPasswordController;
 use App\Http\Controllers\Lawyer\SubscriptionController;
+use App\Http\Controllers\Lawyer\TaskController;
 use App\Http\Controllers\Lawyer\TeamController;
 use Illuminate\Support\Facades\Route;
 
@@ -94,6 +95,17 @@ Route::group(['middleware' => 'lawyer.auth'], function(){
                 'edit'              => 'lawyer.team.edit',
                 'update'            => 'lawyer.team.update',
                 'destroy'           => 'lawyer.team.destroy',
+            ]
+        ]);
+        Route::resource('/manage/task', TaskController::class, [
+            'names' => [
+                'index'             => 'lawyer.task.index',
+                'create'            => 'lawyer.task.create',
+                'store'             => 'lawyer.task.store',
+                'show'              => 'lawyer.task.show',
+                'edit'              => 'lawyer.task.edit',
+                'update'            => 'lawyer.task.update',
+                'destroy'           => 'lawyer.task.destroy',
             ]
         ]);
         Route::put('/manage/team/{user}/change-password', [TeamController::class, 'changePassword'])->name('lawyer.team.change-password');
