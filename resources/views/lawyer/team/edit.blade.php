@@ -45,7 +45,7 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3" style="display: flow-root">
                     <label for="permissions" class="form-label">Permissions</label>
                     <select class="form-select" id="permissions" name="permissions[]" multiple>
                         @foreach (getPermissionsList() as $key => $permission)
@@ -64,12 +64,14 @@
                             @endif
                         @endforeach
                     </select>
+                    <div class="btn-group mt-2 float-end">
+                        <button type="button" class="btn btn-xs btn-success" id="selectAllPermissions">Select All Permissions</button>
+                        <button type="button" class="btn btn-xs btn-danger" id="revokeAllPermissions">Revoke All Permissions</button>
+                    </div>
                 </div>
 
                 <!-- Submit button (with an ID for enabling/disabling) -->
                 <button type="submit" class="btn btn-primary" id="submitBtn">Update User</button>
-                <button type="button" class="btn btn-success" id="selectAllPermissions">Assign All Permissions</button>
-                <button type="button" class="btn btn-danger" id="revokeAllPermissions">Revoke All Permissions</button>
 
             </form>
         </div>

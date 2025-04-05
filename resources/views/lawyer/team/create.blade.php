@@ -56,7 +56,7 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3" style="display: flow-root">
                     <label for="permissions" class="form-label">Permissions</label>
                     <select class="form-select" id="permissions" name="permissions[]" multiple>
                         @foreach (getPermissionsList() as $key => $permission)
@@ -75,6 +75,11 @@
                             @endif
                         @endforeach
                     </select>
+
+                    <div class="btn-group mt-2 float-end">
+                        <button type="button" class="btn btn-xs btn-success" id="selectAllPermissions">Select All Permissions</button>
+                        <button type="button" class="btn btn-xs btn-danger" id="revokeAllPermissions">Revoke All Permissions</button>
+                    </div>
                 </div>
 
                 <!-- Submit button (with an ID for enabling/disabling) -->
@@ -97,6 +102,18 @@
         <script>
             $(document).ready(function() {
                 $('#permissions').select2();
+
+                 // Handle select all permissions button
+                 $('#selectAllPermissions').on('click', function() {
+                    $('#permissions option').prop('selected', true);
+                    $('#permissions').trigger('change');
+                });
+
+                // Handle revoke all permissions button
+                $('#revokeAllPermissions').on('click', function() {
+                    $('#permissions option').prop('selected', false);
+                    $('#permissions').trigger('change');
+                });
 
                 $('#togglePassword').on('click', function() {
                     const $password = $('#password');
