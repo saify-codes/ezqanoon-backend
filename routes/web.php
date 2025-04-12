@@ -10,6 +10,7 @@ use App\Http\Controllers\Lawyer\ClientAttachmentController;
 use App\Http\Controllers\Lawyer\ClientController;
 use App\Http\Controllers\Lawyer\InvoiceController;
 use App\Http\Controllers\Lawyer\NotificationController;
+use App\Http\Controllers\Lawyer\OTPController;
 use App\Http\Controllers\Lawyer\ProfileController;
 use App\Http\Controllers\Lawyer\ResetPasswordController;
 use App\Http\Controllers\Lawyer\SubscriptionController;
@@ -42,7 +43,7 @@ Route::group(['middleware' => 'admin.auth'], function(){
 
 Route::group(['middleware' => 'lawyer.auth'], function(){
 
-    Route::group(['middleware' => 'lawyer.has_subscription'], function(){
+    Route::group(['middleware' => 'lawyer.has_subscription' , 'lawyer.verified'], function(){
         
         Route::view('/', 'lawyer.dashboard')->name('lawyer.dashboard');
         
@@ -162,4 +163,14 @@ Route::group(['middleware' => 'lawyer.guest'], function(){
     
     Route::get('/verification/resend', [AuthController::class, 'sendVerificationLink'])->name('lawyer.verification.resend');
 
+    Route::post('/otp/send', [OTPController::class, 'sendOTP'])->name('lawyer.otp.send');
+
+    Route::post('/otp/verify', [OTPController::class, 'verifyOTP'])->name('lawyer.otp.verify');
 }); 
+
+
+
+Route::any('foo', function(){
+    session_start();
+    dd(session_id());
+});

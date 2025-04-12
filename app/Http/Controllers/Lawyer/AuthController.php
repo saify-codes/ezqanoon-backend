@@ -27,6 +27,13 @@ class AuthController extends Controller
      */
     public function signup(SignupRequest $request)
     {
+        
+        if (!session()->has('otp_verified')) {
+            return redirect()->route('lawyer.signup')->with('error','Please verify your phone number first');
+        }
+        
+        dd($request->all());
+        
         $lawyer = Lawyer::create([
             'name'     => $request->name,
             'email'    => $request->email,

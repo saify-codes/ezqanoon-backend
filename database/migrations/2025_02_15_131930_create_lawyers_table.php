@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('lawyers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->enum('gender', ['MALE', 'FEMALE', 'OTHER']);
             $table->string('email')->unique();
             $table->string('avatar')->nullable();
             $table->string('phone');
@@ -29,6 +30,7 @@ return new class extends Migration
             $table->string('qualification')->nullable();
             $table->text('description')->nullable();
             $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('phone_verified_at')->nullable();
             $table->boolean('is_profile_completed')->default(0);
             $table->unsignedBigInteger('subscription_id')->nullable();
             $table->unsignedBigInteger('lawyer_id')->nullable();

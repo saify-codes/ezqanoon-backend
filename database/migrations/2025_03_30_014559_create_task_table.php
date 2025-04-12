@@ -16,10 +16,13 @@ return new class extends Migration
             $table->string('name');
             $table->enum('priority', ['NORMAL', 'HIGH', 'URGENT']);
             $table->enum('status', ['PENDING', 'IN_PROGRESS', 'COMPLETED']);
+            $table->unsignedBigInteger('lawyer_id')->nullable();
+            $table->unsignedBigInteger('client_id')->nullable();
             $table->timestamps();
 
-            $table->foreignId('lawyer_id')->constrained('lawyers')->onDelete('cascade');
-            $table->foreignId('client_id')->constrained('clients')->onDelete('set null');
+            $table->foreign('lawyer_id')->references('id')->on('lawyers')->onDelete('cascade');
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('set null');
+
         });
     }
 
