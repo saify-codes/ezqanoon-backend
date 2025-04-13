@@ -2,16 +2,14 @@
 
 namespace App\Utils;
 
-class PhoneFormatter
+class Phone
 {
-    // Country codes mapping for detecting the country code.
-    // This is a simple example, and you can extend it with more country codes.
+
     private static $countryCodes = [
-        '1'  => 'US',
-        '92' => 'PK',
-        '44' => 'GB',
-        '61' => 'AU',
-        // Add more country codes as needed.
+        '92' => 'Pakistan',
+        '1'  => 'USA',
+        '44' => 'UK',
+        // Add more country codes as needed
     ];
 
     /**
@@ -89,45 +87,78 @@ class PhoneFormatter
      *
      * @return bool True if the phone number is valid in E.164 format, false otherwise.
      */
-    public static function validateE164(?string $phone): bool
+    public static function isValid(?string $phone, $countryCode): bool
     {
         if (!$phone) {
             return false;
         }
 
-        // Check if the phone number starts with a plus sign and is followed by only digits
-        return preg_match('/^\+(\d{1,15})$/', $phone) === 1;
-    }
-
-    /**
-     * Convert a local phone number to E.164 standard format, guessing the country code.
-     *
-     * This method converts a local phone number (e.g., '03122030440') to the E.164 international format,
-     * by detecting the country code and appending it at the start of the cleaned number.
-     *
-     * @param string|null $phone The local phone number to convert.
-     *
-     * @return string|null The phone number in E.164 format, or null if input is empty or invalid.
-     */
-    public static function convertToE164FromLocal(?string $phone): ?string
-    {
-        if (!$phone) {
-            return null;
-        }
 
         // Remove all non-digit characters
         $cleanedPhone = preg_replace('/\D+/', '', $phone);
 
-        // Try to match the country code from the beginning of the cleaned phone number
-        foreach (self::$countryCodes as $code => $country) {
-            if (strpos($cleanedPhone, $code) === 0) {
-                // Remove the country code and append it to the E.164 formatted number
-                $cleanedPhoneWithoutCode = substr($cleanedPhone, strlen($code));
-                return "+" . $code . $cleanedPhoneWithoutCode;
+        // Check if the number starts with '+' followed by the country code
+        if (strpos($cleanedPhone, $countryCode) !== 0) {
+            return false;
+        }
+
+        return match ($countryCode) {
+            '92' => preg_match('/^92[0-9]{10}$/', $cleanedPhone) === 1,
+            default => false
+        };
+    }
+
+    public static function isValidV2(?string $phone): bool
+    {
+        if (!$phone) {
+            return false;
+        }
+
+        // Remove all non-digit characters except the plus sign at the beginning
+        $cleanedPhone = preg_replace('/\D+/', '', $phone);
+
+
+        // Extract country code by checking first digits
+        $countryCode = null;
+        foreach (array_keys(self::$countryCodes) as $code) {
+            if (str_starts_with($cleanedPhone, $code)) {
+                $countryCode = $code;
+                break;
             }
         }
 
-        // If no country code is found, return null or handle as invalid.
-        return null;
+        if (!$countryCode) {
+            return false;
+        }
+
+
+
+        return match ($countryCode) {
+            '92' => preg_match('/^92[0-9]{10}$/', $cleanedPhone) === 1,  // Pakistan: 92XXXXXXXXXX (12 digits)
+            '44' => preg_match('/^44[0-9]{10}$/', $cleanedPhone) === 1,  // UK: 44XXXXXXXXXX (12 digits)
+            '1'  => preg_match('/^1[0-9]{10}$/', $cleanedPhone) === 1,   // US: 1XXXXXXXXXX (11 digits)
+            default => false
+        };
+    }
+
+    public static function convertToE164Format($phone, $countryCode)
+    {
+        if (!$phone) {
+            throw new \InvalidArgumentException('Phone number cannot be null or empty.');
+        }
+
+        $cleanedPhone = preg_replace('/\D+/', '', $phone);
+
+        // If it starts with 0, remove it
+        if (strpos($cleanedPhone, '0') === 0) {
+            $cleanedPhone = substr($cleanedPhone, 1);
+        }
+
+        // If it already starts with the country code, remove it
+        if (strpos($cleanedPhone, $countryCode) === 0) {
+            $cleanedPhone = substr($cleanedPhone, strlen($countryCode));
+        }
+
+        return "+" . $countryCode . $cleanedPhone;
     }
 }

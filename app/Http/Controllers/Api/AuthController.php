@@ -16,6 +16,8 @@ use App\Http\Requests\Api\ResetRequest;
 use App\Http\Requests\Api\SigninRequest;
 use App\Http\Requests\Api\SignupRequest;
 use App\Mail\Api\Verification;
+use App\Utils\Phone;
+use Illuminate\Support\Facades\Cache;
 
 class AuthController extends Controller
 {
@@ -26,14 +28,22 @@ class AuthController extends Controller
      */
     public function signup(SignupRequest $request): JsonResponse
     {
+        // Check if otp verified
+        if(Cache::get('user_verified_number_' . $request->phone) !== true){
+            return $this->errorResponse('Phone number not verified', 401);
+        }
+
         $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
-            'phone'    => $request->phone,
+            'phone'    => Phone::convertToE164Format($request->phone, $request->country_code),
             'password' => Hash::make($request->password),
         ]);
 
         $this->generateAndSendToken($user, 'verify', env('NEXT_URL'));
+
+        // remove the verification cache
+        Cache::forget('user_verified_number_' . $request->phone);
 
         return $this->successResponse('User created', compact('user'), 201);
     }

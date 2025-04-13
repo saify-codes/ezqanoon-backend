@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Lawyer;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\TwilioService;
@@ -15,11 +15,13 @@ class OTPController extends Controller
 {
     use ApiResponseTrait;
 
-    public function __construct(public TwilioService $twilioService) {
+    public function __construct(public TwilioService  $twilioService) {
+    
     }
 
     public function sendOTP(Request $request)
     {
+        
         $request->validate([
             'phone' => [
                 'required',
@@ -34,9 +36,9 @@ class OTPController extends Controller
 
         $otp = $this->generateOTP();
 
-        Cache::put('lawyer_otp_' . $request->phone, $otp, now()->addMinutes(5));
+        Cache::put('user_otp_' . $request->phone, $otp, now()->addMinutes(5));
 
-        Log::info('Lawyer OTP generated: ' . $otp);
+        Log::info('User OTP generated: ' . $otp);
 
         $message = "Your OTP is: $otp. It is valid for 5 minutes.";
         $this->twilioService->sendSMS(Phone::convertToE164Format($request->phone, $request->country_code), $message);
@@ -51,18 +53,19 @@ class OTPController extends Controller
             'phone' => 'required'
         ]);
 
-        $otp = Cache::get('lawyer_otp_' . $request->phone);
+        $otp = Cache::get('user_otp_' . $request->phone);
 
         if (!$otp) {
-            return $this->errorResponse('OTP expired', 400);
+            return $this->errorResponse('OTP expired or invalid', 400);
         }
 
+        // Verify both OTP and phone number match
         if ($otp == $request->otp) {
-            Cache::put('lawyer_verified_number_' . $request->phone, true);
-            return $this->successResponse('OTP verified successfully!');
+            Cache::put('user_verified_number_' . $request->phone, true);
+            return response()->json(['message' => 'OTP verified successfully!']);
         }
 
-        return $this->errorResponse('Invalid OTP', 400);
+        return $this->errorResponse('Invalid OTP or phone number', 400);
     }
 
     private function generateOTP()

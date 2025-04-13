@@ -4,22 +4,11 @@
             <div class="col-md-8 col-xl-4 mx-auto">
                 <div class="card">
                     <div class="auth-form-wrapper px-4 py-5">
-                        <a href="{{ url('/') }}"
-                            class="noble-ui-logo d-block mb-2">EzQanoon</a>
+                        <a href="{{ url('/') }}" class="noble-ui-logo d-block mb-2">EzQanoon</a>
                         <h5 class="text-muted fw-normal mb-4">Welcome back! Log in to your account.</h5>
 
                         <!-- Display Error Messages -->
-                        @if (session('error'))
-                            <div class="alert alert-danger">
-                                {!! session('error') !!}
-                            </div>
-                        @endif
-
-                        @if (session('success'))
-                            <div class="alert alert-success">
-                                {{ session('success') }}
-                            </div>
-                        @endif
+                        <div id="ajax-errors" class="alert alert-danger d-none"></div>
 
                         <ul class="nav nav-pills nav-fill mb-4">
                             <li class="nav-item bg-light">
@@ -30,161 +19,238 @@
                             </li>
                         </ul>
 
-                        <!-- Login Form -->
-                        <form action="{{ route('lawyer.signup') }}" method="POST">
+                        <!-- Signup Form -->
+                        <form id="signup-form">
                             @csrf
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name</label>
                                 <input type="name" class="form-control" id="name" name="name"
                                     placeholder="name" value="{{ old('name') }}" required>
-                                @error('name')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
+                                <small id="name-error" class="text-danger"></small>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="gender" class="form-label">Gender</label>
                                 <select class="form-select" name="gender" id="gender" required>
-                                    <option value="male"   {{ old('gender') == 'MALE' ? 'selected' : '' }}>Male</option>
-                                    <option value="female" {{ old('gender') == 'FEMALE' ? 'selected' : '' }}>Female</option>
-                                    <option value="other"  {{ old('gender') == 'OTHER' ? 'selected' : '' }}>Other</option>
+                                    <option value="male" {{ old('gender') == 'MALE' ? 'selected' : '' }}>Male</option>
+                                    <option value="female" {{ old('gender') == 'FEMALE' ? 'selected' : '' }}>Female
+                                    </option>
+                                    <option value="other" {{ old('gender') == 'OTHER' ? 'selected' : '' }}>Other
+                                    </option>
                                 </select>
-                                @error('gender')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
+                                <small id="gender-error" class="text-danger"></small>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" class="form-control" id="email" name="email"
                                     placeholder="email" value="{{ old('email') }}" required>
-                                @error('email')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
+                                <small id="email-error" class="text-danger"></small>
                             </div>
 
                             <div class="mb-3">
                                 <label for="phone" class="form-label">Phone</label>
                                 <div class="input-group">
-                                    <input type="phone" class="form-control" id="phone" name="phone"
-                                        placeholder="phone" value="{{ old('phone') }}" required>
+                                    <input type="tel" class="form-control" id="phone" name="phone"
+                                        placeholder="Phone" value="{{ old('phone') }}" required
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                     <button type="button" class="btn btn-primary" id="send-otp-btn">send otp</button>
                                 </div>
-                                @error('phone')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror 
+                                <small id="phone-error" class="text-danger"></small>
                             </div>
-                            
+
                             <div class="mb-3 d-none" id="otp-section">
                                 <label for="otp" class="form-label">Verify otp</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="otp" placeholder="enter otp" maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <input type="text" class="form-control" id="otp" placeholder="enter otp"
+                                        maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                     <button type="button" class="btn btn-primary" id="verify-otp-btn">verify otp</button>
                                 </div>
                                 <small id="otp-message" class="text-danger"></small>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" autocomplete="current-password" placeholder="Password" required>
-                                @error('password')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
+                                <input type="password" class="form-control" id="password" name="password"
+                                    autocomplete="current-password" placeholder="Password" required>
+                                <small id="password-error" class="text-danger"></small>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="password_confirmation" class="form-label">Confirm Password</label>
-                                <input type="password" class="form-control" id="password_confirmation" placeholder="Confirm password" name="password_confirmation" required>
-                                @error('password_confirmation')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
+                                <input type="password" class="form-control" id="password_confirmation"
+                                    placeholder="Confirm password" name="password_confirmation" required>
+                                <small id="password_confirmation-error" class="text-danger"></small>
                             </div>
 
                             <div>
                                 <button type="submit" class="btn btn-primary w-100 me-2 mb-2 mb-md-0">Create account</button>
                             </div>
-
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    @push('style')
+        <style>
+            .iti{
+                flex-grow: 1;
+            }
+        </style>
+    @endpush
+
+    @push('plugin-styles')
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
+        <link href="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" />
+    @endpush
+
+    @push('plugin-scripts')
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+        <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+    @endpush
+
     @push('custom-scripts')
-        <script>
+    <script>
         $(document).ready(function() {
             let isPhoneVerified = false;
-            
-            $('#send-otp-btn').click(function() {
-                const phone = $('#phone').val();
+            let canResendOtp = false;
+            let countdownInterval;
+
+            // Initialize phone input
+            const iti = intlTelInput(document.querySelector("#phone"), {
+                onlyCountries: ["pk", "us", "gb"],
+                separateDialCode: true,
+                initialCountry: "pk",
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+            });
+
+            function startCountdown() {
+                let timeLeft = 60;
+                canResendOtp = false;
                 
-                if (!phone) {
-                    alert('Please enter phone number');
+                $('#send-otp-btn').prop('disabled', true).html(`Resend OTP in ${timeLeft}s`);
+                clearInterval(countdownInterval);
+                
+                countdownInterval = setInterval(() => {
+                    timeLeft--;
+                    if (timeLeft <= 0) {
+                        clearInterval(countdownInterval);
+                        canResendOtp = true;
+                        $('#send-otp-btn').prop('disabled', false).html('Resend OTP');
+                    } else {
+                        $('#send-otp-btn').html(`Resend OTP in ${timeLeft}s`);
+                    }
+                }, 1000);
+            }
+
+            async function handleOtpOperation(operation) {
+                if (operation === 'resend' && !canResendOtp) return;
+
+                const phone = iti.getNumber();
+                if (!iti.isValidNumber()) {
+                    Swal.fire('Error', 'Please enter a valid phone number', 'error');
                     return;
                 }
+
+                const $btn = operation === 'verify' ? $('#verify-otp-btn') : $('#send-otp-btn');
+                const otp  = operation === 'verify' ? $('#otp').val() : null;
                 
-                $.ajax({
-                    url: '{{ route("lawyer.otp.send") }}',
-                    type: 'POST',
-                    data: {
-                        phone: phone,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    beforeSend: () => {
-                        $('#send-otp-btn').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
-                    },
-                    complete: () => {
-                        $('#send-otp-btn').html('send otp');
-                    },
-                    success: (response) => {
-                        $('#send-otp-btn').prop('disabled', true);
+                if (operation === 'verify' && !otp) {
+                    Swal.fire('Error', 'Please enter OTP', 'error');
+                    return;
+                }
+
+                try {
+
+                    const verifyURL = "{{route('lawyer.otp.verify')}}"
+                    const sendURL   = "{{route('lawyer.otp.send')}}"
+                    
+                    await $.ajax({
+                        url: operation === 'verify' ?  verifyURL : sendURL,
+                        type: 'POST',
+                        data: {
+                            phone,
+                            country_code: iti.getSelectedCountryData().dialCode,
+                            otp,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        beforeSend: ()=>{
+                            $btn.html('<span class="spinner-border spinner-border-sm"></span>').prop('disabled', true);
+                        },
+                        complete: () => {
+                            $btn.prop('disabled', false).html(operation === 'verify' ? 'Verify OTP' : 'Send OTP');
+                        }
+                    });
+
+                    if (operation === 'verify') {
+                        isPhoneVerified = true;
+                        Swal.fire({
+                            title: 'Success',
+                            text: 'Phone number verified successfully',
+                            icon: 'success',
+                            timer: 1500
+                        });
+                        $('#otp-section').addClass('d-none');
+                        $('#phone').prop('readonly', true);
+                        $('#send-otp-btn').prop('disabled', true).html('Verified ✓');
+                        clearInterval(countdownInterval);
+                    } else {
                         $('#phone').prop('readonly', true);
                         $('#otp-section').removeClass('d-none').find('#otp').prop('required', true);
-                    },
-                    error: (xhr, status, error) => {
-                        alert(xhr.responseJSO03122030440N.message || 'Something went wrong!');
+                        startCountdown();
                     }
-                });
-            });
-    
-            // Verify OTP button click handler
-            $('#verify-otp-btn').click(function() {
-                const otp = $('#otp').val();
-                const phone = $('#phone').val();
-                
-                if (!otp) {
-                    alert('Please enter otp');
+                } catch (error) {
+                    Swal.fire('Error', error.responseJSON?.message || 'Operation failed', 'error');
+                }
+            }
+
+            // Event Handlers
+            $('#send-otp-btn').click(() => 
+                handleOtpOperation($('#send-otp-btn').html().includes('Resend') ? 'resend' : 'send')
+            );
+            
+            $('#verify-otp-btn').click(() => handleOtpOperation('verify'));
+
+            $('#signup-form').submit(function(e) {
+                e.preventDefault();
+                $('.text-danger').text('');
+                $('#ajax-errors').addClass('d-none').text('');
+
+                if (!isPhoneVerified) {
+                    $('#ajax-errors').removeClass('d-none').text('Please verify your phone number first');
                     return;
                 }
-    
+
+                const formData = new FormData(this);
+                formData.set('phone', iti.getNumber());
+                formData.set('country_code', iti.getSelectedCountryData().dialCode);
+                
+                const $submitBtn = $(this).find('button[type="submit"]');
+                
                 $.ajax({
-                    url: '{{ route("lawyer.otp.verify") }}',
+                    url: '{{ route('lawyer.signup') }}',
                     type: 'POST',
-                    datatype: 'json',
-                    data: {
-                        phone: phone,
-                        otp: otp,
-                        _token: '{{ csrf_token() }}'
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    beforeSend: () => {
+                        $submitBtn.html('<span class="spinner-border spinner-border-sm"></span>').prop('disabled', true);
                     },
-                    success: function(response) {                        
-                        isPhoneVerified = true;
-                        $('#otp-message').removeClass('text-danger').addClass('text-success').text('otp verified');
-                        $('#phone').prop('readonly', true);
+                    success: () => window.location.href = '{{ route("lawyer.signin") }}',
+                    error: (xhr) => {
+                        Object.entries(xhr.responseJSON.errors || {}).forEach(([field, message]) => {
+                            $(`#${field}-error`).text(message);
+                        });
                     },
-                    error: function(xhr, status, error) {
-                        $('#otp-message').text(xhr.responseJSON.message || 'Something went wrong!');
+                    complete: () => {
+                        $submitBtn.html('Create account').prop('disabled', false);
+                        clearInterval(countdownInterval);
                     }
                 });
             });
-    
-            $('form').submit(function(e) {
-                if (!isPhoneVerified) {
-                    e.preventDefault();
-                    alert('Please verify your phone number first');
-                }
-            });
         });
-        </script>
+    </script>
     @endpush
 </x-lawyer.guest>
-

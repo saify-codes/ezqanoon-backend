@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Lawyer;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class SignupRequest extends FormRequest
 {
@@ -50,6 +52,15 @@ class SignupRequest extends FormRequest
             'phone.max'         => 'Phone number cannot exceed 20 characters',
             'phone.phone'       => 'Phone number is invalid',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'success' => false,
+            'message' => 'Validation errors',
+            'errors' => $validator->errors()
+        ], 400));
     }
 
 }

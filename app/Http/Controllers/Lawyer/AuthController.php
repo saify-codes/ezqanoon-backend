@@ -15,7 +15,9 @@ use App\Http\Requests\Lawyer\ResetRequest;
 use App\Http\Requests\Lawyer\SigninRequest;
 use App\Http\Requests\Lawyer\SignupRequest;
 use App\Mail\Lawyer\Verification;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\URL;
 
 class AuthController extends Controller
@@ -26,14 +28,13 @@ class AuthController extends Controller
      * Handle lawyer signup
      */
     public function signup(SignupRequest $request)
-    {
-        
-        if (!session()->has('otp_verified')) {
-            return redirect()->route('lawyer.signup')->with('error','Please verify your phone number first');
+    {       
+
+        // Check if OTP verification is done
+        if(Cache::get('lawyer_verified_number_' . $request->phone) !== true) {
+            return $this->errorResponse('Phone number not verified');
         }
-        
-        dd($request->all());
-        
+                
         $lawyer = Lawyer::create([
             'name'     => $request->name,
             'email'    => $request->email,
@@ -43,7 +44,9 @@ class AuthController extends Controller
 
         $this->sendEmailVerificationLink($lawyer);
 
-        return redirect()->route('lawyer.signin')->with('success',"We have sent a verification mail to <strong class='text-decoration-underline'>$lawyer->email</strong>");
+        Session::flash('success',"We have sent a verification mail to <strong class='text-decoration-underline'>$lawyer->email</strong>");
+
+        return $this->successResponse('account created');
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Utils\PhoneFormatter;
+use App\Utils\Phone;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -73,7 +73,7 @@ class User extends Authenticatable
      */
     public function getPhoneAttribute($value): ?string
     {
-        return PhoneFormatter::convertToLocalFormat($value);
+        return Phone::convertToLocalFormat($value);
     }
 
     /**
@@ -83,7 +83,7 @@ class User extends Authenticatable
      */
     public function setPhoneAttribute($value)
     {
-        $this->attributes['phone'] = PhoneFormatter::convertToInternationalFormat($value);
+        $this->attributes['phone'] = Phone::convertToInternationalFormat($value);
     }
 
    
