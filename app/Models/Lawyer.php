@@ -91,6 +91,18 @@ class Lawyer extends Authenticatable
         return $this->hasMany(self::class, 'lawyer_id')->where('role', 'USER');
     }
 
+    public function clients(){
+        return $this->hasMany(Client::class, 'lawyer_id');
+    }
+
+    public function appointments(){
+        return $this->hasMany(Appointment::class, 'lawyer_id');
+    }
+    
+    public function cases(){
+        return $this->hasMany(Cases::class, 'lawyer_id');
+    }
+
     /**
      * Accessor: get avatar absolute url.
      *

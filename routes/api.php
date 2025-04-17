@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\LawyerController;
 use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -42,3 +43,6 @@ Route::get('/lawyer/{id}/reviews', [LawyerController::class, 'getReviews']);
 
 
 
+Route::any('/foo', function(){
+    return Session::id();
+})->middleware('web');

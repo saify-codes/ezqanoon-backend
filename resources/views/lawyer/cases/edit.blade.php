@@ -83,7 +83,7 @@
                     <div class="col-md-6">
                         <label for="under_acts" class="form-label">Under Acts</label>
                         <input type="text" class="form-control" id="under_acts" name="under_acts"
-                            value="{{ old('under_acts', $case->under_acts) }}" placeholder="e.g. CPC, IPC">
+                            value="{{ old('under_acts', $case->under_acts) }}" placeholder="e.g. PPC, CRPC">
                     </div>
                     <div class="col-md-6">
                         <label for="under_sections" class="form-label">Under Sections</label>

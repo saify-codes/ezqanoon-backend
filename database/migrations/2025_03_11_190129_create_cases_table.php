@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('lawyer_id');
             $table->string('name');
             $table->string('type');
-            $table->enum('urgency', ['HIGH', 'MEDIUM', 'CRITICAL'])->nullable(); 
+            $table->enum('urgency', ['URGENT', 'HIGH', 'MEDIUM', 'LOW'])->nullable(); 
             $table->string('court_name');
             $table->string('court_case_number');
             $table->string('judge_name')->nullable();

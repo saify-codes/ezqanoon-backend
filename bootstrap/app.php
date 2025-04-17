@@ -22,6 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'lawyer.has_subscription'   => SubscriptionMiddleware::class,
             'lawyer.no_subscription'    => NoSubscriptionMiddleware::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            '/api/foo' // <-- exclude this route
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
