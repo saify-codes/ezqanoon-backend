@@ -1,6 +1,6 @@
 <x-lawyer.app>
     <div>
-        <a href="{{ route('lawyer.team.index') }}" class="btn btn-dark btn-icon-text mb-3">
+        <a href="{{ route('lawyer.task.index') }}" class="btn btn-dark btn-icon-text mb-3">
             <i class="btn-icon-prepend" data-feather="list"></i>
             List
         </a>
@@ -20,66 +20,49 @@
 
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title mb-4">Create user</h4>
+            <h4 class="card-title mb-4">Create task</h4>
 
             <!-- The form -->
-            <form action="{{ route('lawyer.team.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('lawyer.task.store') }}" method="POST">
                 @csrf
 
-                <!-- Personal info -->
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" placeholder="e.g. Musaafa" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="phone" class="form-label">Phone <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone') }}" placeholder="e.g. +923487161543" required>
-                    </div>
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+                    <input class="form-control" type="text" id="name" name="name" placeholder="e.g. My task" value="{{old('name')}}" required>
                 </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="email" name="email" value="{{ old('email') }}" placeholder="e.g. test@gmail.com" required>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <input type="password" class="form-control" id="password" name="password" placeholder="•••••••••••••••" required>
-                            <button class="btn btn-xs btn-outline-secondary" type="button" id="togglePassword" tabindex="-1"><i data-feather="eye"></i></button>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="password_confirmation" class="form-label">Confirm Password <span class="text-danger">*</span></label>
-                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="•••••••••••••••" required>
-                    </div>
+                
+                <div class="mb-3">
+                    <label for="start_date" class="form-label">Start date <span class="text-danger">*</span></label>
+                    <input class="form-control" type="date" id="start_date" value="{{old('start_date')}}" name="start_date" required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="permissions" class="form-label">Permissions</label>
-                    <select class="form-select" id="permissions" name="permissions[]" multiple>
-                        @foreach (getPermissionsList() as $key => $permission)
-                            @if (is_array($permission)) 
-                                <optgroup label="{{ $key }}">
-                                    @foreach ($permission as $key => $permission)
-                                        <option value="{{ $key }}" {{ in_array($key, old('permissions', $user->permissions ?? [])) ? 'selected' : '' }}>
-                                            {{ $permission }}
-                                        </option>
-                                    @endforeach
-                                </optgroup>
-                            @else
-                                <option value="{{ $key }}"{{ in_array($key, old('permissions', $user->permissions ?? [])) ? 'selected' : '' }}>
-                                    {{ $permission }}
-                                </option>  
-                            @endif
+                    <label for="end_date" class="form-label">Deadline <span class="text-danger">*</span></label>
+                    <input class="form-control" type="date" id="end_date" value="{{old('end_date')}}" name="end_date" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                    <select class="form-select" id="status" name="status" required>
+                        <option value="PENDING"     {{ old('status') === 'PENDING'      ? 'selected' : '' }}>PENDING</option>
+                        <option value="IN PROGRESS" {{ old('status') === 'IN PROGRESS'  ? 'selected' : '' }}>IN PROGRESS</option>
+                        <option value="COMPLETED"   {{ old('status') === 'COMPLETED'    ? 'selected' : '' }}>COMPLETED</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="assign_to" class="form-label">Assing to</label>
+                    <select class="form-select" id="assign_to" name="assign_to">
+                        <option value="">select member</option>
+                        @foreach ($team as $member)
+                            <option value="{{$member->id}}">{{$member->name}} ({{$member->email}})</option>
                         @endforeach
                     </select>
                 </div>
 
                 <!-- Submit button (with an ID for enabling/disabling) -->
                 <button type="submit" class="btn btn-primary" id="submitBtn">
-                    Add User
+                    Create task
                 </button>
             </form>
         </div>
@@ -96,16 +79,7 @@
     @push('custom-scripts')
         <script>
             $(document).ready(function() {
-                $('#permissions').select2();
-
-                $('#togglePassword').on('click', function() {
-                    const $password = $('#password');
-                    const type      = $password.attr('type') === 'password' ? 'text' : 'password';
-                    
-                    $password.attr('type', type);
-                    $(this).html(type === 'password' ? '<i data-feather="eye"></i>' : '<i data-feather="eye-off"></i>');
-                    feather.replace();
-                });
+                $('#assign_to').select2()
             });
         </script>
     @endpush

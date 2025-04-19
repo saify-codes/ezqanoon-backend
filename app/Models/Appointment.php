@@ -21,6 +21,10 @@ class Appointment extends Model
         return $this->hasOne(User::class, 'id', 'user_id');
     }
 
+    public function notes(){
+        $this->hasMany(AppointmentNote::class);
+    }
+
     public function getCreatedAtAttribute($createdAt)
     {
         return Carbon::parse($createdAt)->format('Y-m-d h:i:s A');

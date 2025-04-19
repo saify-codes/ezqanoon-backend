@@ -23,7 +23,7 @@
             <h4 class="card-title mb-4">Edit Case</h4>
 
             <!-- The form -->
-            <form action="{{ route('lawyer.cases.update', $case->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('lawyer.cases.update', $case->id) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <!-- Case Name & Type -->
@@ -35,8 +35,12 @@
                     </div>
                     <div class="col-md-6">
                         <label for="type" class="form-label">Case Type <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="type" name="type"
-                            value="{{ old('type', $case->type) }}" placeholder="e.g. Criminal, Civil" required>
+                        <select class="form-select" id="type" name="type" required>
+                            <option value="">-- Select Case type --</option>
+                            <option value="CRIMINAL" {{ old('type', $case->type) === 'CRIMINAL' ? 'selected' : '' }}>CRIMINAL</option>
+                            <option value="CIVIL"    {{ old('type', $case->type) === 'CIVIL'    ? 'selected' : '' }}>CIVIL</option>
+                            <option value="OTHERs"   {{ old('type', $case->type) === 'OTHERS'   ? 'selected' : '' }}>OTHERS</option>
+                        </select>
                     </div>
                 </div>
 
@@ -46,12 +50,10 @@
                         <label for="urgency" class="form-label">Urgency</label>
                         <select class="form-select" id="urgency" name="urgency">
                             <option value="">-- Select Urgency --</option>
-                            <option value="HIGH" {{ old('urgency', $case->urgency) === 'HIGH' ? 'selected' : '' }}>
-                                HIGH</option>
-                            <option value="MEDIUM" {{ old('urgency', $case->urgency) === 'MEDIUM' ? 'selected' : '' }}>
-                                MEDIUM</option>
-                            <option value="CRITICAL"
-                                {{ old('urgency', $case->urgency) === 'CRITICAL' ? 'selected' : '' }}>CRITICAL</option>
+                            <option value="HIGH"        {{ old('urgency', $case->urgency) === 'HIGH' ? 'selected' : '' }}>HIGH</option>
+                            <option value="MEDIUM"      {{ old('urgency', $case->urgency) === 'MEDIUM' ? 'selected' : '' }}>MEDIUM</option>
+                            <option value="LOW"         {{ old('urgency', $case->urgency) === 'LOW' ? 'selected' : '' }}>LOW</option>
+                            <option value="URGENT"      {{ old('urgency', $case->urgency) === 'URGENT' ? 'selected' : '' }}>URGENT</option>
                         </select>
                     </div>
                     <div class="col-md-6">
@@ -141,39 +143,50 @@
                         placeholder="Describe the case in detail">{{ old('case_information', $case->case_information) }}</textarea>
                 </div>
 
-                
-                <!-- Deadlines -->
+                <!-- Filing -->
                 <div class="mb-3">
-                    <label for="deadlines" class="form-label">Deadlines</label>
-                    <div id="deadlines-container">
+                    <label for="filing" class="form-label">Filing date</label>
+                    <div id="filing-container">
                         @php
-                            $deadlines = old('deadline', $case->deadlines) ?? [];
+                            $fillings = old('filling', $case->fillings) ?? [];
                         @endphp
 
-                        @foreach ($deadlines as $index => $deadline)
-                            <div class="deadline-row d-flex gap-4 mb-3">
-                                <input type="text" class="form-control deadline-description"
-                                    name="deadlines[{{ $index }}][description]"
-                                    placeholder="Deadline description"
-                                    value="{{ old("deadlines.$index.description", $deadline['description'] ?? '') }}"
-                                    required>
-                                <input type="date" class="form-control deadline-date"
-                                    name="deadlines[{{ $index }}][date]"
-                                    value="{{ old("deadlines.$index.date", $deadline['date'] ?? '') }}" required>
-                                <button type="button" class="btn btn-sm btn-danger remove-deadline">
-                                    <i data-feather="trash"></i>
-                                </button>
+                        @foreach ($fillings as $index => $filling)
+                            <div class="filling-row d-flex gap-4 mb-3">
+                                <input type="text" name="fillings[{{ $index }}][description]" class="form-control filling-description" maxlength="255" placeholder="Filling description" value="{{ old("fillings.$index.description", $filling['description'] ?? '') }}" required>
+                                <input type="date" name="fillings[{{$index}}][date]" class="form-control filling-date" value="{{ old("fillings.$index.date", $filling['date'] ?? '') }}" required>
+                                <button type="button" class="btn btn-sm btn-danger remove-filling"><i data-feather="minus"></i></button>
                             </div>
                         @endforeach
-                        <div class="deadline-row d-flex gap-4 mb-3">
-                            <input type="text" class="form-control deadline-description"
-                                placeholder="Deadline description">
-                            <input type="date" class="form-control deadline-date">
-                            <button type="button" class="btn btn-sm btn-success add-deadline">
-                                <i data-feather="plus"></i>
-                            </button>
+                        <div class="filling-row d-flex gap-4 mb-3">
+                            <input type="text" class="form-control filling-description" maxlength="255" placeholder="Filling description">
+                            <input type="date" class="form-control filling-date">
+                            <button type="button" class="btn btn-sm btn-success add-filling"><i data-feather="plus"></i></button>
                         </div>
+                        
+                    </div>
+                </div>
+                
+                <!-- Hearings -->
+                <div class="mb-3">
+                    <label for="hearing" class="form-label">Hearing date</label>
+                    <div id="hearing-container">
+                        @php
+                            $hearings = old('filling', $case->hearings) ?? [];
+                        @endphp
 
+                        @foreach ($hearings as $index => $hearing)
+                            <div class="filling-row d-flex gap-4 mb-3">
+                                <input type="text" name="hearings[{{ $index }}][description]" class="form-control filling-description" maxlength="255" placeholder="Filling description" value="{{ old("hearings.$index.description", $hearing['description'] ?? '') }}" required>
+                                <input type="date" name="hearings[{{$index}}][date]" class="form-control filling-date" value="{{ old("hearings.$index.date", $hearing['date'] ?? '') }}" required>
+                                <button type="button" class="btn btn-sm btn-danger remove-hearing"><i data-feather="minus"></i></button>
+                            </div>
+                        @endforeach
+                        <div class="hearing-row d-flex gap-4 mb-3">
+                            <input type="text" class="form-control hearing-description" maxlength="255" placeholder="Hearing description">
+                            <input type="date" class="form-control hearing-date">
+                            <button type="button" class="btn btn-sm btn-success add-hearing"><i data-feather="plus"></i></button>
+                        </div>
                     </div>
                 </div>
 
@@ -220,7 +233,7 @@
                     <div id="aerodrop" class="aerodrop mb-3"></div>
                     <!-- Note for users -->
                     <small class="text-muted d-block mt-1">
-                        - Maximum <strong>10 files</strong> allowed.<br>
+                        - Maximum <strong>20 files</strong> allowed.<br>
                         - Allowed file types: <strong>PNG, JPG, WEBP, PDF, DOC, DOCX</strong>.<br>
                         - <strong>Images</strong> must not exceed <strong>2MB</strong> each.<br>
                         - <strong>Documents/PDFs</strong> must not exceed <strong>10MB</strong> each.
@@ -248,29 +261,78 @@
         <script>
             $(document).ready(function() {
 
-                $(document).on('click', '.add-deadline', function() {
-                    const index = $('#deadlines-container .deadline-date').length - 1;
-                    const $row = $(this).closest('.deadline-row');
-                    $row.find('.deadline-description, .deadline-date').prop('required', true);
-                    $row.find('.deadline-description').attr('name', 'deadlines[' + index + '][description]');
-                    $row.find('.deadline-date').attr('name', 'deadlines[' + index + '][date]');
+                // Dynamic Filing rows
+                $(document).on('click', '.add-filling', function() {
+                    // compute the index for the new “filled” row
+                    const index = $('#filing-container .filling-date').length - 1;
+                    const $row = $(this).closest('.filling-row');
+
+                    // mark current inputs required and give them names
+                    $row.find('.filling-description, .filling-date')
+                        .prop('required', true);
+                    $row.find('.filling-description')
+                        .attr('name', `fillings[${index}][description]`);
+                    $row.find('.filling-date')
+                        .attr('name', `fillings[${index}][date]`);
+
+                    // switch the “add” button into a “remove” button
                     $(this)
-                        .removeClass('btn-success add-deadline')
-                        .addClass('btn-danger remove-deadline')
-                        .html('<i data-feather="trash"></i>');
-                    $('#deadlines-container').append(`
-                        <div class="deadline-row d-flex gap-4 mb-3">
-                            <input type="text" class="form-control deadline-description" placeholder="Deadline description">
-                            <input type="date" class="form-control deadline-date">
-                            <button type="button" class="btn btn-sm btn-success add-deadline">
-                                <i data-feather="plus"></i>
-                            </button>
-                        </div>
+                    .removeClass('btn-success add-filling')
+                    .addClass('btn-danger remove-filling')
+                    .html('<i data-feather="trash"></i>');
+
+                    // append a fresh blank row
+                    $('#filing-container').append(`
+                    <div class="filling-row d-flex gap-4 mb-3">
+                        <input type="text" class="form-control filling-description" placeholder="Filing description">
+                        <input type="date" class="form-control filling-date">
+                        <button type="button" class="btn btn-sm btn-success add-filling">
+                        <i data-feather="plus"></i>
+                        </button>
+                    </div>
                     `);
+
+                    // re-render Feather icons
+                    feather.replace();
                 });
 
-                $(document).on('click', '.remove-deadline', function() {
-                    $(this).closest('.deadline-row').remove();
+                $(document).on('click', '.remove-filling', function() {
+                    $(this).closest('.filling-row').remove();
+                });
+
+
+                // Dynamic Hearing rows
+                $(document).on('click', '.add-hearing', function() {
+                    const index = $('#hearing-container .hearing-date').length - 1;
+                    const $row = $(this).closest('.hearing-row');
+
+                    $row.find('.hearing-description, .hearing-date')
+                        .prop('required', true);
+                    $row.find('.hearing-description')
+                        .attr('name', `hearings[${index}][description]`);
+                    $row.find('.hearing-date')
+                        .attr('name', `hearings[${index}][date]`);
+
+                    $(this)
+                    .removeClass('btn-success add-hearing')
+                    .addClass('btn-danger remove-hearing')
+                    .html('<i data-feather="trash"></i>');
+
+                    $('#hearing-container').append(`
+                    <div class="hearing-row d-flex gap-4 mb-3">
+                        <input type="text" class="form-control hearing-description" placeholder="Hearing description">
+                        <input type="date" class="form-control hearing-date">
+                        <button type="button" class="btn btn-sm btn-success add-hearing">
+                        <i data-feather="plus"></i>
+                        </button>
+                    </div>
+                    `);
+
+                    feather.replace();
+                });
+
+                $(document).on('click', '.remove-hearing', function() {
+                    $(this).closest('.hearing-row').remove();
                 });
 
                 const editorConfig = {
@@ -281,7 +343,7 @@
                 ClassicEditor
                     .create(document.querySelector('#your-party-details-editor'), editorConfig)
                     .then(editor => {
-                        editor.ui.view.editable.element.style.minHeight = '300px';
+                        editor.ui.view.editable.element.style.minHeight = '100px';
                     })
                     .catch(error => {
                         console.error(error);
@@ -291,7 +353,7 @@
                 ClassicEditor
                     .create(document.querySelector('#opposite-party-details-editor'), editorConfig)
                     .then(editor => {
-                        editor.ui.view.editable.element.style.minHeight = '300px';
+                        editor.ui.view.editable.element.style.minHeight = '100px';
                     })
                     .catch(error => {
                         console.error(error);
@@ -301,7 +363,7 @@
                 ClassicEditor
                     .create(document.querySelector('#opposite-party-advocate-details-editor'), editorConfig)
                     .then(editor => {
-                        editor.ui.view.editable.element.style.minHeight = '300px';
+                        editor.ui.view.editable.element.style.minHeight = '100px';
                     })
                     .catch(error => {
                         console.error(error);
@@ -311,7 +373,7 @@
                 ClassicEditor
                     .create(document.querySelector('#case-information-editor'), editorConfig)
                     .then(editor => {
-                        editor.ui.view.editable.element.style.minHeight = '300px';
+                        editor.ui.view.editable.element.style.minHeight = '100px';
                     })
                     .catch(error => {
                         console.error(error);
@@ -322,7 +384,7 @@
                     name: 'attachments',
                     uploadURL: '/upload',
                     enableCamera: true,
-                    maxFiles: 10,
+                    maxFiles: 20,
                     allowedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
                     fileSizeRules: [{
                             types: ['image/jpeg', 'image/png', 'image/webp'],
@@ -350,11 +412,6 @@
                     console.error("Upload error:", error);
                 };
 
-            });
-
-            // Re-render icons on DOM change
-            new MutationObserver(() => feather.replace()).observe(document.getElementById('deadlines-container'), {
-                childList: true
             });
 
             // Disable form untill all pending upload processed

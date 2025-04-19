@@ -38,6 +38,7 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Phone</th>
+                            <th>Country</th>
                             <th>Date</th>
                             <th>Action</th>
                         </tr>
@@ -80,12 +81,21 @@
                         orderable:false,
                     },
                     {
+                        data: 'country',
+                        orderable:false,
+                    },
+                    {
                         data: 'created_at',
                     },
                     {
                         sortable: false,
                         data: (data) => {
-                            return `<button class="btn btn-inverse-secondary btn-icon" onclick='viewCase(${JSON.stringify(data)})'><i data-feather="eye"></i></button>`;
+                            return `
+                                <div>
+                                    <button class="btn btn-inverse-secondary btn-icon" onclick='viewCase(${JSON.stringify(data)})'><i data-feather="eye"></i></button>
+                                    <button class="btn btn-inverse-success btn-icon" onclick='viewCase(${data})'><i data-feather="edit"></i></button>
+                                </div>
+                            `;
                         },
                     },
 

@@ -3,17 +3,54 @@
 namespace App\Http\Controllers\Lawyer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Task;
+use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
+    use ApiResponseTrait;
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (request()->ajax()) {
-           
+        if ($request->ajax()) {
+
+            // DataTables columns to map for ordering:
+            $columns            = ['id', 'name', 'start_date', 'end_date', 'status', 'assign_to', 'created_at'];
+            $draw               = $request->input('draw');
+            $start              = $request->input('start');        // skip
+            $length             = $request->input('length');       // rows per page
+            $searchValue        = $request->input('search.value');  // global search box
+            $orderColumnIndex   = $request->input('order.0.column'); // which column index is being sorted
+            $orderDirection     = $request->input('order.0.dir');    // asc or desc
+
+            $query              = Task::with(['member:id,name,email,phone'])->where('lawyer_id', getLawyerId());
+            $totalRecords       = $query->count();
+
+            if (!empty($searchValue)) {
+                $query->where('name', 'like', "%{$searchValue}%")
+                      ->orWhere('status', 'like', "%{$searchValue}%");
+            }
+
+            $totalRecordsFiltered = $query->count();
+
+            if (isset($columns[$orderColumnIndex])) {
+                $query->orderBy($columns[$orderColumnIndex], $orderDirection);
+            } else {
+                $query->orderBy('id', 'asc');
+            }
+
+            $data = $query->skip($start)->take($length)->get();
+
+            return response()->json([
+                'draw'            => intval($draw),
+                'recordsTotal'    => $totalRecords,
+                'recordsFiltered' => $totalRecordsFiltered,
+                'data'            => $data,
+            ]);
         }
         return view('lawyer.task.index');
     }
@@ -23,7 +60,12 @@ class TaskController extends Controller
      */
     public function create()
     {
-        //
+        if(!Auth::user()->hasPermission('task:create')){
+            abort(403, 'Unauthorized');
+        }
+
+        $team = Auth::user()->team;
+        return view('lawyer.task.create', compact('team'));
     }
 
     /**
@@ -31,7 +73,31 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if(!Auth::user()->hasPermission('task:create')){
+            abort(403, 'Unauthorized');
+        }
+
+        $validated = $request->validate([
+            'name'                            => 'required|string|max:255',
+            'start_date'                      => 'required|date',
+            'end_date'                        => 'required|date',
+            'status'                          => 'required|in:PENDING,IN PROGRESS,COMPLETED',
+            'assign_to'                       => 'nullable|exists:lawyers,id',
+            
+        ]);
+        
+        Task::create([
+            'name'                            => $validated['name'],
+            'start_date'                      => $validated['start_date'],
+            'end_date'                        => $validated['end_date'],
+            'status'                          => $validated['status'],
+            'lawyer_id'                       => getLawyerId(),
+            'assign_to'                       => $validated['assign_to'],
+        ]);
+
+        return redirect()
+            ->route('lawyer.task.index')
+            ->with('success', 'Task created successfully!');
     }
 
     /**
@@ -39,7 +105,15 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        //
+        if(!Auth::user()->hasPermission('task:view')){
+            abort(403, 'Unauthorized');
+        }
+
+        $task = Task::where('id', $id)
+            ->where('lawyer_id', getLawyerId())
+            ->firstOrFail();
+
+        return view('lawyer.task.show', compact('task'));
     }
 
     /**
@@ -47,7 +121,15 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        if(!Auth::user()->hasPermission('task:edit')){
+            abort(403, 'Unauthorized');
+        }
+
+        $team = Auth::user()->team;
+        $task = Task::where('id', $id)
+            ->where('lawyer_id', getLawyerId())
+            ->firstOrFail();
+        return view('lawyer.task.edit', compact('team', 'task'));
     }
 
     /**
@@ -55,14 +137,51 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        if(!Auth::user()->hasPermission('task:create')){
+            abort(403, 'Unauthorized');
+        }
+
+        $validated = $request->validate([
+            'name'                            => 'required|string|max:255',
+            'start_date'                      => 'required|date',
+            'end_date'                        => 'required|date',
+            'status'                          => 'required|in:PENDING,IN PROGRESS,COMPLETED',
+            'assign_to'                       => 'nullable|exists:lawyers,id',
+            
+        ]);
+
+        $task = Task::where('lawyer_id', getLawyerId())->findOrFail($id);
+
+        
+        $task->update([
+            'name'                            => $validated['name'],
+            'start_date'                      => $validated['start_date'],
+            'end_date'                        => $validated['end_date'],
+            'status'                          => $validated['status'],
+            'assign_to'                       => $validated['assign_to'],
+        ]);
+
+        return redirect()
+            ->route('lawyer.task.index')
+            ->with('success', 'Task updated successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        //
+        if(!Auth::user()->hasPermission('task:delete')){
+            abort(403, 'Unauthorized');
+        }
+
+        Task::where('lawyer_id', getLawyerId())->findOrFail($id)->delete();
+
+        if ($request->ajax()) {
+            return $this->successResponse('task deleted');
+        }
+
+        return redirect()->route('lawyer.cases.index')->with('success', 'task deleted successfully.');
+   
     }
 }

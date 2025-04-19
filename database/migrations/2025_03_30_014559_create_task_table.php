@@ -11,17 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('task', function (Blueprint $table) {
+        Schema::create('tasks', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('lawyer_id');
+            $table->unsignedBigInteger('assign_to')->nullable();
             $table->string('name');
-            $table->enum('priority', ['NORMAL', 'HIGH', 'URGENT']);
-            $table->enum('status', ['PENDING', 'IN_PROGRESS', 'COMPLETED']);
-            $table->unsignedBigInteger('lawyer_id')->nullable();
-            $table->unsignedBigInteger('client_id')->nullable();
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->enum('status', ['PENDING', 'IN PROGRESS', 'COMPLETED']);
             $table->timestamps();
 
             $table->foreign('lawyer_id')->references('id')->on('lawyers')->onDelete('cascade');
-            $table->foreign('client_id')->references('id')->on('clients')->onDelete('set null');
+            $table->foreign('assign_to')->references('id')->on('lawyers')->onDelete('set null');
 
         });
     }

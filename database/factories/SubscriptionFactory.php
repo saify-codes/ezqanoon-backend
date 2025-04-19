@@ -39,9 +39,9 @@ class SubscriptionFactory extends Factory
         return [
             'name'          => $this->faker->unique()->randomElement($subscriptionTypes),
             'description'   => $this->faker->paragraph(1),
-            'price'         => $this->faker->randomElement([500, 1000, 2000, 3000, 4000, 5000]),
+            'price'         => $this->faker->randomElement([500, 1000, 15000]),
             'features'      => $this->faker->randomElements($features, rand(4, 8)),
-            'status'        => $this->faker->randomElement(['active', 'inactive']),
+            'status'        => 'active',
         ];
     }
 }

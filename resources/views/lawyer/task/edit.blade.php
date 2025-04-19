@@ -1,10 +1,11 @@
 <x-lawyer.app>
     <div>
-        <a href="{{ route('lawyer.team.index') }}" class="btn btn-dark btn-icon-text mb-3">
+        <a href="{{ route('lawyer.task.index') }}" class="btn btn-dark btn-icon-text mb-3">
             <i class="btn-icon-prepend" data-feather="list"></i>
             List
         </a>
     </div>
+
     <!-- Display validation errors (if any) -->
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -16,89 +17,54 @@
             </ul>
         </div>
     @endif
-    
+
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title mb-4">Edit user</h4>
+            <h4 class="card-title mb-4">Edit task</h4>
 
             <!-- The form -->
-            <form action="{{ route('lawyer.team.update', $user->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('lawyer.task.update', $task->id) }}" method="POST">
                 @csrf
-                @method('PUT') <!-- This is important for the update action -->
+                @method('PUT')
 
-                <!-- Personal info -->
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="name" name="name"
-                            value="{{ old('name', $user->name) }}" placeholder="e.g. Musaafa" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="phone" class="form-label">Phone <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="phone" name="phone"
-                            value="{{ old('phone', $user->phone) }}" placeholder="e.g. +923487161543" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="email" name="email"
-                            value="{{ old('email', $user->email) }}" disabled>
-                    </div>
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+                    <input class="form-control" type="text" id="name" name="name" placeholder="e.g. My task" value="{{old('name', $task->name)}}" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="start_date" class="form-label">Start date <span class="text-danger">*</span></label>
+                    <input class="form-control" type="date" id="start_date" value="{{old('start_date', $task->start_date)}}" name="start_date" required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="permissions" class="form-label">Permissions</label>
-                    <select class="form-select" id="permissions" name="permissions[]" multiple>
-                        @foreach (getPermissionsList() as $key => $permission)
-                            @if (is_array($permission)) 
-                                <optgroup label="{{ $key }}">
-                                    @foreach ($permission as $key => $permission)
-                                        <option value="{{ $key }}" {{ in_array($key, old('permissions', $user->permissions ?? [])) ? 'selected' : '' }}>
-                                            {{ $permission }}
-                                        </option>
-                                    @endforeach
-                                </optgroup>
-                            @else
-                                <option value="{{ $key }}"{{ in_array($key, old('permissions', $user->permissions ?? [])) ? 'selected' : '' }}>
-                                    {{ $permission }}
-                                </option>  
-                            @endif
+                    <label for="end_date" class="form-label">Deadline <span class="text-danger">*</span></label>
+                    <input class="form-control" type="date" id="end_date" value="{{old('end_date', $task->end_date)}}" name="end_date" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                    <select class="form-select" id="status" name="status" required>
+                        <option value="PENDING"     {{ old('status', $task->status) === 'PENDING'      ? 'selected' : '' }}>PENDING</option>
+                        <option value="IN PROGRESS" {{ old('status', $task->status) === 'IN PROGRESS'  ? 'selected' : '' }}>IN PROGRESS</option>
+                        <option value="COMPLETED"   {{ old('status', $task->status) === 'COMPLETED'    ? 'selected' : '' }}>COMPLETED</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="assign_to" class="form-label">Assing to</label>
+                    <select class="form-select" id="assign_to" name="assign_to">
+                        <option value="">select member</option>
+                        @foreach ($team as $member)
+                            <option value="{{$member->id}}">{{$member->name}} ({{$member->email}})</option>
                         @endforeach
                     </select>
                 </div>
 
                 <!-- Submit button (with an ID for enabling/disabling) -->
-                <button type="submit" class="btn btn-primary" id="submitBtn">Update User</button>
-                <button type="button" class="btn btn-success" id="selectAllPermissions">Assign All Permissions</button>
-                <button type="button" class="btn btn-danger" id="revokeAllPermissions">Revoke All Permissions</button>
-
-            </form>
-        </div>
-    </div>
-
-    <div class="card mt-3">
-        <div class="card-body">
-            <h4 class="card-title mb-4">Change Password</h4>
-            <form action="{{ route('lawyer.team.change-password', $user->id) }}" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <input type="password" class="form-control" id="password" name="password"
-                                placeholder="•••••••••••••••" required>
-                            <button class="btn btn-xs btn-outline-secondary" type="button" id="togglePassword"
-                                tabindex="-1"><i data-feather="eye"></i></button>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="password_confirmation" class="form-label">Confirm Password <span
-                                class="text-danger">*</span></label>
-                        <input type="password" class="form-control" id="password_confirmation"
-                            name="password_confirmation" placeholder="•••••••••••••••" required>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-danger">Change Password</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    Edit task
+                </button>
             </form>
         </div>
     </div>
@@ -114,29 +80,7 @@
     @push('custom-scripts')
         <script>
             $(document).ready(function() {
-                $('#permissions').select2();
-
-                // Handle select all permissions button
-                $('#selectAllPermissions').on('click', function() {
-                    $('#permissions option').prop('selected', true);
-                    $('#permissions').trigger('change');
-                });
-
-                // Handle revoke all permissions button
-                $('#revokeAllPermissions').on('click', function() {
-                    $('#permissions option').prop('selected', false);
-                    $('#permissions').trigger('change');
-                });
-
-                $('#togglePassword').on('click', function() {
-                    const $password = $('#password');
-                    const type = $password.attr('type') === 'password' ? 'text' : 'password';
-
-                    $password.attr('type', type);
-                    $(this).html(type === 'password' ? '<i data-feather="eye"></i>' :
-                        '<i data-feather="eye-off"></i>');
-                    feather.replace();
-                });
+                $('#assign_to').select2()
             });
         </script>
     @endpush

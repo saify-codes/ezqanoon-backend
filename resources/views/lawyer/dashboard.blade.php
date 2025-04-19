@@ -57,7 +57,7 @@
                 <div class="card-body bg-warning text-white">
                     <h6 class="card-title mb-0">Decided Cases</h6>
                     <div class="card-body">
-                        <h2>{{ $totalClients }}</h2>
+                        <h2>{{ $totalDecidedCases }}</h2>
                     </div>
                 </div>
             </div>

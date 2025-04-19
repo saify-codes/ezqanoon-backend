@@ -19,7 +19,8 @@ class DashboardController extends Controller
         $totalAppointments          = Auth::user()->appointments->count();
         $totalCasesToday            = Auth::user()->cases->where('date_created', Carbon::now())->count();
         $totalHighPriorityCases     = Auth::user()->cases->where('urgency', 'HIGH')->count();
-        return view('lawyer.dashboard', compact('totalClients', 'totalAppointments', 'totalCasesToday', 'totalHighPriorityCases'));
+        $totalDecidedCases          = Auth::user()->cases->where('status', 'CLOSED')->count();
+        return view('lawyer.dashboard', compact('totalClients', 'totalAppointments', 'totalCasesToday', 'totalHighPriorityCases', 'totalDecidedCases'));
     }
 
     /**

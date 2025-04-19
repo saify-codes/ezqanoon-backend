@@ -2,7 +2,7 @@
     <div>
         <a href="{{route('lawyer.team.create')}}" class="btn btn-primary btn-icon-text mb-3">
             <i class="btn-icon-prepend" data-feather="plus"></i>
-            Create user
+            Add member
         </a>
     </div>
 

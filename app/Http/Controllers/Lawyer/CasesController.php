@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Lawyer;
 
 use App\Http\Controllers\Controller;
+use App\Models\CaseFillingDate;
+use App\Models\CaseHearingDate;
 use App\Models\Cases;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
@@ -33,7 +35,8 @@ class CasesController extends Controller
 
             if (!empty($searchValue)) {
                 $query->where('name', 'like', "%{$searchValue}%")
-                      ->orWhere('court_case_number', 'like', "%{$searchValue}%");
+                      ->orWhere('court_case_number', 'like', "%{$searchValue}%")
+                      ->orWhere('type', 'like', "%{$searchValue}%");
             }
 
             $totalRecordsFiltered = $query->count();
@@ -95,9 +98,12 @@ class CasesController extends Controller
             'opposite_party_advocate_details' => 'nullable|string',
             'case_information'                => 'nullable|string',
             'payment_status'                  => 'nullable|in:PENDING,PAID,OVERDUE',
-            'deadlines'                       => 'nullable|array',
-            'deadlines.*.description'         => 'nullable|string|max:255',
-            'deadlines.*.date'                => 'nullable|date',
+            'fillings'                        => 'nullable|array',
+            'fillings.*.description'          => 'nullable|string|max:255',
+            'fillings.*.date'                 => 'nullable|date',
+            'hearings'                        => 'nullable|array',
+            'hearings.*.description'          => 'nullable|string|max:255',
+            'hearings.*.date'                 => 'nullable|date',
             'attachments'                     => 'array|max:10',
         ]);
 
@@ -118,7 +124,6 @@ class CasesController extends Controller
             'opposite_party_details'         => $validated['opposite_party_details']            ?? null,
             'opposite_party_advocate_details'=> $validated['opposite_party_advocate_details']   ?? null,
             'case_information'               => $validated['case_information']                  ?? null,
-            'deadlines'                      => $validated['deadlines']                         ?? null,
             'payment_status'                 => $validated['payment_status']                    ?? 'PENDING',
         ]);
 
@@ -143,6 +148,19 @@ class CasesController extends Controller
                 }
             }
         }
+
+        if ($request->has('fillings')) {
+            
+            $fillingsData = array_map(fn($fillingData) => [...$fillingData, 'case_id' => $case->id],$request->fillings);           
+            CaseFillingDate::insert($fillingsData);
+        }
+        
+        if ($request->has('hearings')) {
+            
+            $hearingsData = array_map(fn($hearingData) => [...$hearingData, 'case_id' => $case->id],$request->hearings);           
+            CaseHearingDate::insert($hearingsData);
+        }
+
 
         return redirect()
             ->route('lawyer.cases.index')
@@ -209,9 +227,12 @@ class CasesController extends Controller
             'case_information'                  => 'nullable|string',
             'payment_status'                    => 'nullable|in:PENDING,PAID,OVERDUE',
             'status'                            => 'nullable|in:OPEN,IN PROGRESS,CLOSED',
-            'deadlines'                         => 'nullable|array',
-            'deadlines.*.description'           => 'nullable|string|max:255',
-            'deadlines.*.date'                  => 'nullable|date',
+            'fillings'                          => 'nullable|array',
+            'fillings.*.description'            => 'nullable|string|max:255',
+            'fillings.*.date'                   => 'nullable|date',
+            'hearings'                          => 'nullable|array',
+            'hearings.*.description'            => 'nullable|string|max:255',
+            'hearings.*.date'                   => 'nullable|date',
             'attachments'                       => 'array|max:10',
         ]);
 
@@ -231,7 +252,6 @@ class CasesController extends Controller
             'opposite_party_details'          => $validated['opposite_party_details']          ?? null,
             'opposite_party_advocate_details' => $validated['opposite_party_advocate_details'] ?? null,
             'case_information'                => $validated['case_information']                ?? null,
-            'deadlines'                       => $validated['deadlines']                       ?? null,
             'payment_status'                  => $validated['payment_status']                  ?? 'PENDING',
             'status'                          => $validated['status']                          ?? 'OPEN',
         ]);
@@ -258,6 +278,20 @@ class CasesController extends Controller
                     }
                 }
             }
+        }
+
+        if ($request->has('fillings')) {
+            
+            $fillingsData = array_map(fn($fillingData) => [...$fillingData, 'case_id' => $case->id],$request->fillings);           
+            CaseFillingDate::where('case_id', $case->id)->delete();
+            CaseFillingDate::insert($fillingsData);
+        }
+        
+        if ($request->has('hearings')) {
+            
+            $hearingsData = array_map(fn($hearingData) => [...$hearingData, 'case_id' => $case->id],$request->hearings);           
+            CaseHearingDate::where('case_id', $case->id)->delete();
+            CaseHearingDate::insert($hearingsData);
         }
 
         return redirect()

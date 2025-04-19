@@ -16,6 +16,14 @@ class Cases extends Model
     public function attachments(){
         return $this->hasMany(CaseAttachments::class, 'case_id', 'id');
     }
+    
+    public function fillings(){
+        return $this->hasMany(CaseFillingDate::class, 'case_id', 'id');
+    }
+    
+    public function hearings(){
+        return $this->hasMany(CaseHearingDate::class, 'case_id', 'id');
+    }
 
     public function getCreatedAtAttribute($createdAt){
         return Carbon::parse($createdAt)->format('Y-m-d h:i:s A');

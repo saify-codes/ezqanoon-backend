@@ -134,13 +134,36 @@ class Lawyer extends Authenticatable
         $this->attributes['phone'] = Phone::convertToInternationalFormat($value);
     }
 
-     /**
+    /**
      * Accessor: Convert international format to local format (0312 345 6789).
      *
      * @return string|null
-     */
-    public function getCreatedAtAttribute($value): ?string
+    */
+    
+     public function getCreatedAtAttribute($value): ?string
     {
         return Carbon::parse($value)->format('Y-m-d h:i:s A');
+    }
+           
+    /**
+     * getAvailabilityFromAttribute
+     *
+     * @param  mixed $value
+     * @return string
+     */
+    public function getAvailabilityFromAttribute($value): ?string
+    {
+        return Carbon::parse($value)->format('h:i');
+    }
+           
+    /**
+     * getAvailabilityFromAttribute
+     *
+     * @param  mixed $value
+     * @return string
+     */
+    public function getAvailabilityToAttribute($value): ?string
+    {
+        return Carbon::parse($value)->format('h:i');
     }
 }

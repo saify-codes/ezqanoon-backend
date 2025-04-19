@@ -71,7 +71,7 @@
                 </div>
 
                 <!-- Submit button (with an ID for enabling/disabling) -->
-                <button type="submit" class="btn btn-primary" id="submitBtn">Update User</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">Update Member</button>
 
             </form>
         </div>
@@ -94,10 +94,11 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="password_confirmation" class="form-label">Confirm Password <span
-                                class="text-danger">*</span></label>
-                        <input type="password" class="form-control" id="password_confirmation"
-                            name="password_confirmation" placeholder="•••••••••••••••" required>
+                        <label for="password_confirmation" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="•••••••••••••••" required>
+                            <button class="btn btn-xs btn-outline-secondary" type="button" id="togglePasswordConfirmation" tabindex="-1"><i data-feather="eye"></i></button>
+                        </div>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-danger">Change Password</button>
@@ -137,6 +138,15 @@
                     $password.attr('type', type);
                     $(this).html(type === 'password' ? '<i data-feather="eye"></i>' :
                         '<i data-feather="eye-off"></i>');
+                    feather.replace();
+                });
+
+                $('#togglePasswordConfirmation').on('click', function() {
+                    const $password = $('#password_confirmation');
+                    const type      = $password.attr('type') === 'password' ? 'text' : 'password';
+                    
+                    $password.attr('type', type);
+                    $(this).html(type === 'password' ? '<i data-feather="eye"></i>' : '<i data-feather="eye-off"></i>');
                     feather.replace();
                 });
             });
