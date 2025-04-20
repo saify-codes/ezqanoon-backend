@@ -1,4 +1,4 @@
-<x-lawyer.app>\
+<x-lawyer.app>
     <div>
         <a href="{{ route('lawyer.invoice.create') }}" class="btn btn-primary btn-icon-text mb-3">
             <i class="btn-icon-prepend" data-feather="plus"></i>
