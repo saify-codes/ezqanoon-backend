@@ -85,6 +85,8 @@ class TeamController extends Controller
             'permissions'   => $request->permissions,
             'role'          => 'USER',
             'lawyer_id'     => getLawyerId(),
+        ],[
+            'validation.phone' => 'invalid phone number'
         ]);
 
         return redirect()->route('lawyer.team.index')->with('success', 'User created successfully');    

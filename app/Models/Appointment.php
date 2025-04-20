@@ -12,6 +12,10 @@ class Appointment extends Model
     public function attachments(){
         return $this->hasMany(Attachment::class);
     }
+    
+    public function summaryAttachments(){
+        return $this->hasMany(AppointmentSummaryAttachment::class);
+    }
 
     public function lawyer(){
         return $this->hasOne(Lawyer::class, 'id', 'lawyer_id');

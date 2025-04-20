@@ -60,6 +60,28 @@
                     </div>
                 </div>
 
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="origin" class="form-label">Client origin <span class="text-danger">*</span></label>
+                        <select class="form-select" id="origin" name="origin" required>
+                            <option value="LOCAL"   {{ old('origin', $client->origin) === 'LOCAL' ? 'selected' : '' }}>Local</option>
+                            <option value="FOREIGN" {{ old('origin', $client->origin) === 'FOREIGN' ? 'selected' : '' }}>Foreign</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="city" class="form-label">City</label>
+                        <input type="text" class="form-control" id="city" name="city" value="{{ old('city', $client->city) }}" placeholder="e.g. Karachi">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="state" class="form-label">State</label>
+                        <input type="text" class="form-control" id="state" name="state" value="{{ old('state', $client->state) }}" placeholder="e.g. Sindh">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="country" class="form-label">Country</label>
+                        <input type="text" class="form-control" id="city" name="country" value="{{ old('city', $client->country) }}" placeholder="e.g. Pakistan">
+                    </div>
+                </div>
+
                 <div class="mb-3">
                     <label for="address" class="form-label">Address</label>
                     <input type="text" class="form-control" name="address" value="{{ old('address', $client->address) }}" placeholder="e.g. St#44 sadar, karachi">

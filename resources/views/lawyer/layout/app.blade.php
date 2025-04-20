@@ -47,7 +47,7 @@
       @include('lawyer.layout.partials.header')
       <div class="page-content">
 
-        @if (Auth::user()->role == 'ADMIN' && !Auth::user()->is_profile_completed && !Request::is('profile'))
+        @if (!Auth::user()->is_profile_completed && !Request::is('profile'))
           <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>Action required</strong> Please complete your profile to get listed
             <a class="text-decoration-underline" href="{{route('lawyer.profile')}}">click here to goto profile page</a>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class AppointmentController extends Controller
 {
@@ -56,7 +57,67 @@ class AppointmentController extends Controller
         }
 
         // 9) If not an AJAX request, simply load the Blade view
-        return view('lawyer.appointments');
+        return view('lawyer.appointments.index');
     }
 
+    public function edit(string $id)
+    {
+        $appointment = Appointment::where('id', $id)->where('lawyer_id', getLawyerId())->firstOrFail();
+        return view('lawyer.appointments.edit', compact('appointment'));
+    }
+
+    public function update(Request $request, string $id)
+    {
+        // Validate incoming data
+        $validated = $request->validate([
+            'summary'               => 'required|string',
+            'attachments'           => 'array|max:10',
+        ]);
+
+        $appointment = Appointment::where('id', $id)->where('lawyer_id', getLawyerId())->firstOrFail();
+
+        // Update client details
+        $appointment->update([
+            'summary' => $validated['summary'],
+        ]);
+
+        // Process attachments if any exist in the request.
+        if ($request->has('attachments')) {
+            // Delete all old attachments first
+            $appointment->summaryAttachments()->delete();
+            // Decode each attachment JSON string
+            $attachments = array_map(fn($attachment) => json_decode($attachment), $request->attachments);
+            // Upload the new attachments
+            foreach ($attachments as $attachment) {
+                // Check if the file exists in the public disk
+                if (Storage::disk('public')->exists($attachment->file_path)) {
+                    $mimeType = Storage::disk('public')->mimeType($attachment->file_path);
+                    // Move the file into a directory specific to the client
+                    if (Storage::disk('public')->move($attachment->file_path, "appointments/summary/$appointment->id/{$attachment->file}")) {
+                        // Save the attachment record
+                        $appointment->summaryAttachments()->create([
+                            'file'          => $attachment->file,
+                            'original_name' => $attachment->original_name,
+                            'mime_type'     => $mimeType,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return redirect()
+            ->route('lawyer.appointment.index')
+            ->with('success', 'Appointment updated successfully!');
+    }
+
+    public function show(string $id)
+    {
+        // Retrieve the client that belongs to the authenticated lawyer or fail
+        $appointment = Appointment::where('id', $id)
+            ->where('lawyer_id', getLawyerId())
+            ->firstOrFail();
+
+        // Return the view with the case data
+        return view('lawyer.appointments.show', compact('appointment'));
+    }
 }

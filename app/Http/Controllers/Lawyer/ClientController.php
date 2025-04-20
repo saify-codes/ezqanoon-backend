@@ -24,7 +24,7 @@ class ClientController extends Controller
         if ($request->ajax()) {
 
             // DataTables columns to map for ordering:
-            $columns            = ['id', 'name', 'gender', 'phone', 'email', 'dob', 'type', 'created_at'];
+            $columns            = ['id', 'first_name', 'last_name', 'gender', 'phone', 'origin', 'type', 'created_at'];
             $draw               = $request->input('draw');
             $start              = $request->input('start');        // skip
             $length             = $request->input('length');       // rows per page
@@ -38,8 +38,8 @@ class ClientController extends Controller
             if (!empty($searchValue)) {
                 $query->where('first_name', 'like', "%{$searchValue}%")
                     ->orWhere('last_name', 'like', "%{$searchValue}%")
-                    ->orWhere('email', 'like', "%{$searchValue}%")
-                    ->orWhere('phone', 'like', "%{$searchValue}%");
+                    ->orWhere('phone', 'like', "%{$searchValue}%")
+                    ->orWhere('origin', 'like', "%{$searchValue}%");
             }
 
             $totalRecordsFiltered = $query->count();
@@ -83,13 +83,17 @@ class ClientController extends Controller
             'dob'                   => 'nullable|date',
             'gender'                => 'required|in:MALE,FEMALE,OTHER',
             'type'                  => 'required|in:REGULAR,VIP',
-            'phone'                 => 'nullable|phone:PK',
+            'phone'                 => 'nullable|phone',
             'email'                 => 'nullable|email|max:255',
             'company_name'          => 'nullable|string|max:255',
             'company_website'       => 'nullable|url|max:255',
             'communication_method'  => 'nullable|string|max:255',
             'contact_time'          => 'nullable',
             'language'              => 'nullable|string|max:50',
+            'origin'                => 'required|in:LOCAL,FOREIGN',
+            'city'                  => 'nullable|string|max:255',
+            'state'                 => 'nullable|string|max:255',
+            'country'               => 'nullable|string|max:255',
             'address'               => 'nullable|string',
             'billing_address'       => 'nullable|string',
             'payment_methods'       => 'nullable|array',
@@ -106,10 +110,14 @@ class ClientController extends Controller
             'gender'                => $validated['gender'],
             'type'                  => $validated['type'],
             'email'                 => $validated['email'],
+            'origin'                => $validated['origin'],
             'dob'                   => $validated['dob']                    ?? null,
             'phone'                 => $validated['phone']                  ?? null,
             'company_name'          => $validated['company_name']           ?? null,
             'company_website'       => $validated['company_website']        ?? null,
+            'city'                  => $validated['city']                   ?? null,
+            'state'                 => $validated['state']                  ?? null,
+            'country'               => $validated['country']                ?? null,
             'address'               => $validated['address']                ?? null,
             'communication_method'  => $validated['communication_method']   ?? null,
             'contact_time'          => $validated['contact_time']           ?? null,
@@ -180,6 +188,10 @@ class ClientController extends Controller
             'communication_method'  => 'nullable|string|max:255',
             'contact_time'          => 'nullable',
             'language'              => 'nullable|string|max:50',
+            'origin'                => 'required|in:LOCAL,FOREIGN',
+            'city'                  => 'nullable|string|max:255',
+            'state'                 => 'nullable|string|max:255',
+            'country'               => 'nullable|string|max:255',
             'address'               => 'nullable|string',
             'billing_address'       => 'nullable|string',
             'payment_methods'       => 'nullable|array',
@@ -204,11 +216,15 @@ class ClientController extends Controller
             'gender'                => $validated['gender'],
             'type'                  => $validated['type'],
             'email'                 => $validated['email'],                 
+            'origin'                 => $validated['origin'],                 
             'phone'                 => $validated['phone']                  ?? null,
             'dob'                   => $validated['dob']                    ?? null,
             'company_name'          => $validated['company_name']           ?? null,
             'company_website'       => $validated['company_website']        ?? null,
             'address'               => $validated['address']                ?? null,
+            'city'                  => $validated['city']                   ?? null,
+            'state'                 => $validated['state']                  ?? null,
+            'country'               => $validated['country']                ?? null,
             'communication_method'  => $validated['communication_method']   ?? null,
             'contact_time'          => $validated['contact_time']           ?? null,
             'language'              => $validated['language']               ?? null,

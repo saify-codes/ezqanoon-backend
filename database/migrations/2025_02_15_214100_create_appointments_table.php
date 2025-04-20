@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('lawyer_id');
             $table->unsignedBigInteger('user_id');
+            $table->string('country')->default('Pakistan');
             $table->text('details');
             $table->string('meeting_link')->nullable();
             $table->timestamp('meeting_date');
@@ -32,10 +33,28 @@ return new class extends Migration
             $table->index('meeting_date');
         });
 
-        Schema::create('attachments', function (Blueprint $table) {
+        Schema::create('appointment_attachments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('appointment_id');
-            $table->string('file_path');
+            $table->string('file');
+            $table->string('original_name');
+            $table->string('mime_type');
+            $table->timestamps();
+
+            // Foreign key with index
+            $table->foreign('appointment_id')
+                ->references('id')
+                ->on('appointments')
+                ->onDelete('cascade');
+
+            // Index for file metadata if needed
+            $table->index('mime_type');
+        });
+
+        Schema::create('appointment_summary_attachments', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('appointment_id');
+            $table->string('file');
             $table->string('original_name');
             $table->string('mime_type');
             $table->timestamps();
@@ -53,7 +72,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('attachments');
+        Schema::dropIfExists('appointment_summary_attachments');
+        Schema::dropIfExists('appointment_attachments');
         Schema::dropIfExists('appointments');
     }
 };

@@ -16,6 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('lawyer_id');
             $table->string('first_name');
             $table->string('last_name');
+            $table->enum('origin', ['LOCAL', 'FOREIGN']);
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('country')->nullable();
             $table->enum('type', ['VIP', 'REGULAR']);
             $table->date('dob')->nullable();
             $table->enum('gender', ['MALE', 'FEMALE', 'OTHER'])->nullable();

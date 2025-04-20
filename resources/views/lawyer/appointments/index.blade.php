@@ -30,6 +30,14 @@
 
     <div class="card">
         <div class="card-body">
+            
+            @session('success')
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Hurray!</strong> {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close"></button>
+                </div>
+            @endsession
+
             <div class="table-responsive">
                 <table class="table" id="appointments-table">
                     <thead>
@@ -64,36 +72,39 @@
                 processing: true,
                 serverSide: true,
                 ajax: '{{ route('lawyer.appointment.index') }}',
-                columns: [
-                    {
+                columns: [{
                         data: 'id',
                     },
                     {
                         data: 'user.name',
-                        orderable:false,
+                        orderable: false,
                     },
                     {
                         data: 'user.email',
-                        orderable:false,
+                        orderable: false,
                     },
                     {
                         data: 'user.phone',
-                        orderable:false,
+                        orderable: false,
                     },
                     {
                         data: 'country',
-                        orderable:false,
+                        orderable: false,
                     },
                     {
                         data: 'created_at',
                     },
                     {
                         sortable: false,
-                        data: (data) => {
+                        data: (appointment) => {
+                            const showUrl = `{{ route('lawyer.appointment.show', ':id') }}`.replace(':id',appointment.id);
+                            const editUrl = `{{ route('lawyer.appointment.edit', ':id') }}`.replace(':id',appointment.id);
+                            const deleteUrl = `{{ route('lawyer.appointment.destroy', ':id') }}`.replace(':id',appointment.id);
                             return `
                                 <div>
-                                    <button class="btn btn-inverse-secondary btn-icon" onclick='viewCase(${JSON.stringify(data)})'><i data-feather="eye"></i></button>
-                                    <button class="btn btn-inverse-success btn-icon" onclick='viewCase(${data})'><i data-feather="edit"></i></button>
+                                    <!-- <button class="btn btn-inverse-secondary btn-icon" onclick='viewCase(${JSON.stringify(appointment)})'><i data-feather="eye"></i></button> -->
+                                    <a href="${showUrl}" class="btn btn-inverse-secondary btn-icon"><i data-feather="eye"></i></a>
+                                    <a href="${editUrl}" class="btn btn-inverse-success btn-icon"><i data-feather="edit"></i></a>
                                 </div>
                             `;
                         },
@@ -116,8 +127,13 @@
 
                 if (data.attachments && data.attachments.length > 0) {
                     $('#attachmentSection').show();
-                    $.each(data.attachments, function(index, {original_name, file_path}) {
-                        $attachmentsList.append(`<li class="list-group-item"> <a href="${file_path}" target="_blank">${original_name}</a></li>`);
+                    $.each(data.attachments, function(index, {
+                        original_name,
+                        file_path
+                    }) {
+                        $attachmentsList.append(
+                            `<li class="list-group-item"> <a href="${file_path}" target="_blank">${original_name}</a></li>`
+                            );
                     });
                 } else {
                     $('#attachmentSection').hide();

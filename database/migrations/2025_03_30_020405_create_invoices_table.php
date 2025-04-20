@@ -14,19 +14,30 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->foreignId('lawyer_id')->constrained('lawyers')->onDelete('cascade');
-            $table->string('issuer_name');
-            $table->string('issuer_email');
-            $table->string('issuer_phone');
-            $table->string('recipient_name');
-            $table->string('recipient_email');
-            $table->string('recipient_phone');
-            $table->string('recipient_address')->nullable();
-            $table->date('due_date');
-            $table->decimal('amount', 10, 2);
-            $table->json('summary');
-            $table->enum('status', ['PENDING', 'PAID', 'OVERDUE']);
+            $table->string('name');
+            $table->string('email');
+            $table->string('phone');
+            $table->string('address')->nullable();
+            $table->enum('type', ['ONE TIME', 'MILESTONE'])->default('ONE TIME');
+            $table->enum('status', ['PENDING', 'PAID', 'OVERDUE'])->nullable();
+            $table->date('due_date')->nullable();
+            $table->enum('payment_method', ['CASH', 'BANK', 'ONLINE TRANSFER']);
+            $table->json('receipt')->nullable();
+            $table->decimal('total', 2)->default(0);
             $table->timestamps();
         });
+
+        Schema::create('invoice_milestones', function (Blueprint $table) {
+            $table->id();
+            $table->string('description');
+            $table->date('due_date');
+            $table->enum('status', ['PENDING', 'PAID', 'OVERDUE'])->default('PENDING');
+
+            $table->foreignId('invoice_id')
+                  ->constrained('invoices')
+                  ->onDelete('cascade');
+        });
+        
     }
 
     /**

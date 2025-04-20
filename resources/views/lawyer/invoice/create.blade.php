@@ -1,12 +1,12 @@
 <x-lawyer.app>
     <div>
-        <a href="{{ route('lawyer.team.index') }}" class="btn btn-dark btn-icon-text mb-3">
+        <a href="{{ route('lawyer.invoice.index') }}" class="btn btn-dark btn-icon-text mb-3">
             <i class="btn-icon-prepend" data-feather="list"></i>
             List
         </a>
     </div>
 
-    <!-- Display validation errors (if any) -->
+    <!-- Validation errors -->
     @if ($errors->any())
         <div class="alert alert-danger">
             <strong>Whoops!</strong> There were some problems with your input.
@@ -20,67 +20,107 @@
 
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title mb-4">Create invoice</h4>
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h4 class="card-title m-0">Create invoice</h4>
+                <select class="form-control w-auto" id="type" name="type" form="invoice-form" required>
+                    <option value="ONE TIME">One time</option>
+                    <option value="MILESTONE">Milestone</option>
+                </select>
+            </div>
 
-            <!-- The form -->
-            <form action="{{ route('lawyer.invoice.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('lawyer.invoice.store') }}" method="POST" id="invoice-form">
                 @csrf
-
-                <fieldset>
-                    <legend>Issuer</legend>
-                    <div class="row mb-3">
-                        <div class="col-md-3">
-                            <label for="issuer_name" class="form-label">Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="issuer_name" name="issuer_name" value="{{ old('issuer_name') }}" placeholder="e.g. Musaafa" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="issuer_phone" class="form-label">Phone <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="issuer_phone" name="issuer_phone" value="{{ old('issuer_phone') }}" placeholder="e.g. +923487161543" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="issuer_email" class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="issuer_email" name="issuer_email" value="{{ old('issuer_email') }}" placeholder="e.g. test@gmail.com" required>
-                        </div>
-                    </div>
-                </fieldset>
 
                 <fieldset>
                     <legend>Recipient</legend>
                     <div class="row mb-3">
                         <div class="col-md-3">
-                            <label for="recipient_name" class="form-label">Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="recipient_name" name="recipient_name" value="{{ old('recipient_name') }}" placeholder="e.g. Musaafa" required>  
+                            <label class="form-label">Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" value="{{ old('name') }}"
+                                placeholder="e.g. Musaafa" required>
                         </div>
                         <div class="col-md-3">
-                            <label for="recipient_phone" class="form-label">Phone <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="recipient_phone" name="recipient_phone" value="{{ old('recipient_phone') }}" placeholder="e.g. +923487161543" required>
+                            <label class="form-label">Phone <span class="text-danger">*</span></label>
+                            <input type="text" name="phone" class="form-control" value="{{ old('phone') }}"
+                                placeholder="+923423767655" required>
                         </div>
                         <div class="col-md-3">
-                                <label for="recipient_email" class="form-label">Email <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="recipient_email" name="recipient_email" value="{{ old('recipient_email') }}" placeholder="e.g. test@gmail.com" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="recipient_address" class="form-label">Address <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="recipient_address" name="recipient_address" value="{{ old('recipient_address') }}" placeholder="e.g. 123 Main St, Anytown, USA" required>
+                            <label class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="form-control" value="{{ old('email') }}"
+                                placeholder="test@gmail.com" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Address <span class="text-danger">*</span></label>
+                            <input type="text" name="address" class="form-control" value="{{ old('address') }}"
+                                placeholder="123 Main St…" required>
                         </div>
                     </div>
-                </fieldset> 
+                </fieldset>
 
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="due_date" class="form-label">Due Date <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control" id="due_date" name="due_date" value="{{ old('due_date') }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
-                        <select class="form-control" id="status" name="status" required>
-                            <option value="PENDING">Pending</option>
-                            <option value="PAID">Paid</option>
-                            <option value="OVERDUE">Overdue</option>
-                        </select>
-                    </div>
+                <div class="mb-3">
+                    <label class="form-label">Payment method <span class="text-danger">*</span></label>
+                    <select name="payment_method" class="form-control" required>
+                        <option value="CASH" {{old('payment_method') === 'CASH'? 'selected' : ''}}>Cash</option>
+                        <option value="BANK" {{old('payment_method') === 'BANK'? 'selected' : ''}}>Bank</option>
+                        <option value="ONLINE" {{old('payment_method') === 'ONLINE'? 'selected' : ''}}>Online transfer</option>
+                    </select>
                 </div>
 
+
+                <!-- ONE-TIME section -->
+                <template id="one_time_template">
+                    <div id="one_time" class="mb-3">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Due Date <span class="text-danger">*</span></label>
+                                <input type="date" name="due_date" class="form-control" value="{{ old('due_date') }}"
+                                    required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Status <span class="text-danger">*</span></label>
+                                <select name="status" class="form-control" required>
+                                    <option value="PENDING" {{old('status') === 'PENDING'? 'selected' : ''}}>Pending</option>
+                                    <option value="PAID" {{old('status') === 'PAID'? 'selected' : ''}}>Paid</option>
+                                    <option value="OVERDUE" {{old('status') === 'OVERDUE'? 'selected' : ''}}>Overdue</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- MILESTONE section -->
+                <template id="milestone_template">
+                    <div id="milestone" class="mb-3">
+                        <div class="row mb-3 milestone-row" data-index="0">
+                            <div class="col-md-4">
+                                <label class="form-label">Milestone Description <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" name="milestone[0][description]" class="form-control description"
+                                    placeholder="e.g. first draft" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Due Date <span class="text-danger">*</span></label>
+                                <input type="date" name="milestone[0][due_date]" class="form-control due_date"
+                                    required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Status <span class="text-danger">*</span></label>
+                                <div class="d-flex gap-2">
+                                    <select name="milestone[0][status]" class="form-control status" required>
+                                        <option value="PENDING">Pending</option>
+                                        <option value="PAID">Paid</option>
+                                        <option value="OVERDUE">Overdue</option>
+                                    </select>
+                                    <button type="button" class="btn btn-icon btn-success add-milestone">
+                                        <i data-feather="plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- RECEIPT table -->
                 <div class="row mb-3">
                     <div class="col-12">
                         <table class="table table-bordered">
@@ -89,28 +129,20 @@
                                     <th>Particulars</th>
                                     <th>Qty</th>
                                     <th>Amount</th>
-                                    <th>Tax (%)</th>
                                     <th>Total</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>
-                                        <input type="text" class="form-control" name="particulars[0]" placeholder="e.g. Service 1" required>
-                                    </td>
-                                    <td>
-                                        <input type="number" class="form-control" name="qty[0]" placeholder="e.g. 1" value="1" min="1" required>
-                                    </td>
-                                    <td>
-                                        <input type="number" class="form-control" name="amount[0]" placeholder="e.g. 100" value="0" min="0" required>
-                                    </td>
-                                    <td>
-                                        <input type="number" class="form-control" name="tax[0]" placeholder="e.g. 10" value="0" min="0" required>
-                                    </td>
-                                    <td>
-                                        <input type="number" class="form-control" name="total[0]" value="0.00" readonly required>
-                                    </td>
+                                    <td><input type="text" name="receipt[0][particular]" class="form-control"
+                                            placeholder="Service 1" required></td>
+                                    <td><input type="number" name="receipt[0][qty]" class="form-control"
+                                            value="1" min="1" required></td>
+                                    <td><input type="number" name="receipt[0][amount]" class="form-control"
+                                            value="0" min="0" required></td>
+                                    <td><input type="number" name="receipt[0][total]" class="form-control"
+                                            value="0.00" readonly required></td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-icon btn-danger delete-row">
                                             <i data-feather="trash"></i>
@@ -120,9 +152,15 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="6">
+                                    <td colspan="3">Grand Total</td>
+                                    <td colspan="2">
+                                        <input id="grand_total" name="grand_total" class="form-control" type="number" value="0" readonly >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5">
                                         <button type="button" class="btn btn-icon btn-success add-row w-100">
-                                            <i data-feather="plus"></i> 
+                                            <i data-feather="plus"></i> Add row
                                         </button>
                                     </td>
                                 </tr>
@@ -131,71 +169,145 @@
                     </div>
                 </div>
 
-                <!-- Submit button (with an ID for enabling/disabling) -->
-                <button type="submit" class="btn btn-primary" id="submitBtn">
-                    Create Invoice
-                </button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">Create Invoice</button>
             </form>
         </div>
     </div>
 
-
     @push('custom-scripts')
         <script>
+
+            function calculateGrandTotal() {
+                let sum = 0;
+                $('tbody tr').each(function() {
+                    sum += parseFloat($(this).find('input[name*="[total]"]').val()) || 0
+                });
+                $('#grand_total').val(sum.toFixed(2));
+            }
+            // calculate total on receipt table
+            function calculateTotal(row) {
+                const qty        = parseFloat(row.find('input[name*="[qty]"]').val()) || 0;
+                const amount     = parseFloat(row.find('input[name*="[amount]"]').val()) || 0;
+                row.find('input[name*="[total]"]').val((qty * amount).toFixed(2));
+                calculateGrandTotal()
+            }
+
             $(document).ready(function() {
-                // Function to calculate total
-                function calculateTotal(row) {
-                    const qty       = parseFloat(row.find('input[name^="qty"]').val())      || 0
-                    const amount    = parseFloat(row.find('input[name^="amount"]').val())   || 0
-                    const tax       = parseFloat(row.find('input[name^="tax"]').val())      || 0
-                    const subtotal  = qty * amount
-                    const taxAmount = (subtotal * tax) / 100
-                    const total     = subtotal + taxAmount
-                    
-                    row.find('input[name^="total"]').val(total.toFixed(2));
-                }
 
-                // Add row handler
-                $('table').on('click', '.add-row', function() {
-                    var rowIndex = $('tbody tr').length;
-                    $('tbody').append(`
-                        <tr>
-                            <td>
-                                <input type="text" class="form-control" name="particulars[${rowIndex}]" placeholder="e.g. Service 1" required>
-                            </td>
-                            <td>
-                                <input type="number" class="form-control" name="qty[${rowIndex}]" placeholder="e.g. 1" required>
-                            </td>
-                            <td>
-                                <input type="number" class="form-control" name="amount[${rowIndex}]" placeholder="e.g. 100" required>
-                            </td>
-                            <td>
-                                <input type="number" class="form-control" name="tax[${rowIndex}]" placeholder="e.g. 10" required>
-                            </td>
-                            <td>
-                                <input type="number" class="form-control" name="total[${rowIndex}]" placeholder="e.g. 100" readonly>
-                            </td>
-                            <td class="text-center">
-                                <button type="button" class="btn btn-danger delete-row">
-                                    <i data-feather="trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `);
+                // toggle sections
+                $('#type').change(function() {
 
-                    feather.replace();
+                    switch (this.value) {
+                        case 'ONE TIME':
+                            
+                            // 1) Show the one‑time form
+                            var $oneTmpl     = $('#one_time_template');
+                            var $oneFragment = $($oneTmpl.prop('content').cloneNode(true));
+                            $oneTmpl.replaceWith($oneFragment);
+
+                            // 2) Wrap the existing #milestone back into a new template
+                            var $milestone = $('#milestone');
+                            if ($milestone.length) {
+                                var $msTmpl = $('<template>', { id: 'milestone_template' });
+                                $milestone.replaceWith($msTmpl);
+                                // DOM append into the template’s content
+                                $msTmpl[0].content.appendChild($milestone[0]);
+                            }
+                        break;
+                        
+                        case 'MILESTONE':
+                            
+                            // 1) Show the milestone form
+                            var $msTmpl      = $('#milestone_template');
+                            var $msFragment  = $($msTmpl.prop('content').cloneNode(true));
+                            $msTmpl.replaceWith($msFragment);
+
+                            // 2) Wrap the existing #one_time back into a new template
+                            var $oneTime = $('#one_time');
+                            if ($oneTime.length) {
+                                var $otTmpl = $('<template>', { id: 'one_time_template' });
+                                $oneTime.replaceWith($otTmpl);
+                                $otTmpl[0].content.appendChild($oneTime[0]);
+                            }
+                        
+                        break;
+                    }
+
+                    feather.replace()
                 });
 
-                // Input change handler for automatic total calculation
-                $('table').on('input', 'input[name^="qty"], input[name^="amount"], input[name^="tax"]', function() {
+                $('table').on('input', 'input[name*="[qty]"], input[name*="[amount]"]', function() {
                     calculateTotal($(this).closest('tr'));
                 });
 
-                // Delete row handler
+                // add receipt row
+                $('table').on('click', '.add-row', function() {
+                    const index = $('tbody tr').length;
+                    $('tbody').append(`
+                    <tr>
+                        <td><input type="text" name="receipt[${index}][particular]" class="form-control" placeholder="Service 1" required></td>
+                        <td><input type="number" name="receipt[${index}][qty]" class="form-control" value="1" min="1" required></td>
+                        <td><input type="number" name="receipt[${index}][amount]" class="form-control" value="0" min="0" required></td>
+                        <td><input type="number" name="receipt[${index}][total]" class="form-control" value="0.00" readonly></td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-icon btn-danger delete-row"><i data-feather="trash"></i></button>
+                        </td>
+                    </tr>
+                `);
+                    feather.replace();
+                });
+
+                // delete receipt row
                 $('table').on('click', '.delete-row', function() {
                     $(this).closest('tr').remove();
                 });
+
+                // add milestone
+                $(document).on('click', '.add-milestone', function() {
+                    const index = $('#milestone .milestone-row').length;
+
+                    $(this)
+                        .removeClass('btn-success add-milestone')
+                        .addClass('btn-danger remove-milestone')
+                        .html('<i data-feather="trash"></i>');
+
+                    $('#milestone').append(`
+                        <div class="row mb-3 milestone-row" data-index="0">
+                            <div class="col-md-4">
+                                <label class="form-label">Milestone Description <span class="text-danger">*</span></label>
+                                <input type="text" name="milestone[${index}][description]" class="form-control description" placeholder="e.g. first draft" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Due Date <span class="text-danger">*</span></label>
+                                <input type="date" name="milestone[${index}][due_date]" class="form-control due_date" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Status <span class="text-danger">*</span></label>
+                                <div class="d-flex gap-2">
+                                    <select name="milestone[${index}][status]" class="form-control status" required>
+                                        <option value="PENDING">Pending</option>
+                                        <option value="PAID">Paid</option>
+                                        <option value="OVERDUE">Overdue</option>
+                                    </select>
+                                    <button type="button" class="btn btn-icon btn-success add-milestone">
+                                        <i data-feather="plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                    feather.replace();
+                });
+
+                // remove milestone
+                $(document).on('click', '.remove-milestone', function() {
+                    $(this).closest('.milestone-row').remove();
+                    calculateGrandTotal()
+                });
+
+                $('#type').trigger('change')
             });
+
         </script>
     @endpush
 </x-lawyer.app>

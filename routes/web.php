@@ -168,3 +168,5 @@ Route::group(['middleware' => 'lawyer.guest'], function () {
 
     Route::post('/otp/verify', [OTPController::class, 'verifyOTP'])->name('lawyer.otp.verify');
 });
+
+Route::view('/foo', 'welcome');

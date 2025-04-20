@@ -32,6 +32,7 @@ class AppointmentController extends Controller
             'details'      => 'required|string',
             'meeting_date' => 'required|date',
             'lawyer_id'    => 'required|exists:lawyers,id',
+            'country'      => 'required|string',
             'attachment.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:5000' // Allow optional file upload
         ]);
 
@@ -41,6 +42,7 @@ class AppointmentController extends Controller
         $appointment = Appointment::create([
             'user_id'      => $user->id,
             'lawyer_id'    => $request->lawyer_id,
+            'country'      => $request->country,
             'details'      => $request->details,
             'meeting_date' => $request->meeting_date,
         ]);

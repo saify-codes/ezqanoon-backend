@@ -25,8 +25,7 @@
                             <th>Last Name</th>
                             <th>Gender</th>
                             <th>Phone</th>
-                            <th>Email</th>
-                            <th>Dob</th>
+                            <th>Origin</th>
                             <th>Type</th>
                             <th>Date created</th>
                             <th>Action</th>
@@ -102,8 +101,16 @@
                     { data: 'last_name' },
                     { data: 'gender' },
                     { data: 'phone' },
-                    { data: 'email' },
-                    { data: 'dob' },
+                    { 
+                        data: 'origin',
+                        render: function(data) {
+                            const originClasses = {
+                                'LOCAL': 'primary',
+                                'FOREIGN': 'info',
+                            };
+                            return getBadge(data, originClasses);
+                        }    
+                    },
                     {
                         data: 'type',
                         render: function(data) {

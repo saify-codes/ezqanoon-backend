@@ -3,15 +3,56 @@
 namespace App\Http\Controllers\Lawyer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Invoice;
+use App\Models\InvoiceMilestone;
+use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class InvoiceController extends Controller
 {
+    use ApiResponseTrait;
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->ajax()) {
+
+            // DataTables columns to map for ordering:
+            $columns            = ['id', 'name', 'phone', 'total', 'statue', 'due_date', 'created_at'];
+            $draw               = $request->input('draw');
+            $start              = $request->input('start');        // skip
+            $length             = $request->input('length');       // rows per page
+            $searchValue        = $request->input('search.value');  // global search box
+            $orderColumnIndex   = $request->input('order.0.column'); // which column index is being sorted
+            $orderDirection     = $request->input('order.0.dir');    // asc or desc
+
+            $query              = Invoice::with('milestone')->where('lawyer_id', getLawyerId());
+            $totalRecords       = $query->count();
+
+            if (!empty($searchValue)) {
+                $query->where('name', 'like', "%{$searchValue}%")
+                    ->orWhere('phone', 'like', "%{$searchValue}%");
+            }
+
+            $totalRecordsFiltered = $query->count();
+
+            if (isset($columns[$orderColumnIndex])) {
+                $query->orderBy($columns[$orderColumnIndex], $orderDirection);
+            } else {
+                $query->orderBy('id', 'asc');
+            }
+
+            $data = $query->skip($start)->take($length)->get();
+
+            return response()->json([
+                'draw'            => intval($draw),
+                'recordsTotal'    => $totalRecords,
+                'recordsFiltered' => $totalRecordsFiltered,
+                'data'            => $data,
+            ]);
+        }
         return view('lawyer.invoice.index');
     }
 
@@ -19,7 +60,7 @@ class InvoiceController extends Controller
      * Show the form for creating a new resource.
      */
     public function create()
-    {   
+    {
         return view('lawyer.invoice.create');
     }
 
@@ -28,7 +69,54 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if (!Auth::user()->hasPermission('invoice:create')) {
+            abort(403, 'Unauthorized');
+        }
+
+        $validated = $request->validate([
+            'name'                            => 'required|string|max:255',
+            'email'                           => 'required|email',
+            'phone'                           => 'required|phone',
+            'address'                         => 'required|string',
+            'type'                    => 'required|string',
+            'payment_method'                  => 'required|in:CASH,BANK,ONLINE',
+            'due_date'                        => 'required_if:type,ONE TIME|date',
+            'status'                          => 'required_if:type,ONE TIME|in:PENDING,PAID,OVERDUE',
+            'milestone'                       => 'nullable|array',
+            'milestone.*.description'         => 'nullable|string|max:255',
+            'milestone.*.due_date'            => 'nullable|date',
+            'milestone.*.status'              => 'nullable|string',
+            'receipt'                         => 'required|array',
+            'grand_total'                     => 'required|numeric',
+        ]);
+
+        $invoice = Invoice::create([
+            'lawyer_id'                       => getLawyerId(),
+            'name'                            => $validated['name'],
+            'email'                           => $validated['email'],
+            'phone'                           => $validated['phone'],
+            'address'                         => $validated['address'],
+            'type'                            => $validated['type'],
+            'payment_method'                  => $validated['payment_method'],
+            'due_date'                        => $validated['due_date'] ?? null,
+            'status'                          => $validated['status']   ?? null,
+            'total'                           => $validated['grand_total'],
+            'receipt'                         => $validated['receipt'] ?? null
+        ]);
+
+
+        if ($request->type === 'MILESTONE') {
+            foreach ($validated['milestone'] as $milestone) {
+                InvoiceMilestone::create([
+                    'invoice_id' => $invoice->id,
+                    ...$milestone
+                ]);
+            }
+        }
+
+        return redirect()
+            ->route('lawyer.invoice.index')
+            ->with('success', 'Invoice created successfully!');
     }
 
     /**
@@ -36,7 +124,13 @@ class InvoiceController extends Controller
      */
     public function show(string $id)
     {
-        //
+        // Retrieve the invloice that belongs to the authenticated lawyer or fail
+        $invoice = Invoice::where('id', $id)
+            ->where('lawyer_id', getLawyerId())
+            ->firstOrFail();
+
+        // Return the view with the case data
+        return view('lawyer.invoice.show', compact('invoice'));
     }
 
     /**
@@ -44,7 +138,15 @@ class InvoiceController extends Controller
      */
     public function edit(string $id)
     {
-        return view('construction');
+        if (!Auth::user()->hasPermission('invoice:edit')) {
+            abort(403, 'Unauthorized');
+        }
+
+        $invoice = Invoice::where('id', $id)
+            ->where('lawyer_id', getLawyerId())
+            ->firstOrFail();
+
+        return view('lawyer.invoice.edit', compact('invoice'));
     }
 
     /**
@@ -52,14 +154,85 @@ class InvoiceController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // authorization
+        if (!Auth::user()->hasPermission('invoice:edit')) {
+            abort(403, 'Unauthorized');
+        }
+
+        // validate exactly as in store()
+        $validated = $request->validate([
+            'name'                            => 'required|string|max:255',
+            'email'                           => 'required|email',
+            'phone'                           => 'required|phone',
+            'address'                         => 'required|string',
+            'type'                    => 'required|string',
+            'payment_method'                  => 'required|in:CASH,BANK,ONLINE',
+            'due_date'                        => 'required_if:type,ONE TIME|date',
+            'status'                          => 'required_if:type,ONE TIME|in:PENDING,PAID,OVERDUE',
+            'milestone'                       => 'nullable|array',
+            'milestone.*.description'         => 'nullable|string|max:255',
+            'milestone.*.due_date'            => 'nullable|date',
+            'milestone.*.status'              => 'nullable|string',
+            'receipt'                         => 'required|array',
+            'grand_total'                     => 'required|numeric',
+        ]);
+
+        // fetch the invoice, ensuring it belongs to this lawyer
+        $invoice = Invoice::where('id', $id)
+            ->where('lawyer_id', getLawyerId())
+            ->firstOrFail();
+
+        // update main invoice fields
+        $invoice->update([
+            'name'             => $validated['name'],
+            'email'            => $validated['email'],
+            'phone'            => $validated['phone'],
+            'address'          => $validated['address'],
+            'type'             => $validated['type'],
+            'payment_method'   => $validated['payment_method'],
+            // only keep due_date/status on ONE TIME invoices
+            'due_date'         => $validated['type'] === 'ONE TIME'? $validated['due_date']: null,
+            'status'           => $validated['type'] === 'ONE TIME'? $validated['status']: null,
+            'total'            => $validated['grand_total'],
+            'receipt'          => $validated['receipt'],
+        ]);
+
+        // remove any old milestones
+        InvoiceMilestone::where('invoice_id', $invoice->id)->delete();
+
+        // if it's a milestone‐based invoice, recreate them
+        if ($validated['type'] === 'MILESTONE' && !empty($validated['milestone'])) {
+            foreach ($validated['milestone'] as $ms) {
+                InvoiceMilestone::create([
+                    'invoice_id'  => $invoice->id,
+                    'description' => $ms['description'] ?? null,
+                    'due_date'    => $ms['due_date']    ?? null,
+                    'status'      => $ms['status']      ?? null,
+                ]);
+            }
+        }
+
+        return redirect()
+            ->route('lawyer.invoice.index')
+            ->with('success', 'Invoice updated successfully!');
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        //
+        if (!Auth::user()->hasPermission('invoice:delete')) {
+            abort(403, 'Unauthorized');
+        }
+
+        Invoice::where('lawyer_id', getLawyerId())->findOrFail($id)->delete();
+
+        if ($request->ajax()) {
+            return $this->successResponse('invoice deleted');
+        }
+
+        return redirect()->route('lawyer.invoice.index')->with('success', 'Invoice deleted successfully.');
     }
 }

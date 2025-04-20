@@ -4,9 +4,9 @@
             <div class="col-md-8 col-xl-4 mx-auto">
                 <div class="card">
                     <div class="auth-form-wrapper px-4 py-5">
-                        <a href="{{ url('/') }}" class="noble-ui-logo d-block mb-2">EzQanoon</a>
-                        <h5 class="text-muted fw-normal mb-4">Welcome back! Log in to your account.</h5>
-
+                        <a href="{{ url('/') }}" class="noble-ui-logo d-block mb-5 text-center">
+                            <img src="{{asset('logo.png')}}" alt="logo" style="height: 100px">
+                        </a>
                         <!-- Display Error Messages -->
                         <div id="ajax-errors" class="alert alert-danger d-none"></div>
 
