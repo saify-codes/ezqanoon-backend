@@ -257,6 +257,17 @@
         <script src="{{ asset('assets/plugins/ckeditor/ckeditor.min.js') }}"></script>
     @endpush
 
+    @push('style')
+        <style>
+            .ck-content{
+                min-height: 100px
+            }
+            .ck-content p{
+                white-space: pre-wrap !important;   /* keep every space */
+            }
+        </style>
+    @endpush
+
     @push('custom-scripts')
         <script>
             $(document).ready(function() {
