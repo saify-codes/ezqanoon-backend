@@ -151,13 +151,13 @@ class CasesController extends Controller
 
         if ($request->has('fillings')) {
             
-            $fillingsData = array_map(fn($fillingData) => [...$fillingData, 'case_id' => $case->id],$request->fillings);           
+            $fillingsData = array_map(fn($fillingData) => [...$fillingData, 'case_id' => $case->id, 'lawyer_id' => getLawyerId()],$request->fillings);           
             CaseFillingDate::insert($fillingsData);
         }
         
         if ($request->has('hearings')) {
             
-            $hearingsData = array_map(fn($hearingData) => [...$hearingData, 'case_id' => $case->id],$request->hearings);           
+            $hearingsData = array_map(fn($hearingData) => [...$hearingData, 'case_id' => $case->id,  'lawyer_id' => getLawyerId()],$request->hearings);           
             CaseHearingDate::insert($hearingsData);
         }
 
@@ -282,14 +282,14 @@ class CasesController extends Controller
 
         if ($request->has('fillings')) {
             
-            $fillingsData = array_map(fn($fillingData) => [...$fillingData, 'case_id' => $case->id],$request->fillings);           
+            $fillingsData = array_map(fn($fillingData) => [...$fillingData, 'case_id' => $case->id, 'lawyer_id' => getLawyerId()],$request->fillings);           
             CaseFillingDate::where('case_id', $case->id)->delete();
             CaseFillingDate::insert($fillingsData);
         }
         
         if ($request->has('hearings')) {
             
-            $hearingsData = array_map(fn($hearingData) => [...$hearingData, 'case_id' => $case->id],$request->hearings);           
+            $hearingsData = array_map(fn($hearingData) => [...$hearingData, 'case_id' => $case->id, 'lawyer_id' => getLawyerId()],$request->hearings);           
             CaseHearingDate::where('case_id', $case->id)->delete();
             CaseHearingDate::insert($hearingsData);
         }

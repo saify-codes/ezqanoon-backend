@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Lawyer;
 
 use App\Http\Controllers\Controller;
+use App\Models\CaseFillingDate;
+use App\Models\CaseHearingDate;
 use App\Models\Cases;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CalendarController extends Controller
-{    
+{
     /**
      * index
      *
@@ -21,26 +23,46 @@ class CalendarController extends Controller
 
     public function events()
     {
-        $cases = Cases::where('lawyer_id', Auth::id())->get();
+        // 1.  Pull the two date tables with the related case in one go
+        $hearingDates = CaseHearingDate::with('caseRelation')
+            ->where('lawyer_id', getLawyerId())
+            ->get();
+
+        $filingDates  = CaseFillingDate::with('caseRelation')
+            ->where('lawyer_id', getLawyerId())
+            ->get();
+
+        // 2.  Build one events array for FullCalendar
         $events = [];
 
-        foreach ($cases as $case) {
-            if (!empty($case->deadlines) && is_array($case->deadlines)) {
-                foreach ($case->deadlines as $deadline) {
-                    if (isset($deadline['date']) && isset($deadline['description'])) {
-                        $events[] = [
-                            'title' => $deadline['description'],
-                            'start' => $deadline['date'],
-                            'extendedProps' => [
-                                'caseId' => $case->id,
-                                'caseName' => $case->name
-                            ],
-                            'backgroundColor' => $this->getColorByUrgency($case->urgency),
-                        ];
-                    }
-                }
-            }
+        /* ‑‑‑ filings ‑‑‑ */
+        foreach ($filingDates as $item) {
+            $events[] = [
+                'title' => $item->description ?: 'Filing',
+                'start' => $item->date,
+                'extendedProps' => [
+                    'caseId'   => $item->case_id,
+                    'caseName' => $item->caseRelation->name,
+                    'type'     => 'filing',
+                ],
+                'backgroundColor' => $this->getColorByUrgency($item->caseRelation->urgency),
+            ];
         }
+
+        /* ‑‑‑ hearings ‑‑‑ */
+        foreach ($hearingDates as $item) {
+            $events[] = [
+                'title' => $item->description ?: 'Hearing',
+                'start' => $item->date,
+                'extendedProps' => [
+                    'caseId'   => $item->case_id,
+                    'caseName' => $item->caseRelation->name,
+                    'type'     => 'hearing',
+                ],
+                'backgroundColor' => $this->getColorByUrgency($item->caseRelation->urgency),
+            ];
+        }
+
 
         return response()->json($events);
     }

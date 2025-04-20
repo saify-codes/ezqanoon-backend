@@ -59,6 +59,26 @@ return new class extends Migration
         Schema::create('case_filling_dates', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('case_id');
+            $table->unsignedBigInteger('lawyer_id');
+            $table->string('description');
+            $table->date('date');
+
+            // Foreign key with index
+            $table->foreign('case_id')
+                ->references('id')
+                ->on('cases')
+                ->onDelete('cascade');
+                
+            $table->foreign('lawyer_id')
+                ->references('id')
+                ->on('lawyers')
+                ->onDelete('cascade');
+        });
+        
+        Schema::create('case_hearing_dates', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('case_id');
+            $table->unsignedBigInteger('lawyer_id');
             $table->string('description');
             $table->date('date');
 
@@ -68,18 +88,9 @@ return new class extends Migration
                 ->on('cases')
                 ->onDelete('cascade');
 
-        });
-        
-        Schema::create('case_hearing_dates', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('case_id');
-            $table->string('description');
-            $table->date('date');
-
-            // Foreign key with index
-            $table->foreign('case_id')
+            $table->foreign('lawyer_id')
                 ->references('id')
-                ->on('cases')
+                ->on('lawyers')
                 ->onDelete('cascade');
 
         });
