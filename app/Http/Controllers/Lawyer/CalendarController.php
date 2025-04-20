@@ -21,15 +21,19 @@ class CalendarController extends Controller
         return view('lawyer.calendar.index');
     }
 
-    public function events()
+    public function events(Request $request)
     {
+        $start = $request->start;
+        $end   = $request->end;
         // 1.  Pull the two date tables with the related case in one go
         $hearingDates = CaseHearingDate::with('caseRelation')
             ->where('lawyer_id', getLawyerId())
+            ->whereBetween('date', [$start, $end])
             ->get();
 
         $filingDates  = CaseFillingDate::with('caseRelation')
             ->where('lawyer_id', getLawyerId())
+            ->whereBetween('date', [$start, $end])
             ->get();
 
         // 2.  Build one events array for FullCalendar
