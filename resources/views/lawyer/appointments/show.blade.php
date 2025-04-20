@@ -41,40 +41,41 @@
             <div class="mb-3">
                 <h6 class="mb-3">Summary</h6>
                 <div class="border rounded p-3">
-                    {!! $appointment->summary !!}
+                    {!! $appointment->summary ?? 'N\A' !!}
                 </div>
             </div>
 
             <!-- Client Attachments -->
             @if ($appointment->attachments && count($appointment->attachments))
                 <div class="mb-3">
-                    <h6 class="mb-3">Attachments</h6>
+                    <h6 class="mb-3">Client Attachments</h6>
                     <div class="appointment-attachments">
                         @foreach ($appointment->attachments as $attachment)
                             @php
-                                $fileUrl = asset("/storage/clients/$appointment->id/$attachment->file");
+                                $fileUrl  = $attachment->file;
                                 $mimeType = $attachment->mime_type;
-                                $isImage = strpos($mimeType, 'image') === 0;
+                                $isImage  = strpos($mimeType, 'image') === 0;
                             @endphp
 
                             <div class="attachment" id="attachment-{{ $attachment->id }}">
-                                <a href="{{ $fileUrl }}" class="{{ $isImage ? 'glightbox' : '' }}"
+                                <a  href="{{ $fileUrl }}" 
+                                    class="{{ $isImage ? 'glightbox' : '' }}"
                                     data-gallery="appointment-attachments" data-title="{{ $attachment->original_name }}"
                                     target="_blank">
-                                    <img src="{{ $isImage ? $fileUrl : asset('assets/images/icons/file.png') }}"
-                                        alt="{{ $attachment->original_name }}" class="rounded">
+                                    <img src="{{ $isImage ? $fileUrl : asset('assets/images/icons/file.png') }}" alt="{{ $attachment->original_name }}" class="rounded">
                                 </a>
                                 <!-- Delete Icon Button using AJAX -->
-                                <button type="button" class="delete-attachment-button"
+                                {{-- <button type="button" class="delete-attachment-button"
                                     data-url="{{ route('lawyer.client.attachments.destroy', [$appointment->id, $attachment->id]) }}">
                                     <i data-feather="trash" style="width: 15px"></i>
-                                </button>
+                                </button> --}}
                                 <p class="text-sm text-muted text-center mt-1">{{ $attachment->original_name }}</p>
                             </div>
                         @endforeach
                     </div>
                 </div>
             @endif
+            
             
             <!-- Summary Attachments -->
             @if ($appointment->summaryAttachments && count($appointment->summaryAttachments))
@@ -84,7 +85,7 @@
                         @foreach ($appointment->summaryAttachments as $attachment)
 
                             @php
-                                $fileUrl  = asset("/storage/appointments/summary/$appointment->id/$attachment->file");
+                                $fileUrl  = $attachment->file;
                                 $mimeType = $attachment->mime_type;
                                 $isImage  = strpos($mimeType, 'image') === 0;
                             @endphp
@@ -199,7 +200,7 @@
                                 },
                                 success: function(response) {
                                     button.closest('.attachment').remove();
-                                    successMessage('Attachment deleted successfully.');
+                                    successMessage('AppointmentAttachment deleted successfully.');
                                 },
                                 error: function(xhr) {
                                     Swal.fire('Error',

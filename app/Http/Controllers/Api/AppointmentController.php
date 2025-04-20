@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
-use App\Models\Attachment;
+use App\Models\AppointmentAttachment;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +16,7 @@ class AppointmentController extends Controller
         
     public function getAppointments(){
         $user = Auth::user();
-        $appointments = Appointment::with(['attachments', 'lawyer'])->where('user_id', $user->id)->get();
+        $appointments = Appointment::with(['attachments', 'lawyer:id,name'])->where('user_id', $user->id)->get();
         return $this->successResponse('appointments', ['data' => $appointments]);
     }
     
@@ -50,10 +50,11 @@ class AppointmentController extends Controller
         // Handle file upload
         if ($request->hasFile('attachment')) {
             foreach ($request->file('attachment') as $file) {
-                $attachmentPath = $file->store("users/{$user->id}/appointments", 'public');
-                Attachment::create([
+                $path       = $file->store("appointments/{$appointment->id}", 'public');
+                $fileName   = basename($path);
+                AppointmentAttachment::create([
                     'appointment_id' => $appointment->id,
-                    'file_path'      => $attachmentPath,
+                    'file'           => $fileName,
                     'original_name'  => $file->getClientOriginalName(),
                     'mime_type'      => $file->getClientMimeType(),
                 ]);

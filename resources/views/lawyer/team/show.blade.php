@@ -233,7 +233,7 @@
                                 },
                                 success: function(response) {
                                     button.closest('.attachment').remove();
-                                    successMessage('Attachment deleted successfully.');
+                                    successMessage('AppointmentAttachment deleted successfully.');
                                 },
                                 error: function(xhr) {
                                     Swal.fire('Error',

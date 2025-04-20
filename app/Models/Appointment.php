@@ -10,7 +10,7 @@ class Appointment extends Model
     protected $guarded = ['id'];
 
     public function attachments(){
-        return $this->hasMany(Attachment::class);
+        return $this->hasMany(AppointmentAttachment::class);
     }
     
     public function summaryAttachments(){

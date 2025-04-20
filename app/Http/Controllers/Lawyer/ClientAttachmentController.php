@@ -36,6 +36,6 @@ class ClientAttachmentController extends Controller
         $attachment->delete();
         
         // Redirect back to the case details with a success message
-        return $this->successResponse('Attachment deleted');
+        return $this->successResponse('AppointmentAttachment deleted');
     }
 }

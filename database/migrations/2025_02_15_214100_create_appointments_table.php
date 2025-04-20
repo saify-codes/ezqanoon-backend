@@ -14,6 +14,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('country')->default('Pakistan');
             $table->text('details');
+            $table->text('summary');
             $table->string('meeting_link')->nullable();
             $table->timestamp('meeting_date');
             $table->timestamps();

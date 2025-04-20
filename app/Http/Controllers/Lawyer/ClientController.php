@@ -144,7 +144,7 @@ class ClientController extends Controller
                     $mimeType = Storage::disk('public')->mimeType($attachment->file_path);
                     // Move the file into a directory specific to the client
                     if (Storage::disk('public')->move($attachment->file_path, "clients/$client->id/{$attachment->file}")) {
-                        // Save the attachment record (assuming a one-to-many relationship between Client and Attachment)
+                        // Save the attachment record (assuming a one-to-many relationship between Client and AppointmentAttachment)
                         $client->attachments()->create([
                             'file'          => $attachment->file,
                             'original_name' => $attachment->original_name,

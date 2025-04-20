@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AppointmentSummaryAttachment extends Model
+class AppointmentAttachment extends Model
 {
     protected $guarded = ['id'];
 
     public function getFileAttribute($value){
-        return asset("storage/appointments/summary/$this->appointment_id/$value");
+        return asset("storage/appointments/$this->appointment_id/$value");
     }
 }
