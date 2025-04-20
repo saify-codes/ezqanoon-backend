@@ -70,10 +70,11 @@ class CalendarController extends Controller
     private function getColorByUrgency($urgency)
     {
         return match ($urgency) {
-            'CRITICAL'  => 'var(--bs-danger)', // red
-            'HIGH'      => 'var(--bs-primary)',     // orange
-            'MEDIUM'    => 'var(--bs-warning)',   // yellow
-            default     => 'var(--bs-light)',    // blue
+            'URGENT'    => 'var(--bs-danger)', // red
+            'HIGH'      => 'var(--bs-primary)',// orange
+            'MEDIUM'    => 'var(--bs-warning)',// yellow
+            'LOW'       => 'var(--bs-info)',   // yellow
+            default     => 'var(--bs-light)',  // blue
         };
     }
 }
