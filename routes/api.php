@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\LawyerController;
+use App\Http\Controllers\Api\OTPController;
 use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,8 @@ Route::post('/forgot', [AuthController::class, 'forgot']);
 Route::post('/verify', [AuthController::class, 'verify']);
 Route::post('/reset',  [AuthController::class, 'reset']);
 Route::post('/resend',  [AuthController::class, 'sendVerificationLink']);
+Route::post('/otp/send', [OTPController::class, 'sendOTP'])->name('lawyer.otp.send');
+Route::post('/otp/verify', [OTPController::class, 'verifyOTP'])->name('lawyer.otp.verify');
 
 /*-------------------------------------------------------
 |                      LAWYERS API                      |
