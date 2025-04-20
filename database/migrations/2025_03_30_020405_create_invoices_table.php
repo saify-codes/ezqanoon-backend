@@ -23,7 +23,7 @@ return new class extends Migration
             $table->date('due_date')->nullable();
             $table->enum('payment_method', ['CASH', 'BANK', 'ONLINE TRANSFER']);
             $table->json('receipt')->nullable();
-            $table->decimal('total', 2)->default(0);
+            $table->decimal('total', 14, 2)->default(0);
             $table->timestamps();
         });
 
