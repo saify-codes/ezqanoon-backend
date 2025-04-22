@@ -60,7 +60,7 @@
                             <th scope="row">Company Name</th>
                             <td>{{ $client->company_name ?? '-' }}</td>
                         </tr>
-                        <tr>
+                        {{-- <tr>
                             <th scope="row">Company Website</th>
                             <td>{{ $client->company_website ?? '-' }}</td>
                         </tr>
@@ -100,7 +100,7 @@
                         <tr>
                             <th scope="row">TIN</th>
                             <td>{{ $client->tin ?? '-' }}</td>
-                        </tr>
+                        </tr> --}}
                     </tbody>
                 </table>
             </div>
@@ -124,7 +124,7 @@
             @endif
 
             <!-- Attachments -->
-            @if ($client->attachments && count($client->attachments))
+            {{-- @if ($client->attachments && count($client->attachments))
                 <div class="mb-3">
                     <h6 class="mb-3">Attachments</h6>
                     <div class="client-attachments">
@@ -152,7 +152,7 @@
                         @endforeach
                     </div>
                 </div>
-            @endif
+            @endif --}}
 
         </div>
     </div>

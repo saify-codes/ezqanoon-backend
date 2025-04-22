@@ -98,18 +98,18 @@
                 
                 <!-- Company details -->
                 <div class="row mb-3">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <label for="company_name" class="form-label">Company name</label>
                         <input type="tel" class="form-control" id="company_name" name="company_name" value="{{ old('company_name') }}" placeholder="e.g. Martin max Co.">
                     </div>
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <label for="company_website" class="form-label">Website</label>
                         <input type="text" class="form-control" id="company_website" name="company_website" value="{{ old('company_website') }}" placeholder="e.g. www.martin.co">
-                    </div>
+                    </div> --}}
                 </div>
                 
                 <!-- Preferences -->
-                <div class="row mb-3">
+                {{-- <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="communication_method" class="form-label">Communation method</label>
                         <input type="tel" class="form-control" id="communication_method" name="communication_method" value="{{ old('communication_method') }}" placeholder="e.g. sms">
@@ -122,10 +122,10 @@
                         <label for="language" class="form-label">Language</label>
                         <input type="text" class="form-control" id="language" name="language" value="{{ old('language') }}" placeholder="e.g. English, Urdu">
                     </div>
-                </div>
+                </div> --}}
                 
                 <!-- Financial details -->
-                <div class="row mb-3">
+                {{-- <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="billing_address" class="form-label">Billing address</label>
                         <input type="tel" class="form-control" id="billing_address" name="billing_address" value="{{ old('billing_address') }}" placeholder="e.g. sms">
@@ -142,7 +142,7 @@
                         <label for="tin" class="form-label">Tax identification number (TIN)</label>
                         <input type="text" class="form-control" id="tin" name="tin" value="{{ old('tin') }}" placeholder="e.g. XXXXX-XXXXXX-X">
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Notes -->
                 <div class="mb-3">
@@ -156,9 +156,8 @@
                 </div>
 
                 <!-- Attachments -->
-                <div class="mb-3">
+                {{-- <div class="mb-3">
                     <label for="attachments" class="form-label">Attachments (optional)</label>
-                    {{-- <input type="file" class="form-control" id="attachments" name="attachments[]" multiple> --}}
                     <div id="aerodrop" class="aerodrop mb-3"></div>
                     <!-- Note for users -->
                     <small class="text-muted d-block mt-1">
@@ -167,7 +166,7 @@
                         - <strong>Images</strong> must not exceed <strong>2MB</strong> each.<br>
                         - <strong>Documents/PDFs</strong> must not exceed <strong>10MB</strong> each.
                     </small>
-                </div>
+                </div> --}}
 
                 <!-- Submit button (with an ID for enabling/disabling) -->
                 <button type="submit" class="btn btn-primary" id="submitBtn">
@@ -223,30 +222,30 @@
                 });
 
                 // AeroDrop initialization with upload state management.
-                const aerodrop = new AeroDrop(document.querySelector('#aerodrop'), {
-                    name: 'attachments',
-                    uploadURL: '/upload',
-                    enableCamera: true,
-                    maxFiles: 10,
-                    allowedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
-                    fileSizeRules: [
-                        { types: ['image/jpeg', 'image/png', 'image/webp'], maxSize: 2 * 1024 * 1024, error: "Image file too big" },
-                        { types: ['application/pdf'], maxSize: 10 * 1024 * 1024, error: "PDF file too big" }
-                    ],
-                    fallbackError: "File too big",
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
-                    },
-                });
+                // const aerodrop = new AeroDrop(document.querySelector('#aerodrop'), {
+                //     name: 'attachments',
+                //     uploadURL: '/upload',
+                //     enableCamera: true,
+                //     maxFiles: 10,
+                //     allowedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
+                //     fileSizeRules: [
+                //         { types: ['image/jpeg', 'image/png', 'image/webp'], maxSize: 2 * 1024 * 1024, error: "Image file too big" },
+                //         { types: ['application/pdf'], maxSize: 10 * 1024 * 1024, error: "PDF file too big" }
+                //     ],
+                //     fallbackError: "File too big",
+                //     beforeSend: function(xhr) {
+                //         xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+                //     },
+                // });
 
-                aerodrop.onupload = function(res) {
-                    console.log("Upload successful:", res);
-                };
+                // aerodrop.onupload = function(res) {
+                //     console.log("Upload successful:", res);
+                // };
 
-                aerodrop.onerror = function(error) {
-                    errorMessage(error) 
-                    console.error("Upload error:", error);
-                };
+                // aerodrop.onerror = function(error) {
+                //     errorMessage(error) 
+                //     console.error("Upload error:", error);
+                // };
             });
 
             // Re-render icons on DOM change
@@ -255,14 +254,14 @@
             });
 
             // Disable form untill all pending upload processed
-            new MutationObserver(function(mutationsList, observer) {
-                $('#submitBtn').prop('disabled', $('#aerodrop').attr('data-loading') === 'true')
-            }).observe($('#aerodrop')[0], { attributes: true, attributeFilter: ['data-loading'] });
+            // new MutationObserver(function(mutationsList, observer) {
+            //     $('#submitBtn').prop('disabled', $('#aerodrop').attr('data-loading') === 'true')
+            // }).observe($('#aerodrop')[0], { attributes: true, attributeFilter: ['data-loading'] });
 
             // select 2
-            $('#payment_methods').select2({
-                placeholder: 'select payment method'
-            })
+            // $('#payment_methods').select2({
+            //     placeholder: 'select payment method'
+            // })
         </script>
     @endpush
 </x-lawyer.app>
