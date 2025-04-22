@@ -35,9 +35,10 @@
                         <label for="type" class="form-label">Case Type <span class="text-danger">*</span></label>
                         <select class="form-select" id="type" name="type" required>
                             <option value="">-- Select Case type --</option>
-                            <option value="CRIMINAL" {{ old('type') === 'CRIMINAL' ? 'selected' : '' }}>CRIMINAL</option>
-                            <option value="CIVIL"    {{ old('type') === 'CIVIL'    ? 'selected' : '' }}>CIVIL</option>
-                            <option value="OTHERs"   {{ old('type') === 'OTHERS'   ? 'selected' : '' }}>OTHERS</option>
+                            <option value="CRIMINAL" {{ old('type') === 'CRIMINAL' ? 'selected' : '' }}>CRIMINAL
+                            </option>
+                            <option value="CIVIL" {{ old('type') === 'CIVIL' ? 'selected' : '' }}>CIVIL</option>
+                            <option value="OTHERS" {{ old('type') === 'OTHERS' ? 'selected' : '' }}>OTHERS</option>
                         </select>
                     </div>
                 </div>
@@ -48,10 +49,10 @@
                         <label for="urgency" class="form-label">Urgency</label>
                         <select class="form-select" id="urgency" name="urgency">
                             <option value="">-- Select Urgency --</option>
-                            <option value="HIGH"    {{ old('urgency') === 'HIGH' ? 'selected' : '' }}>HIGH</option>
-                            <option value="MEDIUM"  {{ old('urgency') === 'MEDIUM' ? 'selected' : '' }}>MEDIUM</option>
-                            <option value="LOW"     {{ old('urgency') === 'LOW' ? 'selected' : '' }}>LOW</option>
-                            <option value="URGENT"  {{ old('urgency') === 'URGENT' ? 'selected' : '' }}>URGENT</option>
+                            <option value="HIGH" {{ old('urgency') === 'HIGH' ? 'selected' : '' }}>HIGH</option>
+                            <option value="MEDIUM" {{ old('urgency') === 'MEDIUM' ? 'selected' : '' }}>MEDIUM</option>
+                            <option value="LOW" {{ old('urgency') === 'LOW' ? 'selected' : '' }}>LOW</option>
+                            <option value="URGENT" {{ old('urgency') === 'URGENT' ? 'selected' : '' }}>URGENT</option>
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -69,7 +70,8 @@
                 <!-- Court Case Number & Judge Name -->
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="court_case_number" class="form-label">Court Case Number <span class="text-danger">*</span></label>
+                        <label for="court_case_number" class="form-label">Court Case Number <span
+                                class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="court_case_number" name="court_case_number"
                             value="{{ old('court_case_number') }}" placeholder="Enter court case number" required>
                     </div>
@@ -129,7 +131,8 @@
 
                 <!-- Opposite Party Advocate Details -->
                 <div class="mb-3">
-                    <label for="opposite-party-advocate-details-editor" class="form-label">Opposite Party Advocate Details</label>
+                    <label for="opposite-party-advocate-details-editor" class="form-label">Opposite Party Advocate
+                        Details</label>
                     <textarea class="form-control" id="opposite-party-advocate-details-editor" name="opposite_party_advocate_details"
                         rows="3" placeholder="Enter opposite party advocate details">{{ old('opposite_party_advocate_details') }}</textarea>
                 </div>
@@ -146,21 +149,25 @@
                     <label for="filing" class="form-label">Filing date</label>
                     <div id="filing-container">
                         <div class="filling-row d-flex gap-4 mb-3">
-                            <input type="text" class="form-control filling-description" maxlength="255" placeholder="Filling description">
+                            <input type="text" class="form-control filling-description" maxlength="255"
+                                placeholder="Filling description">
                             <input type="date" class="form-control filling-date">
-                            <button type="button" class="btn btn-sm btn-success add-filling"><i data-feather="plus"></i></button>
+                            <button type="button" class="btn btn-sm btn-success add-filling"><i
+                                    data-feather="plus"></i></button>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Hearings -->
                 <div class="mb-3">
                     <label for="hearing" class="form-label">Hearing date</label>
                     <div id="hearing-container">
                         <div class="hearing-row d-flex gap-4 mb-3">
-                            <input type="text" class="form-control hearing-description" maxlength="255" placeholder="Hearing description">
+                            <input type="text" class="form-control hearing-description" maxlength="255"
+                                placeholder="Hearing description">
                             <input type="date" class="form-control hearing-date">
-                            <button type="button" class="btn btn-sm btn-success add-hearing"><i data-feather="plus"></i></button>
+                            <button type="button" class="btn btn-sm btn-success add-hearing"><i
+                                    data-feather="plus"></i></button>
                         </div>
                     </div>
                 </div>
@@ -169,9 +176,11 @@
                 <div class="mb-3">
                     <label for="payment_status" class="form-label">Payment Status</label>
                     <select class="form-select" id="payment_status" name="payment_status">
-                        <option value="PENDING" {{ old('payment_status') === 'PENDING' ? 'selected' : '' }}>PENDING</option>
+                        <option value="PENDING" {{ old('payment_status') === 'PENDING' ? 'selected' : '' }}>PENDING
+                        </option>
                         <option value="PAID" {{ old('payment_status') === 'PAID' ? 'selected' : '' }}>PAID</option>
-                        <option value="OVERDUE" {{ old('payment_status') === 'OVERDUE' ? 'selected' : '' }}>OVERDUE</option>
+                        <option value="OVERDUE" {{ old('payment_status') === 'OVERDUE' ? 'selected' : '' }}>OVERDUE
+                        </option>
                     </select>
                 </div>
 
@@ -208,11 +217,13 @@
 
     @push('style')
         <style>
-            .ck-content{
+            .ck-content {
                 min-height: 100px
             }
-            .ck-content p{
-                white-space: pre-wrap !important;   /* keep every space */
+
+            .ck-content p {
+                white-space: pre-wrap !important;
+                /* keep every space */
             }
         </style>
     @endpush
@@ -237,9 +248,9 @@
 
                     // switch the “add” button into a “remove” button
                     $(this)
-                    .removeClass('btn-success add-filling')
-                    .addClass('btn-danger remove-filling')
-                    .html('<i data-feather="trash"></i>');
+                        .removeClass('btn-success add-filling')
+                        .addClass('btn-danger remove-filling')
+                        .html('<i data-feather="trash"></i>');
 
                     // append a fresh blank row
                     $('#filing-container').append(`
@@ -274,9 +285,9 @@
                         .attr('name', `hearings[${index}][date]`);
 
                     $(this)
-                    .removeClass('btn-success add-hearing')
-                    .addClass('btn-danger remove-hearing')
-                    .html('<i data-feather="trash"></i>');
+                        .removeClass('btn-success add-hearing')
+                        .addClass('btn-danger remove-hearing')
+                        .html('<i data-feather="trash"></i>');
 
                     $('#hearing-container').append(`
                     <div class="hearing-row d-flex gap-4 mb-3">
@@ -295,12 +306,25 @@
                     $(this).closest('.hearing-row').remove();
                 });
 
-                $('#type').change(function(){
-                    
-                    if (this.value === 'CRIMINAL') $('#case_type_criminal_fields').removeClass('d-none')
-                    else $('#case_type_criminal_fields').addClass('d-none')
-                })
+                $('#type').change(function() {
 
+                    const parent = $(this).parent();
+                    const value  = this.value;
+
+                    if (value === 'OTHERS') {
+                        parent.prop('class', 'col-md-3').after(`
+                            <div class="col-md-3">
+                                <label for="otherType" class="form-label">Specify Case Type</label>
+                                <input type="text" class="form-control" id="otherType" name="type" placeholder="Enter case type" />
+                            </div>
+                        `);
+                    } else {
+                        parent.prop('class', 'col-md-6').next().remove();
+                    }
+
+                    $('#case_type_criminal_fields').toggleClass('d-none', value !== 'CRIMINAL');
+
+                });
 
                 // Common configuration for allowed toolbar tools
                 const editorConfig = {
@@ -346,7 +370,7 @@
                     .catch(error => {
                         console.error(error);
                     });
-                
+
                 // AeroDrop initialization with upload state management.
                 const aerodrop = new AeroDrop(document.querySelector('#aerodrop'), {
                     name: 'attachments',
@@ -355,9 +379,11 @@
                     maxFiles: 20,
                     maxFileSize: 10 * 1024 * 1024,
                     fallbackError: "File too big",
-                    fileSizeRules: [
-                        { types: ['image/jpeg', 'image/png', 'image/webp'], maxSize: 2 * 1024 * 1024, error: "Image file too big" },
-                    ],
+                    fileSizeRules: [{
+                        types: ['image/jpeg', 'image/png', 'image/webp'],
+                        maxSize: 2 * 1024 * 1024,
+                        error: "Image file too big"
+                    }, ],
                     beforeSend: function(xhr) {
                         xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
                     },
@@ -368,7 +394,7 @@
                 };
 
                 aerodrop.onerror = function(error) {
-                    errorMessage(error) 
+                    errorMessage(error)
                     console.error("Upload error:", error);
                 };
             });
@@ -376,8 +402,10 @@
             // Disable form untill all pending upload processed
             new MutationObserver(function(mutationsList, observer) {
                 $('#submitBtn').prop('disabled', $('#aerodrop').attr('data-loading') === 'true')
-            }).observe($('#aerodrop')[0], { attributes: true, attributeFilter: ['data-loading'] });
- 
+            }).observe($('#aerodrop')[0], {
+                attributes: true,
+                attributeFilter: ['data-loading']
+            });
         </script>
     @endpush
 </x-lawyer.app>

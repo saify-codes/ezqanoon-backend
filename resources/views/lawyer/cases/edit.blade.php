@@ -39,7 +39,7 @@
                             <option value="">-- Select Case type --</option>
                             <option value="CRIMINAL" {{ old('type', $case->type) === 'CRIMINAL' ? 'selected' : '' }}>CRIMINAL</option>
                             <option value="CIVIL"    {{ old('type', $case->type) === 'CIVIL'    ? 'selected' : '' }}>CIVIL</option>
-                            <option value="OTHERs"   {{ old('type', $case->type) === 'OTHERS'   ? 'selected' : '' }}>OTHERS</option>
+                            <option value="OTHERS"   selected>OTHERS</option>
                         </select>
                     </div>
                 </div>
@@ -95,7 +95,7 @@
                 </div>
 
                 <!-- FIR Number, FIR Year, Police Station -->
-                <div class="row mb-3">
+                <div class="row mb-3 d-none" id="case_type_criminal_fields">
                     <div class="col-md-4">
                         <label for="fir_number" class="form-label">FIR Number</label>
                         <input type="text" class="form-control" id="fir_number" name="fir_number"
@@ -345,6 +345,27 @@
                 $(document).on('click', '.remove-hearing', function() {
                     $(this).closest('.hearing-row').remove();
                 });
+
+                $('#type').change(function() {
+
+                    const parent = $(this).parent();
+                    const value  = this.value;
+
+                    if (value === 'OTHERS') {
+                        parent.prop('class', 'col-md-3').after(`
+                            <div class="col-md-3">
+                                <label for="otherType" class="form-label">Specify Case Type</label>
+                                <input type="text" class="form-control" id="otherType" name="type" placeholder="Enter case type" value="{{ old('type', $case->type)}}" />
+                            </div>
+                        `);
+                    } else {
+                        parent.prop('class', 'col-md-6').next().remove();
+                    }
+
+                    $('#case_type_criminal_fields').toggleClass('d-none', value !== 'CRIMINAL');
+
+                });
+                $('#type').trigger('change')
 
                 const editorConfig = {
                     toolbar: ['bold', 'italic', 'bulletedList', 'numberedList', 'link']
