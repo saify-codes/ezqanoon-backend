@@ -20,7 +20,7 @@ class AeroDropController extends Controller
     {
         // Validate the request data
         $validator = Validator::make($request->all(), [
-            'file' => 'required|file|mimetypes:image/jpeg,image/png,image/webp,application/pdf|max:10240',
+            'file' => 'required|file|max:10240',
         ]);
 
         if ($validator->fails()) {

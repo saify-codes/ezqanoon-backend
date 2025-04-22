@@ -85,7 +85,7 @@
                     <div class="col-md-6">
                         <label for="under_acts" class="form-label">Under Acts</label>
                         <input type="text" class="form-control" id="under_acts" name="under_acts"
-                            value="{{ old('under_acts') }}" placeholder="e.g. PPC, CRPC">
+                            value="{{ old('under_acts') }}" placeholder="e.g. PPC, CrPC">
                     </div>
                     <div class="col-md-6">
                         <label for="under_sections" class="form-label">Under Sections</label>
@@ -353,12 +353,11 @@
                     uploadURL: '/upload',
                     enableCamera: true,
                     maxFiles: 20,
-                    allowedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
+                    maxFileSize: 10 * 1024 * 1024,
+                    fallbackError: "File too big",
                     fileSizeRules: [
                         { types: ['image/jpeg', 'image/png', 'image/webp'], maxSize: 2 * 1024 * 1024, error: "Image file too big" },
-                        { types: ['application/pdf'], maxSize: 10 * 1024 * 1024, error: "PDF file too big" }
                     ],
-                    fallbackError: "File too big",
                     beforeSend: function(xhr) {
                         xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
                     },
