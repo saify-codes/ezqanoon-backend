@@ -16,7 +16,7 @@ class NotificationController extends Controller
         $notifications = LawyerNotification::where('lawyer_id', Auth::user()->id)
             // ->orderBy('read', 'asc')    
             ->orderBy('id', 'desc');    
-        return response()->json($notifications->paginate(10));
+        return response()->json($notifications->paginate(25));
     }
 
     public function markRead(LawyerNotification $notification): JsonResponse
