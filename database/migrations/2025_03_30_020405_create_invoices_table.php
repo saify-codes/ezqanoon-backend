@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('email');
             $table->string('phone');
             $table->string('address')->nullable();
+            $table->string('country')->nullable();
+            $table->string('city')->nullable();
+            $table->string('case_type')->nullable();
             $table->enum('type', ['ONE TIME', 'MILESTONE'])->default('ONE TIME');
             $table->enum('status', ['PENDING', 'PAID', 'OVERDUE'])->nullable();
             $table->date('due_date')->nullable();

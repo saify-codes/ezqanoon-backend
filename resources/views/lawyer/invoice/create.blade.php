@@ -41,8 +41,19 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Phone <span class="text-danger">*</span></label>
-                            <input type="text" name="phone" class="form-control" value="{{ old('phone') }}"
-                                placeholder="+923423767655" required>
+                            <div class="input-group">
+                                <input type="tel" 
+                                    class="form-control" 
+                                    id="phone" 
+                                    name="phone"
+                                    placeholder="Phone" 
+                                    value="{{ old('phone') }}" 
+                                    maxlength="15"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                    required
+                                >
+                            </div>
+                            <input type="hidden" name="country_code" id="country_code">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Email <span class="text-danger">*</span></label>
@@ -51,20 +62,35 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Address <span class="text-danger">*</span></label>
-                            <input type="text" name="address" class="form-control" value="{{ old('address') }}"
-                                placeholder="123 Main St…" required>
+                            <input type="text" name="address" class="form-control" value="{{ old('address') }}" placeholder="123 Main St…" required>
                         </div>
                     </div>
                 </fieldset>
-
-                <div class="mb-3">
-                    <label class="form-label">Payment method <span class="text-danger">*</span></label>
-                    <select name="payment_method" class="form-control" required>
-                        <option value="CASH" {{old('payment_method') === 'CASH'? 'selected' : ''}}>Cash</option>
-                        <option value="BANK" {{old('payment_method') === 'BANK'? 'selected' : ''}}>Bank</option>
-                        <option value="ONLINE" {{old('payment_method') === 'ONLINE'? 'selected' : ''}}>Online transfer</option>
-                    </select>
+                
+                
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Country</label>
+                        <input type="text" name="country" class="form-control" value="{{ old('country') }}" placeholder="e.g. Pakistan">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">City</label>
+                        <input type="text" name="city" class="form-control" value="{{ old('city') }}" placeholder="e.g. Karachi">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Under case typ</label>
+                        <input type="text" name="case_type" class="form-control" value="{{ old('case_type') }}" placeholder="e.g. PPC">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Payment method <span class="text-danger">*</span></label>
+                        <select name="payment_method" class="form-control" required>
+                            <option value="CASH" {{old('payment_method') === 'CASH'? 'selected' : ''}}>Cash</option>
+                            <option value="BANK" {{old('payment_method') === 'BANK'? 'selected' : ''}}>Bank</option>
+                            <option value="ONLINE" {{old('payment_method') === 'ONLINE'? 'selected' : ''}}>Online transfer</option>
+                        </select>
+                    </div>
                 </div>
+
 
 
                 <!-- ONE-TIME section -->
@@ -174,6 +200,24 @@
         </div>
     </div>
 
+    @push('plugin-styles')
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
+        <link href="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" />
+    @endpush
+
+    @push('plugin-scripts')
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+        <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+    @endpush
+
+    @push('style')
+       <style>
+        .iti{
+            width: 100%;
+        }
+       </style>
+    @endpush
+
     @push('custom-scripts')
         <script>
 
@@ -193,6 +237,13 @@
             }
 
             $(document).ready(function() {
+
+                const iti = intlTelInput(document.querySelector("#phone"), {
+                    onlyCountries: ["pk", "us", "gb"],
+                    separateDialCode: true,
+                    initialCountry: "pk",
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                });
 
                 // toggle sections
                 $('#type').change(function() {
@@ -304,6 +355,17 @@
                     $(this).closest('.milestone-row').remove();
                     calculateGrandTotal()
                 });
+
+                $('#phone').on('input', function() {
+                    $('#country_code').val(iti.getSelectedCountryData().dialCode);
+                });
+
+                $('#invoice-form').submit(function(e) {
+                    if (!iti.isValidNumber()) {
+                        Swal.fire('Error', 'Please enter a valid phone number', 'error');
+                        e.preventDefault()
+                    }
+                })
 
                 $('#type').trigger('change')
             });

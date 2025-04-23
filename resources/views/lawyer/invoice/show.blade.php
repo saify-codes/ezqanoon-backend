@@ -33,6 +33,18 @@
                             <td>{{ $invoice->address ?? '-' }}</td>
                         </tr>
                         <tr>
+                            <th scope="row">City</th>
+                            <td>{{ $invoice->city ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Country</th>
+                            <td>{{ $invoice->country ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Under case type</th>
+                            <td>{{ $invoice->case_type ?? '-' }}</td>
+                        </tr>
+                        <tr>
                             <th scope="row">Type</th>
                             <td>{{ $invoice->type }}</td>
                         </tr>
