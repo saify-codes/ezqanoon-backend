@@ -70,7 +70,7 @@
               <div class="d-flex justify-content-between align-items-baseline mb-2">
                 <h6 class="card-title mb-0">Inbox</h6>
               </div>
-              <div class="d-flex flex-column pe-2" id="inbox">
+              <div class="d-flex flex-column" id="inbox">
                 <div id="messages">
                     <div class="d-flex justify-content-center">
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -117,6 +117,10 @@
 
         #inbox:hover::-webkit-scrollbar-thumb {
             background-color: rgba(0, 0, 0, 0.5); /* Show scrollbar thumb on hover */
+        }
+
+        #inbox .unread{
+            /* background: var(--bs-light); */
         }
 
 
