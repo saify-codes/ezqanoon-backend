@@ -18,9 +18,11 @@ $(function () {
 
     bindEvents() {
       // Event delegation for handling "read" button click
-      $(this.container).on('click', '.btn-read', (e) => {
-        const messageId = $(e.target).data('id'); // Get the message ID from data attribute
-        this.markRead(messageId, e.target); // Call the markRead function
+      $(this.container).on('click', '.read-message', (e) => {
+        const messageId = $(e.target).data('id');
+        this.markRead(messageId);
+        $(e.target).closest('.message').removeClass('unread');
+        $(e.target).remove();
       });
       
       $(this.container).on('click', '#load-messages', (e) => {
@@ -53,7 +55,7 @@ $(function () {
 
           if (response.next_page_url) {
             if (!this.loadMoreBtn) {
-              this.loadMoreBtn = $('<button class="btn btn-sm btn-outline-primary" id="load-messages">Load more</button>');
+              this.loadMoreBtn = $('<button class="btn btn-sm btn-outline-primary mt-2" id="load-messages">Load more</button>');
               $(this.container).append(this.loadMoreBtn);
             }
           } else {
@@ -70,8 +72,22 @@ $(function () {
       });
     }
 
-    markRead(id, buttonElement) {      
-      $(buttonElement).remove();
+    markRead(messageId) {   
+      $.ajax({
+        url: `/notification/${messageId}`,
+        type: "PATCH",
+        dataType: "json",
+        data: {
+          _token: document.querySelector('meta[name="_token"]').content,
+        },
+        success(){
+          successMessage('Message read')
+        },
+        error(xhr, status, error) {
+          errorMessage('Couldn;t read message')
+          console.error("Error marking notification as read:", error);
+        },
+      });   
     }
 
     render() {
@@ -91,23 +107,38 @@ $(function () {
       let messageList = '';
       $.each(this.messages, (index, message) => {
         messageList += `
-          <a href="javascript:;" class="d-flex align-items-center border-bottom py-3">
+          <div class="message d-flex align-items-center border-bottom p-3 ${!message.read ? 'unread' : ''}">
             <div class="me-3">
               <img width="35" src="https://www.nobleui.com/html/template/assets/images/faces/face2.jpg" class="rounded-circle" alt="user">
             </div>
             <div class="w-100">
               <div class="d-flex justify-content-between">
                 <h6 class="text-body mb-2">${message.title}</h6>
-                <p class="text-secondary fs-12px">12.30 PM</p>
+                <p class="text-secondary fs-12px">${this.prettyDateTime(message.created_at)}</p>
               </div>
               <p class="text-secondary fs-13px">${message.body}</p>
-              <!-- <button class="btn btn-sm btn-primary float-end btn-read" data-id="${message.id}">read</button> -->
+              <a href="javascript:0" class="read-message" data-id="${message.id}">mark read</a>
             </div>
-          </a>
+          </div>
         `;
       });
 
       $(this.container).find('#messages').html(messageList);
+    }
+
+    prettyDateTime(dateString) {
+      const now           = new Date();
+      const past          = new Date(dateString);
+      const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
+      
+      if (diffInSeconds < 0)        return "just now";
+      if (diffInSeconds < 60)       return `${diffInSeconds}                        second  ${diffInSeconds                       === 1 ? '' : 's'} ago`;
+      if (diffInSeconds < 3600)     return `${Math.floor(diffInSeconds/60)}         minute  ${Math.floor(diffInSeconds/60)        === 1 ? '' : 's'} ago`;
+      if (diffInSeconds < 86400)    return `${Math.floor(diffInSeconds/3600)}       hour    ${Math.floor(diffInSeconds/3600)      === 1 ? '' : 's'} ago`;
+      if (diffInSeconds < 604800)   return `${Math.floor(diffInSeconds/86400)}      day     ${Math.floor(diffInSeconds/86400)     === 1 ? '' : 's'} ago`;
+      if (diffInSeconds < 2592000)  return `${Math.floor(diffInSeconds/604800)}     week    ${Math.floor(diffInSeconds/604800)    === 1 ? '' : 's'} ago`;
+      if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds/2592000)}    month   ${Math.floor(diffInSeconds/2592000)   === 1 ? '' : 's'} ago`;
+                                    return `${Math.floor(diffInSeconds/31536000)}   year    ${Math.floor(diffInSeconds/31536000)  === 1 ? '' : 's'} ago`;
     }
   }
 

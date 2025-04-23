@@ -144,6 +144,6 @@ $(function () {
   
     // Create and initialize the notification handler.
     const notificationHandler = new NotificationHandler();
-    notificationHandler.init();
+    // notificationHandler.init();
   });
   
