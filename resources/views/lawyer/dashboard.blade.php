@@ -6,8 +6,7 @@
         </div>
     </div>
 
-    <div class="row">
-
+    <div class="row mb-5">
         <div class="col-md-4 grid-margin stretch-card">
             <div class="card bg-primary text-white">
                 <div class="card-body">
@@ -63,6 +62,104 @@
             </div>
         </div>
     </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-baseline mb-2">
+                <h6 class="card-title mb-0">Inbox</h6>
+              </div>
+              <div class="d-flex flex-column pe-2" id="inbox">
+                <div id="messages">
+                    <div class="d-flex justify-content-center">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </div>
+        
+      </div>
+
+
+    @push('style')
+      <style>
+        #inbox {
+            max-height: 500px;
+            overflow: auto;
+            scrollbar-width: thin; /* For Firefox */
+            scrollbar-color: transparent transparent; /* For Firefox */
+            transition: scrollbar-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        #inbox:hover {
+            scrollbar-color: rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0); /* Show scrollbar on hover */
+        }
+
+        #inbox::-webkit-scrollbar {
+            width: 8px; /* Width of the scrollbar */
+        }
+
+        #inbox::-webkit-scrollbar-thumb {
+            background-color: transparent; /* Hide scrollbar thumb initially */
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        #inbox:hover::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.5); /* Show scrollbar thumb on hover */
+        }
+
+
+      </style>
+    @endpush
+
+    @push('plugin-scripts')
+        <script src="{{ asset('assets/plugins/fullcalendar/index.global.min.js') }}"></script>
+    @endpush
+        
+    @push('custom-scripts')
+        <script src="{{ asset('assets/js/lawyer-inbox.js') }}"></script>
+        <script>
+            $(document).ready(function() {
+                const calendar = new FullCalendar.Calendar($('#calendar')[0], {
+                    initialView: 'dayGridMonth',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    events: "{{ route('lawyer.calendar.events') }}",
+                    eventClick: function(info) {
+                        Swal.fire({
+                            title: info.event.title,
+                            text: `Case: ${info.event.extendedProps.caseName}`,
+                            icon: 'info',
+                            showCancelButton: true,
+                            confirmButtonText: 'View Case',
+                            cancelButtonText: 'Close'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = `{{ route('lawyer.cases.show', '') }}/${info.event.extendedProps.caseId}`;
+                            }
+                        });
+                    }
+                });
+                calendar.render();
+            });
+
+
+        </script>
+    @endpush
 
 
 </x-lawyer.app>
