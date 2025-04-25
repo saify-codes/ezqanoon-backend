@@ -84,7 +84,7 @@ class CasesController extends Controller
         $validated = $request->validate([
             'name'                            => 'required|string|max:255',
             'type'                            => 'required|string|max:255',
-            'urgency'                         => 'nullable|in:HIGH,MEDIUM,CRITICAL',
+            'urgency'                         => 'nullable|in:HIGH,MEDIUM,LOW,URGENT',
             'court_name'                      => 'required|string|max:255',
             'court_case_number'               => 'required|string|max:255',
             'judge_name'                      => 'nullable|string|max:255',
@@ -207,12 +207,10 @@ class CasesController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $case = Cases::where('lawyer_id', getLawyerId())->findOrFail($id);
-
         $validated = $request->validate([
             'name'                              => 'required|string|max:255',
             'type'                              => 'required|string|max:255',
-            'urgency'                           => 'nullable|in:HIGH,MEDIUM,CRITICAL',
+            'urgency'                           => 'nullable|in:HIGH,MEDIUM,LOW,URGENT',
             'court_name'                        => 'required|string|max:255',
             'court_case_number'                 => 'required|string|max:255',
             'judge_name'                        => 'nullable|string|max:255',
@@ -235,6 +233,8 @@ class CasesController extends Controller
             'hearings.*.date'                   => 'nullable|date',
             'attachments'                       => 'array|max:10',
         ]);
+
+        $case = Cases::where('lawyer_id', getLawyerId())->findOrFail($id);
 
         $case->update([
             'name'                            => $validated['name'],
