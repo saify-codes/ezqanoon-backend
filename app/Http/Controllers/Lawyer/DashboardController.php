@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Lawyer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Lawyer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,11 +16,11 @@ class DashboardController extends Controller
     public function dashboard()
     {
         
-        $totalClients               = Auth::user()->clients->count();
-        $totalAppointments          = Auth::user()->appointments->count();
-        $totalCasesToday            = Auth::user()->cases->where('date_created', Carbon::now())->count();
-        $totalHighPriorityCases     = Auth::user()->cases->where('urgency', 'HIGH')->count();
-        $totalDecidedCases          = Auth::user()->cases->where('status', 'CLOSED')->count();
+        $totalClients               = Lawyer::find(getLawyerId())->clients->count();
+        $totalAppointments          = Lawyer::find(getLawyerId())->appointments->count();
+        $totalCasesToday            = Lawyer::find(getLawyerId())->cases->where('date_created', Carbon::now())->count();
+        $totalHighPriorityCases     = Lawyer::find(getLawyerId())->cases->where('urgency', 'HIGH')->count();
+        $totalDecidedCases          = Lawyer::find(getLawyerId())->cases->where('status', 'CLOSED')->count();
         return view('lawyer.dashboard', compact('totalClients', 'totalAppointments', 'totalCasesToday', 'totalHighPriorityCases', 'totalDecidedCases'));
     }
 
