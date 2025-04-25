@@ -27,7 +27,7 @@
                 @csrf
 
                 <div class="mb-3">
-                    <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+                    <label for="name" class="form-label">Describe task <span class="text-danger">*</span></label>
                     <input class="form-control" type="text" id="name" name="name" placeholder="e.g. My task" value="{{old('name')}}" required>
                 </div>
                 

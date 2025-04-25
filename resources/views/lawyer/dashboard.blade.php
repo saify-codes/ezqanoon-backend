@@ -1,28 +1,5 @@
     <x-lawyer.app>
 
-        {{-- Generic modal --}}
-        <div class="modal fade" id="generic-modal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title"></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        {{-- spinner while loading --}}
-                        <div class="d-flex justify-content-center py-5">
-                            <div class="spinner-border" role="status"></div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-
-
         <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
             <div>
                 <h4 class="mb-3 mb-md-0">Welcome {{ Auth::user()->name }}</h4>
@@ -114,7 +91,6 @@
 
         </div>
 
-
         @push('style')
             <style>
                 #inbox {
@@ -164,17 +140,28 @@
             <script src="{{ asset('assets/js/calendar-event-modals.js') }}"></script>
 
             <script>
-                $(function() {
+                function openModal(event) {
 
-                    // Cache jQuery selectors
-                    const $modal = $('#generic-modal');
-                    const $title = $modal.find('.modal-title');
-                    const $body = $modal.find('.modal-body');
-                    const $saveBtn = $('#generic-save-btn');
-                    const bsModal = new bootstrap.Modal($modal[0]);
+                    const type = event.extendedProps.type
 
+                    switch (type) {
+                        case 'HEARING':
+                            const {
+                                caseId, hearingId, description, date
+                            } = event.extendedProps;
+                            const hearingModal = new HearingModal(caseId, hearingId, description, date);
+                            hearingModal.open();
+                            hearingModal.onDateChange = () => {
+                                calendar.refetchEvents()
+                                hearingModal.close()
+                            }
 
-                    // 2) Initialize FullCalendar
+                            break;
+                    }
+                }
+
+                $(document).ready(function() {
+                    
                     const calendar = new FullCalendar.Calendar($('#calendar')[0], {
                         initialView: 'dayGridMonth',
                         headerToolbar: {
@@ -187,24 +174,8 @@
                             openModal(info.event);
                         }
                     });
-
                     calendar.render();
-
-                    // 3) The generic openModal
-                    function openModal(event) {
-
-                        const type = event.extendedProps.type
-
-                        switch (type) {
-                            case 'HEARING':
-                                const {caseId, hearingId, description, date} = event.extendedProps;
-                                const hearingModal = new HearingModal(caseId, hearingId, description, date);
-                                hearingModal.open();
-                                hearingModal.onDateChange = () => hearingModal.close()
-
-                                break;
-                        }
-                    }
+                    
                 });
             </script>
         @endpush
