@@ -140,28 +140,8 @@
             <script src="{{ asset('assets/js/calendar-event-modals.js') }}"></script>
 
             <script>
-                function openModal(event) {
-
-                    const type = event.extendedProps.type
-
-                    switch (type) {
-                        case 'HEARING':
-                            const {
-                                caseId, hearingId, description, date
-                            } = event.extendedProps;
-                            const hearingModal = new HearingModal(caseId, hearingId, description, date);
-                            hearingModal.open();
-                            hearingModal.onDateChange = () => {
-                                calendar.refetchEvents()
-                                hearingModal.close()
-                            }
-
-                            break;
-                    }
-                }
-
                 $(document).ready(function() {
-                    
+
                     const calendar = new FullCalendar.Calendar($('#calendar')[0], {
                         initialView: 'dayGridMonth',
                         headerToolbar: {
@@ -175,7 +155,27 @@
                         }
                     });
                     calendar.render();
-                    
+
+                    function openModal(event) {
+
+                        const type = event.extendedProps.type
+
+                        switch (type) {
+                            case 'HEARING':
+                                const {
+                                    caseId, hearingId, description, date
+                                } = event.extendedProps;
+                                const hearingModal = new HearingModal(caseId, hearingId, description, date);
+                                hearingModal.open();
+                                hearingModal.onDateChange = () => {
+                                    calendar.refetchEvents()
+                                    hearingModal.close()
+                                }
+
+                                break;
+                        }
+                    }
+
                 });
             </script>
         @endpush
