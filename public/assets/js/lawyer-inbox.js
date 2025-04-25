@@ -104,9 +104,7 @@ $(function () {
         return
       }
 
-      let messageList = '';
-      $.each(this.messages, (index, message) => {
-        messageList += `
+      let messageList = this.messages.map(message => `
           <div class="message d-flex align-items-center border-bottom p-3 ${!message.read ? 'unread' : ''}">
             <div class="me-3">
               <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
@@ -120,10 +118,9 @@ $(function () {
               ${!message.read? `<a href="javascript:0" class="read-message" data-id="${message.id}">mark read</a>` : `` }
             </div>
           </div>
-        `;
-      });
+        `);
 
-      $(this.container).find('#messages').html(messageList);
+      $(this.container).find('#messages').html(messageList.join('\n'));
     }
 
     prettyDateTime(dateString) {

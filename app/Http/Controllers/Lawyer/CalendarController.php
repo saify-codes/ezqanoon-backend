@@ -40,30 +40,21 @@ class CalendarController extends Controller
         $events = [];
 
         /* ‑‑‑ filings ‑‑‑ */
-        foreach ($filingDates as $item) {
-            $events[] = [
-                'title' => $item->description ?: 'Filing',
-                'start' => $item->date,
-                'extendedProps' => [
-                    'caseId'   => $item->case_id,
-                    'caseName' => $item->caseRelation->name,
-                    'type'     => 'filing',
-                ],
-                'backgroundColor' => $this->getColorByUrgency($item->caseRelation->urgency),
-            ];
-        }
 
         /* ‑‑‑ hearings ‑‑‑ */
         foreach ($hearingDates as $item) {
             $events[] = [
-                'title' => $item->description ?: 'Hearing',
-                'start' => $item->date,
+                'title'             => $item->description ?: 'Hearing',
+                'start'             => $item->date,
+                'backgroundColor'   => $this->getColorByUrgency($item->caseRelation->urgency),
                 'extendedProps' => [
-                    'caseId'   => $item->case_id,
-                    'caseName' => $item->caseRelation->name,
-                    'type'     => 'hearing',
+                    'type'          => 'HEARING',
+                    'caseId'        => $item->case_id,
+                    'hearingId'     => $item->id,
+                    'caseName'      => $item->caseRelation->name,
+                    'description'   => $item->description,
+                    'date'          => $item->date,
                 ],
-                'backgroundColor' => $this->getColorByUrgency($item->caseRelation->urgency),
             ];
         }
 

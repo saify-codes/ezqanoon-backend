@@ -68,15 +68,17 @@ Route::group(['middleware' => 'lawyer.auth'], function () {
         ]);
         Route::resource('/manage/cases', CasesController::class, [
             'names' => [
-                'index'   => 'lawyer.cases.index',
-                'create'  => 'lawyer.cases.create',
-                'store'   => 'lawyer.cases.store',
-                'show'    => 'lawyer.cases.show',
-                'edit'    => 'lawyer.cases.edit',
-                'update'  => 'lawyer.cases.update',
-                'destroy' => 'lawyer.cases.destroy',
-            ]
+                'index'     => 'lawyer.cases.index',
+                'create'    => 'lawyer.cases.create',
+                'store'     => 'lawyer.cases.store',
+                'show'      => 'lawyer.cases.show',
+                'edit'      => 'lawyer.cases.edit',
+                'update'    => 'lawyer.cases.update',
+                'destroy'   => 'lawyer.cases.destroy',
+                ]
         ]);
+        Route::patch('/cases/{caseId}/hearing/{hearingId}', [CasesController::class, 'changeHearingDate'])->name('lawyer.cases.hearing');
+
         Route::resource('/manage/client', ClientController::class, [
             'names' => [
                 'index'   => 'lawyer.client.index',

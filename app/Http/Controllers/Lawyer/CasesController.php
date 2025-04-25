@@ -316,4 +316,22 @@ class CasesController extends Controller
 
         return redirect()->route('lawyer.cases.index')->with('success', 'Case deleted successfully.');
     }
+
+    public function changeHearingDate(Request $request, $caseId, $hearingId)
+    {
+        $request->validate([
+            'date' => 'required|date',
+        ]);
+
+        // Retrieve the case and hearing
+        $case    = Cases::where('lawyer_id', getLawyerId())->findOrFail($caseId);
+        $hearing = $case->hearings->findOrFail($hearingId);
+
+        // Update the hearing date
+        $hearing->update(['date' => $request->date]);
+
+        // Return success response
+        return $this->successResponse('Date changed successfully');
+    }
+
 }
