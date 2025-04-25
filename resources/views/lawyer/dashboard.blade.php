@@ -96,7 +96,8 @@
                         <div class="d-flex flex-column" id="inbox">
                             <div id="messages">
                                 <div class="d-flex justify-content-center">
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span class="spinner-border spinner-border-sm" role="status"
+                                        aria-hidden="true"></span>
                                 </div>
                             </div>
                         </div>
@@ -186,23 +187,21 @@
                             openModal(info.event);
                         }
                     });
-                    
+
                     calendar.render();
 
                     // 3) The generic openModal
                     function openModal(event) {
 
                         const type = event.extendedProps.type
-                        bsModal.show();
 
                         switch (type) {
                             case 'HEARING':
-                                const {caseId, hearingId, description, date} = event.extendedProps
-                                new HearingModal($body[0], caseId, hearingId, description, date)
-                                    .onDateChange = () =>{
-                                        calendar.refetchEvents();
-                                        bsModal.hide()
-                                    }   
+                                const {caseId, hearingId, description, date} = event.extendedProps;
+                                const hearingModal = new HearingModal(caseId, hearingId, description, date);
+                                hearingModal.open();
+                                hearingModal.onDateChange = () => hearingModal.close()
+
                                 break;
                         }
                     }
