@@ -22,10 +22,6 @@ class ZoomService
         $this->redirectURI  = env('ZOOM_REDIRECT_URI');
         $this->accessToken  = AdminOption::get('zoom_access_token');
         $this->refreshToken = AdminOption::get('zoom_refresh_token');
-
-        if (empty($this->accessToken) || empty($this->refreshToken())) {
-            throw new Exception('zoom keys not generated');
-        }
     }
 
     /**
