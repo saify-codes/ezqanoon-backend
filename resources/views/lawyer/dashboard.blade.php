@@ -162,10 +162,8 @@
 
                         switch (type) {
                             case 'HEARING':
-                                const {
-                                    caseId, hearingId, description, date
-                                } = event.extendedProps;
-                                const hearingModal = new HearingModal(caseId, hearingId, description, date);
+                                const {caseId, caseName, hearingId, description, date} = event.extendedProps;
+                                const hearingModal = new HearingModal(caseId, caseName, hearingId, description, date);
                                 hearingModal.open();
                                 hearingModal.onDateChange = () => {
                                     calendar.refetchEvents()

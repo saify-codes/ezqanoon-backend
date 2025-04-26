@@ -29,9 +29,10 @@ class BaseModal{
 }
 
 class HearingModal extends BaseModal{
-    constructor(caseId, hearingId, description, date) {
+    constructor(caseId, caseName, hearingId, description, date) {
         super()
         this.caseId          = caseId;
+        this.caseName        = caseName;
         this.hearingId       = hearingId;
         this.description     = description;
         this.date            = date;
@@ -50,24 +51,21 @@ class HearingModal extends BaseModal{
                         </div>
                         <div class="modal-body">
                             <form>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="mb-3">
-                                            <label for="description" class="form-label">Description</label>
-                                            <textarea class="form-control" name="description" id="description" rows="3" disabled>${this.description}</textarea>
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="mb-3">
-                                            <label for="hearing-date" class="form-label">Date</label>
-                                            <input type="date" class="form-control" name="date" id="hearing-date" value="${this.date}" required />
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="mb-3">
-                                            <button type="submit" class="btn btn-primary w-100">Save</button>
-                                        </div>
-                                    </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Case</label>
+                                    <input class="form-control" name="name" id="name" value="${this.caseName}" disabled/>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea class="form-control" name="description" id="description" rows="3" disabled>${this.description}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="hearing-date" class="form-label">Date</label>
+                                    <input type="date" class="form-control" name="date" id="hearing-date" value="${this.date}" required />
+                                </div>
+                                <div class="mb-3">
+                                    <a href="/manage/cases/${this.caseId}" type="submit" class="btn btn-warning me-2">View case</a>
+                                    <button type="submit" class="btn btn-primary me-2">Save</button>
                                 </div>
                             </form>
                         </div>
