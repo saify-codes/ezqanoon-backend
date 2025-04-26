@@ -146,7 +146,7 @@
                         initialView: 'dayGridMonth',
                         headerToolbar: {
                             left: 'prev,next today',
-                            center: 'tidatetle',
+                            center: 'title',
                             right: 'dayGridMonth'
                         },
                         events: "{{ route('lawyer.calendar.events') }}",

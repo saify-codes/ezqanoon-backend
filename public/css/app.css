@@ -3005,7 +3005,7 @@ textarea.is-invalid.typeahead.tt-hint, .select2-container--default .select2-sear
   --bs-btn-focus-shadow-rgb: 124, 134, 255;
   --bs-btn-active-color: #fff;
   --bs-btn-active-bg: #C3AC5C;
-  --bs-btn-active-border-color: #4c55bf;
+  --bs-btn-active-border-color: #C3AC5C;
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
   --bs-btn-disabled-color: #fff;
   --bs-btn-disabled-bg: #61744A;
