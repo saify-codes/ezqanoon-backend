@@ -126,7 +126,7 @@
                 }
 
                 #inbox .unread {
-                    /* background: var(--bs-light); */
+                    background: var(--bs-light);
                 }
             </style>
         @endpush
