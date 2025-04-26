@@ -59,6 +59,16 @@
                         <small class="d-block text-danger mt-1">{{ $message }}</small>
                     @enderror
                 </div>
+                
+                {{-- Licence --}}
+                <div class="mb-3">
+                    <label for="name" class="form-label">Licence number</label>
+                    <input type="text" class="form-control" id="name" name="name"
+                        value="{{ old('licence_number', $lawyer->licence_number) }}" required>
+                    @error('licence_number')
+                        <small class="d-block text-danger mt-1">{{ $message }}</small>
+                    @enderror
+                </div>
 
                 {{-- Location --}}
                 <div class="mb-3">
