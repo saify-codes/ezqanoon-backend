@@ -16,7 +16,7 @@ class AppointmentController extends Controller
         if ($request->ajax()) {
 
             // DataTables columns to map for ordering:
-            $columns            = ['id', 'name', 'email', 'phone', 'counttry', 'created_at'];
+            $columns            = ['id', 'name', 'email', 'phone', 'counttry', 'created_at', 'meeting_link_lawyer'];
             $draw               = $request->input('draw');
             $start              = $request->input('start');        // skip
             $length             = $request->input('length');       // rows per page

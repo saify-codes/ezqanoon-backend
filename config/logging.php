@@ -126,6 +126,11 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+        
+        'zoom' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/zoom.log'),
+        ],
 
     ],
 

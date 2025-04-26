@@ -5,18 +5,26 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\AppointmentAttachment;
+use App\Services\ZoomService;
 use App\Traits\ApiResponseTrait;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AppointmentController extends Controller
 {
     use ApiResponseTrait;
 
+    public function __construct(private ZoomService $zoom) {
+    }
+
         
     public function getAppointments(){
-        $user = Auth::user();
-        $appointments = Appointment::with(['attachments', 'lawyer:id,name'])->where('user_id', $user->id)->get();
+        $appointments = Appointment::with(['attachments', 'lawyer:id,name'])
+                        ->select('*')
+                        ->where('user_id', Auth::id())
+                        ->get();
         return $this->successResponse('appointments', ['data' => $appointments]);
     }
     
@@ -38,32 +46,51 @@ class AppointmentController extends Controller
 
         $user = Auth::user();
 
-        // Create the appointment record
-        $appointment = Appointment::create([
-            'user_id'      => $user->id,
-            'lawyer_id'    => $request->lawyer_id,
-            'country'      => $request->country,
-            'details'      => $request->details,
-            'meeting_date' => $request->meeting_date,
-        ]);
-
-        // Handle file upload
-        if ($request->hasFile('attachment')) {
-            foreach ($request->file('attachment') as $file) {
-                $path       = $file->store("appointments/{$appointment->id}", 'public');
-                $fileName   = basename($path);
-                AppointmentAttachment::create([
-                    'appointment_id' => $appointment->id,
-                    'file'           => $fileName,
-                    'original_name'  => $file->getClientOriginalName(),
-                    'mime_type'      => $file->getClientMimeType(),
-                ]);
+        
+        try {
+            // create meeting
+            $data = $this->zoom->createMeeting("consultant with advocate", $request->meeting_date);
+            
+            // Create the appointment record
+            $appointment = Appointment::create([
+                'user_id'               => $user->id,
+                'lawyer_id'             => $request->lawyer_id,
+                'country'               => $request->country,
+                'details'               => $request->details,
+                'meeting_date'          => $request->meeting_date,
+                'meeting_link_lawyer'   => $data['start_url'],
+                'meeting_link_user'     => $data['join_url'],
+            ]);
+    
+            // Handle file upload
+            if ($request->hasFile('attachment')) {
+                foreach ($request->file('attachment') as $file) {
+                    $path       = $file->store("appointments/{$appointment->id}", 'public');
+                    $fileName   = basename($path);
+                    AppointmentAttachment::create([
+                        'appointment_id' => $appointment->id,
+                        'file'           => $fileName,
+                        'original_name'  => $file->getClientOriginalName(),
+                        'mime_type'      => $file->getClientMimeType(),
+                    ]);
+                }
             }
+
+            notifyLawyer($request->lawyer_id, 'New Appointment', "you have an appointemnt from $user->name");
+
+            return $this->successResponse('Appointment created successfully', ['data' => $appointment], 201);
+
+            
+        } catch (Exception $e) {
+
+            Log::channel('zoom')->error('Zoom create meeting failed', [
+                'lawyer_id' => $request->lawyer_id,
+                'user_id'   => $user->id,
+                'error'     => $e->getMessage(),
+            ]);
         }
 
-        notifyLawyer($request->lawyer_id, 'New Appointment', "you have an appointemnt from $user->name");
-
-        return $this->successResponse('Appointment created successfully', ['data' => $appointment], 201);
+        return $this->errorResponse('Appointment not created', 500);
     }
 }
 

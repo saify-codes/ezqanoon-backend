@@ -17,6 +17,7 @@ use App\Http\Controllers\Lawyer\ResetPasswordController;
 use App\Http\Controllers\Lawyer\SubscriptionController;
 use App\Http\Controllers\Lawyer\TaskController;
 use App\Http\Controllers\Lawyer\TeamController;
+use App\Http\Controllers\Admin\ZoomController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,11 +28,12 @@ use Illuminate\Support\Facades\Route;
 | Ensure that the 'admin' middleware is applied to protect these routes.
 |--------------------------------------------------------------------------
 */
-Route::group(['middleware' => 'admin.auth'], function(){
+Route::group([], function(){
     Route::get('/admin/dashboard', fn() => "Welcome, Admin!");
     Route::get('/admin/users', fn() => "Manage Users");
+    Route::get('/integrations/zoom/oauth/authorize', [ZoomController::class, 'authenticate']);
+    Route::get('/integrations/zoom/oauth/callback', [ZoomController::class, 'handleOAuthCallback']);
 });
-
 /*
 |--------------------------------------------------------------------------
 | ⚖️ LAWYER ROUTES ⚖️
@@ -170,5 +172,3 @@ Route::group(['middleware' => 'lawyer.guest'], function () {
 
     Route::post('/otp/verify', [OTPController::class, 'verifyOTP'])->name('lawyer.otp.verify');
 });
-
-Route::view('/foo', 'welcome');

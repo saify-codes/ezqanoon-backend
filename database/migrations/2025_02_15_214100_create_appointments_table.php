@@ -15,7 +15,8 @@ return new class extends Migration
             $table->string('country')->default('Pakistan');
             $table->text('details');
             $table->text('summary');
-            $table->string('meeting_link')->nullable();
+            $table->text('meeting_link_user')->nullable();
+            $table->text('meeting_link_lawyer')->nullable();
             $table->timestamp('meeting_date');
             $table->timestamps();
 

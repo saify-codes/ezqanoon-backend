@@ -94,17 +94,20 @@
                     {
                         data: 'created_at',
                     },
+                   
                     {
                         sortable: false,
                         data: (appointment) => {
-                            const showUrl = `{{ route('lawyer.appointment.show', ':id') }}`.replace(':id',appointment.id);
-                            const editUrl = `{{ route('lawyer.appointment.edit', ':id') }}`.replace(':id',appointment.id);
-                            const deleteUrl = `{{ route('lawyer.appointment.destroy', ':id') }}`.replace(':id',appointment.id);
+                            const showUrl       = `{{ route('lawyer.appointment.show', ':id') }}`.replace(':id',appointment.id);
+                            const editUrl       = `{{ route('lawyer.appointment.edit', ':id') }}`.replace(':id',appointment.id);
+                            const deleteUrl     = `{{ route('lawyer.appointment.destroy', ':id') }}`.replace(':id',appointment.id);
+                            const meetingUrl    = appointment.meeting_link_lawyer
                             return `
                                 <div>
                                     <!-- <button class="btn btn-inverse-secondary btn-icon" onclick='viewCase(${JSON.stringify(appointment)})'><i data-feather="eye"></i></button> -->
                                     <a href="${showUrl}" class="btn btn-inverse-secondary btn-icon"><i data-feather="eye"></i></a>
                                     <a href="${editUrl}" class="btn btn-inverse-success btn-icon"><i data-feather="edit"></i></a>
+                                    <a href="${meetingUrl}" target="_blank" class="btn btn-inverse-warning btn-icon"><i data-feather="external-link"></i></a>
                                 </div>
                             `;
                         },
