@@ -109,7 +109,7 @@ class AuthController extends Controller
         $lawyer   = Lawyer::find($lawyerID);
         
         if (!$lawyer) {
-            return redirect()->route('lawyer.reset')->with('error','Invalid or expired token');
+            return back()->with('error','Invalid or expired token');
         }
         
         return redirect()->route('lawyer.signin')->with('success','Password changed successfully');

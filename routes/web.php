@@ -163,7 +163,7 @@ Route::group(['middleware' => 'lawyer.guest'], function () {
     Route::view('/forgot', 'lawyer.forgot')->name('lawyer.forgot');
     Route::post('/forgot', [AuthController::class, 'forgot']);
 
-    Route::view('/reset/{token}', 'lawyer.reset');
+    Route::view('/reset/{token}', 'lawyer.reset')->name('lawyer.reset');
     Route::post('/reset', [AuthController::class, 'reset'])->name('lawyer.reset');
 
     Route::get('/verify/{token}', [AuthController::class, 'verify']);
