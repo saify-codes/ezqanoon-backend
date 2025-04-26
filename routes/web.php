@@ -31,8 +31,10 @@ use Illuminate\Support\Facades\Route;
 Route::group([], function(){
     Route::get('/admin/dashboard', fn() => "Welcome, Admin!");
     Route::get('/admin/users', fn() => "Manage Users");
-    Route::get('/integrations/zoom/oauth/authorize', [ZoomController::class, 'authenticate']);
-    Route::get('/integrations/zoom/oauth/callback', [ZoomController::class, 'handleOAuthCallback']);
+    Route::get('/integrations/zoom/oauth/authorize', [ZoomController::class, 'authenticate'])->name('integration.zoom.authorize');
+    Route::get('/integrations/zoom/oauth/callback', [ZoomController::class, 'handleOAuthCallback'])->name('integration.zoom.callback');
+    Route::get('/integrations/zoom/success', [ZoomController::class, 'success'])->name('integration.zoom.success');
+    Route::get('/integrations/zoom/error', [ZoomController::class, 'error'])->name('integration.zoom.error');
 });
 /*
 |--------------------------------------------------------------------------
@@ -172,3 +174,5 @@ Route::group(['middleware' => 'lawyer.guest'], function () {
 
     Route::post('/otp/verify', [OTPController::class, 'verifyOTP'])->name('lawyer.otp.verify');
 });
+
+Route::view('/foo', 'integrations.zoom.success');
