@@ -37,6 +37,14 @@
                 </table>
             </div>
 
+            <!-- Details -->
+            <div class="mb-3">
+                <h6 class="mb-3">Client details</h6>
+                <div class="border rounded p-3">
+                    {{ $appointment->details }}
+                </div>
+            </div>
+
             <!-- Summary -->
             <div class="mb-3">
                 <h6 class="mb-3">Summary</h6>
