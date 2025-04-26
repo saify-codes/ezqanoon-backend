@@ -62,8 +62,8 @@
                 
                 {{-- Licence --}}
                 <div class="mb-3">
-                    <label for="name" class="form-label">Licence number</label>
-                    <input type="text" class="form-control" id="name" name="name"
+                    <label for="licence_number" class="form-label">Licence number</label>
+                    <input type="text" class="form-control" id="licence_number" name="licence_number"
                         value="{{ old('licence_number', $lawyer->licence_number) }}" required>
                     @error('licence_number')
                         <small class="d-block text-danger mt-1">{{ $message }}</small>
