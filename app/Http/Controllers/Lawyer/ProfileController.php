@@ -22,6 +22,7 @@ class ProfileController extends Controller
             case 'ADMIN':
                 $validated = $request->validate([
                     'name'              => 'required|string|max:255',
+                    'licence_number'    => 'required|string|max:255',
                     'phone'             => 'nullable|phone:PK', 
                     'location'          => 'required|string|max:255',
                     'specialization'    => 'required|string|max:255',
@@ -35,13 +36,13 @@ class ProfileController extends Controller
                 Auth::user()->update([...$validated, 'is_profile_completed' => true]);
                 break;
 
-            case 'USER':
-                $validated = $request->validate([
-                    'name'  => 'required|string|max:255',
-                    'phone' => 'nullable|phone:PK',
-                ]);
-                Auth::user()->update($validated);
-                break;
+            // case 'USER':
+            //     $validated = $request->validate([
+            //         'name'  => 'required|string|max:255',
+            //         'phone' => 'nullable|phone:PK',
+            //     ]);
+            //     Auth::user()->update($validated);
+            //     break;
         }
 
         return redirect()->back()->with('success', 'Profile updated successfully!');
