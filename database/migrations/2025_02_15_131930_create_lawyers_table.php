@@ -29,6 +29,7 @@ return new class extends Migration
             $table->float('price')->nullable();
             $table->string('qualification')->nullable();
             $table->text('description')->nullable();
+            $table->text('licence_number')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
             $table->boolean('is_profile_completed')->default(0);
