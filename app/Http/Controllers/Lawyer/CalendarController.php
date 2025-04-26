@@ -46,6 +46,7 @@ class CalendarController extends Controller
             $events[] = [
                 'title'             => $item->description ?: 'Hearing',
                 'start'             => $item->date,
+                'textColor'             => '#FFF',
                 'backgroundColor'   => $this->getColorByUrgency($item->caseRelation->urgency),
                 'extendedProps' => [
                     'type'          => 'HEARING',

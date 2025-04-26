@@ -21820,7 +21820,7 @@ div.fc .fc-daygrid-event {
   padding: 4px;
 }
 div.fc .fc-daygrid-day.fc-day-today {
-  background-color: rgba(101, 113, 255, 0.2);
+  background-color: #C3AC5C;
 }
 div.fc .fc-list-event:hover td {
   background-color: rgba(101, 113, 255, 0.2);
