@@ -22,7 +22,7 @@ class ZoomController extends Controller
     public function handleOAuthCallback(Request $request)
     {
         if (!$request->code) {
-            Session::flash('zoom_oauth_error', 'Missing authorization code');
+            Session::put('zoom_oauth_error', 'Missing authorization code');
             return redirect()->route('integration.zoom.error');
         }
 
@@ -30,11 +30,11 @@ class ZoomController extends Controller
             $credentials = $this->zoom->exchangeAuthorizationCodeForTokens($request->code);
             AdminOption::set('zoom_access_token', $credentials['access_token']);
             AdminOption::set('zoom_refresh_token', $credentials['refresh_token']);
-            Session::flash('zoom_oauth_success', true);
+            Session::put('zoom_oauth_success', true);
             return redirect()->route('integration.zoom.success');
         } catch (Exception $e) {
             Log::channel('error')->error('Zoom OAuth callback failed: ' . $e->getMessage());
-            Session::flash('zoom_oauth_error', $e->getMessage());
+            Session::put('zoom_oauth_error', $e->getMessage());
             return redirect()->route('integration.zoom.error');
         }
 
@@ -57,7 +57,8 @@ class ZoomController extends Controller
 
     public function success()
     {
-        if (Session::has('zoom_oauth_error')) {
+        if (Session::has('zoom_oauth_success')) {
+            Session::forget('zoom_oauth_success');
             return view('integrations.zoom.success');
         }
     
@@ -67,7 +68,9 @@ class ZoomController extends Controller
     public function error()
     {
         if (Session::has('zoom_oauth_error')) {
-            return view('integrations.zoom.error')->with('error', Session::get('zoom_oauth_error'));
+            $error = Session::get('zoom_oauth_error');
+            Session::forget('zoom_oauth_error');
+            return view('integrations.zoom.error', compact('error'));
         }
 
         return redirect('/');
