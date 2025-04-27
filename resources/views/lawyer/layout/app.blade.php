@@ -31,7 +31,7 @@
   @stack('plugin-styles')
 
   <!-- common css -->
-  <link href="{{ asset('css/app.css') }}" rel="stylesheet" />
+  <link href="{{ asset('css/app.css?version=' . env('VERSION')) }}" rel="stylesheet" />
   <link href="{{ asset('css/animations.css') }}" rel="stylesheet" />
   <!-- end common css -->
 
