@@ -20,6 +20,8 @@ return new class extends Migration
                 lawyers.availability_from,
                 lawyers.availability_to,
                 lawyers.price,
+                lawyers.city,
+                lawyers.country,
                 lawyers.location,
                 lawyers.description,
                 lawyers.is_profile_completed,

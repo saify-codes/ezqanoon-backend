@@ -32,7 +32,7 @@ class LawyerController extends Controller
         }
 
         // Filter by availability time range
-        if ($request->has('start_time') && $request->has('end_time')) {
+        if ($request->filled('start_time') && $request->filled('end_time')) {
             $query->where('availability_from', '<=', $request->start_time)
                   ->where('availability_to', '>=', $request->end_time);
         }
