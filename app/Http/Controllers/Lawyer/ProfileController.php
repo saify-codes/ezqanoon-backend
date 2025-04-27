@@ -23,9 +23,9 @@ class ProfileController extends Controller
                 $validated = $request->validate([
                     'name'              => 'required|string|max:255',
                     'licence_number'    => 'required|string|max:255',
-                    'phone'             => 'nullable|phone:PK', 
+                    'phone'             => 'nullable|phone', 
                     'city'              => 'required|string|max:255',
-                    'country'           => 'string|max:255',
+                    'country'           => 'nullable|string|max:255',
                     'location'          => 'required|string|max:255',
                     'specialization'    => 'required|string|max:255',
                     'qualification'     => 'required|string|max:255',
