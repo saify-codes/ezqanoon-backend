@@ -70,6 +70,26 @@
                     @enderror
                 </div>
 
+                {{-- City --}}
+                <div class="mb-3">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control" id="city" name="city"
+                        value="{{ old('city', $lawyer->city) }}" required>
+                    @error('city')
+                        <small class="d-block text-danger mt-1">{{ $message }}</small>
+                    @enderror
+                </div>
+               
+                {{-- Country --}}
+                <div class="mb-3">
+                    <label for="country" class="form-label">Country</label>
+                    <input type="text" class="form-control" id="country" name="country"
+                        value="{{ old('country', $lawyer->country) }}">
+                    @error('country')
+                        <small class="d-block text-danger mt-1">{{ $message }}</small>
+                    @enderror
+                </div>
+
                 {{-- Location --}}
                 <div class="mb-3">
                     <label for="location" class="form-label">Office location</label>

@@ -21,9 +21,14 @@ class LawyerController extends Controller
     public function getLawyers(Request $request){
         $query = LawyerRatingView::where('is_profile_completed', true);
 
-        // Filter by city/location
+        // Filter by city
         if ($request->has('city')) {
-            $query->where('location', 'like', '%' . $request->city . '%');
+            $query->where('city', 'like', '%' . $request->city . '%');
+        }
+        
+        // Filter by location
+        if ($request->has('location')) {
+            $query->where('location', 'like', '%' . $request->location . '%');
         }
 
         // Filter by availability time range

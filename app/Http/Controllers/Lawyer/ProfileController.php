@@ -24,6 +24,8 @@ class ProfileController extends Controller
                     'name'              => 'required|string|max:255',
                     'licence_number'    => 'required|string|max:255',
                     'phone'             => 'nullable|phone:PK', 
+                    'city'              => 'required|string|max:255',
+                    'country'           => 'string|max:255',
                     'location'          => 'required|string|max:255',
                     'specialization'    => 'required|string|max:255',
                     'qualification'     => 'required|string|max:255',

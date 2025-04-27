@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->string('phone');
             $table->string('password');
+            $table->string('city')->nullable();
+            $table->string('country')->nullable();
             $table->string('location')->nullable();
             $table->time('availability_from')->nullable();
             $table->time('availability_to')->nullable();
