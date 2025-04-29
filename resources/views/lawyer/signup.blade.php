@@ -48,7 +48,7 @@
                                 <small id="email-error" class="text-danger"></small>
                             </div>
 
-                            <div class="mb-3">
+                            {{-- <div class="mb-3">
                                 <label for="phone" class="form-label">Phone</label>
                                 <div class="input-group">
                                     <input type="tel" class="form-control" id="phone" name="phone"
@@ -57,9 +57,15 @@
                                     <button type="button" class="btn btn-primary" id="send-otp-btn">send otp</button>
                                 </div>
                                 <small id="phone-error" class="text-danger"></small>
+                            </div> --}}
+                            
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone" value="{{ old('phone') }}" maxlength="15"  oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                                <small id="phone-error" class="text-danger"></small>
                             </div>
-
-                            <div class="mb-3 d-none" id="otp-section">
+                            
+                            {{-- <div class="mb-3 d-none" id="otp-section">
                                 <label for="otp" class="form-label">Verify otp</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="otp" placeholder="enter otp"
@@ -67,7 +73,7 @@
                                     <button type="button" class="btn btn-primary" id="verify-otp-btn">verify otp</button>
                                 </div>
                                 <small id="otp-message" class="text-danger"></small>
-                            </div>
+                            </div> --}}
 
                             <div class="mb-3">
                                 <label for="password" class="form-label">Password</label>
@@ -96,7 +102,7 @@
     @push('style')
         <style>
             .iti{
-                flex-grow: 1;
+                width: 100%;
             }
         </style>
     @endpush
@@ -218,10 +224,10 @@
                 $('.text-danger').text('');
                 $('#ajax-errors').addClass('d-none').text('');
 
-                if (!isPhoneVerified) {
-                    $('#ajax-errors').removeClass('d-none').text('Please verify your phone number first');
-                    return;
-                }
+                // if (!isPhoneVerified) {
+                //     $('#ajax-errors').removeClass('d-none').text('Please verify your phone number first');
+                //     return;
+                // }
 
                 const formData = new FormData(this);
                 formData.set('phone', iti.getNumber());

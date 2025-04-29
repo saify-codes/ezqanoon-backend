@@ -28,7 +28,7 @@ class SignupRequest extends FormRequest
             'email'     => 'required|email|unique:lawyers,email',
             'gender'    => 'required|in:male,female,other',
             'password'  => 'required|min:8|confirmed',
-            'phone'     => 'required|phone:PK'
+            'phone'     => 'required|phone'
         ];
     }
 
