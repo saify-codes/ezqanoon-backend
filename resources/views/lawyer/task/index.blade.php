@@ -103,7 +103,7 @@
                         data: 'status'
                     },
                     {
-                        data: 'members.name',
+                        data: 'member.name',
                         render: function(name) {
                             return name ?? 'N/A'
                         }
