@@ -52,7 +52,7 @@ class HearingModal extends BaseModal{
                         <div class="modal-body">
                             <form>
                                 <div class="mb-3">
-                                    <label for="description" class="form-label">Case</label>
+                                    <label for="name" class="form-label">Case</label>
                                     <input class="form-control" name="name" id="name" value="${this.caseName}" disabled/>
                                 </div>
                                 <div class="mb-3">
@@ -116,4 +116,53 @@ class HearingModal extends BaseModal{
             },
         });
     }
+}
+
+class AppointmentModal extends BaseModal{
+    constructor(appointmentId, name, details, meetingDate) {
+        super()
+        this.appointmentId   = appointmentId;
+        this.name            = name;
+        this.details         = details;
+        this.meetingDate     = meetingDate;
+        this.modalId         = `appointment-modal-${appointmentId}`; // Unique ID for this modal instance
+    }
+
+    render() {
+        this.modal = $(`
+            <div class="modal fade" id="${this.modalId}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Appointment Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Name</label>
+                                    <input class="form-control" name="name" id="name" value="${this.name}" disabled/>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="time" class="form-label">Time</label>
+                                    <input class="form-control" name="time" id="time" value="${new Date(this.meetingDate).toLocaleTimeString()}" disabled/>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="details" class="form-label">Details</label>
+                                    <textarea class="form-control" name="details" id="details" rows="3" disabled>${this.details}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <a href="/manage/appointments/${this.appointmentId}" type="submit" class="btn btn-warning me-2">View appointment</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `)
+        $("body").prepend(this.modal);
+    }
+
+    bindEvents() {}
+
 }

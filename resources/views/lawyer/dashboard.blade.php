@@ -171,6 +171,12 @@
                                 }
 
                                 break;
+
+                            case 'APPOINTMENT':
+                                const {appointmentId, name, details, meetingDate} = event.extendedProps;
+                                const appointmentModal = new AppointmentModal(appointmentId, name, details, meetingDate);
+                                appointmentModal.open();
+                                break;
                         }
                     }
 
