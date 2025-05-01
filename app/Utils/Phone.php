@@ -2,6 +2,10 @@
 
 namespace App\Utils;
 
+use Exception;
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
+
 class Phone
 {
 
@@ -58,7 +62,8 @@ class Phone
      *
      * @return string|null The phone number in local format, or null if input is empty.
      */
-    public static function convertToLocalFormat(?string $phone, ?string $countryCode = '92'): ?string
+
+    public static function convertToLocalFormat(?string $phone): ?string
     {
         if (!$phone) {
             return null;
@@ -67,15 +72,36 @@ class Phone
         // Remove all non-digit characters except the plus sign at the beginning
         $cleanedPhone = preg_replace('/(?!^\+)\D+/', '', $phone);
 
-        // Check if the number starts with '+' followed by the country code
-        if (strpos($cleanedPhone, '+' . $countryCode) === 0) {
-            // Remove the country code and add a leading zero
-            $localNumber = '0' . substr($cleanedPhone, strlen($countryCode) + 1);
-            return $localNumber;
-        }
+        $phoneUtil = PhoneNumberUtil::getInstance();
 
-        // If the country code is not found, assume it's already local
-        return $cleanedPhone;
+        try {
+            // Parse the phone number and attempt to detect the region
+            $phoneNumber = $phoneUtil->parse($cleanedPhone, null);
+
+            // Check if the phone number is valid
+            if ($phoneUtil->isValidNumber($phoneNumber)) {
+
+                $countryCode = $phoneNumber->getCountryCode();
+                
+                switch ($countryCode) {
+                    case 1:  
+                        $areaCode       = substr($cleanedPhone, 2, 3); // After '+1'
+                        $localNumber    = substr($cleanedPhone, 5); // After area code
+                        return '(' . $areaCode . ') ' . substr($localNumber, 0, 3) . '-' . substr($localNumber, 3);
+                        
+                    case 92:
+                        return '0' . substr($cleanedPhone, 3);
+                    
+                    default:
+                        return $cleanedPhone;
+                }
+
+            }
+
+        }catch(Exception $e){}
+        
+        return null;
+
     }
 
     /**

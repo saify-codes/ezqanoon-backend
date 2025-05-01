@@ -43,18 +43,17 @@
                         <div class="col-md-3">
                             <label class="form-label">Phone <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="tel" 
+                                <input 
+                                    type="tel" 
                                     class="form-control" 
                                     id="phone" 
-                                    name="phone"
                                     placeholder="Phone" 
                                     value="{{ old('phone', $invoice->phone) }}" 
-                                    maxlength="15"
-                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                     required
                                 >
                             </div>
-                            <input type="hidden" name="country_code" id="country_code">
+                            <input type="hidden" name="phone">
+                            <input type="hidden" name="country_code">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Email <span class="text-danger">*</span></label>
@@ -230,21 +229,11 @@
     </div>
     
     @push('plugin-styles')
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
         <link href="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" />
     @endpush
 
     @push('plugin-scripts')
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
         <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-    @endpush
-
-    @push('style')
-        <style>
-            .iti{
-                width: 100%;
-            }
-        </style>
     @endpush
 
     @push('custom-scripts')
@@ -268,10 +257,25 @@
             $(document).ready(function() {
 
                 const iti = intlTelInput(document.querySelector("#phone"), {
-                    onlyCountries: ["pk", "us", "gb"],
                     separateDialCode: true,
                     initialCountry: "pk",
                     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                    strictMode: true   
+                });
+
+                $('form').on('submit', (eve) => {
+                    // Only validate phone if it's not empty
+                    if (!iti.isValidNumber()) {
+                        eve.preventDefault();
+                        alert('Invalid phone');
+                        return;
+                    }
+
+                    // If valid, set the phone number and country code
+                    if ($('#phone').val()) {
+                        $('[name="phone"]').val(iti.getNumber());
+                        $('[name="country_code"]').val(iti.getSelectedCountryData().iso2);
+                    }
                 });
 
                 // toggle sections
@@ -385,10 +389,6 @@
                     calculateGrandTotal()
                 });
 
-                $('#phone').on('input', function() {
-                    $('#country_code').val(iti.getSelectedCountryData().dialCode);
-                });
-
                 $('#invoice-form').submit(function(e) {
                     if (!iti.isValidNumber()) {
                         Swal.fire('Error', 'Please enter a valid phone number', 'error');
@@ -396,7 +396,6 @@
                     }
                 })
 
-                $('#phone').trigger('input')
                 $('#type').trigger('change')
             });
 
