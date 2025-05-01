@@ -87,8 +87,18 @@
                 <!-- Contact details -->
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="urgency" class="form-label">Phone</label>
-                        <input type="tel" class="form-control" id="phone" name="phone" value="{{ old('phone') }}" placeholder="e.g. +923487161543">
+                        <label class="form-label">Phone</label>
+                        <div class="input-group">
+                            <input 
+                                type="tel" 
+                                class="form-control" 
+                                id="phone" 
+                                placeholder="Phone" 
+                                value="{{ old('phone') }}" 
+                            >
+                        </div>
+                        <input type="hidden" name="phone">
+                        <input type="hidden" name="country_code">
                     </div>
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email</label>
@@ -190,6 +200,29 @@
     @push('custom-scripts')
         <script>
             $(document).ready(function() {
+
+                const iti = intlTelInput(document.querySelector("#phone"), {
+                    separateDialCode: true,
+                    initialCountry: "pk",
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                    strictMode: true   
+                });
+
+                $('form').on('submit', (eve) => {
+                    // Only validate phone if it's not empty
+                    if ($('#phone').val() && !iti.isValidNumber()) {
+                        eve.preventDefault();
+                        alert('Invalid phone');
+                        return;
+                    }
+
+                    // If valid, set the phone number and country code
+                    if ($('#phone').val()) {
+                        $('[name="phone"]').val(iti.getNumber());
+                        $('[name="country_code"]').val(iti.getSelectedCountryData().iso2);
+                    }
+                });
+
 
                 $(document).on('click', '.add-note', function() {
                     // Determine the index based on rows that already have a name attribute.

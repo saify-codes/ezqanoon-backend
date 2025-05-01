@@ -83,7 +83,8 @@ class ClientController extends Controller
             'dob'                   => 'nullable|date',
             'gender'                => 'required|in:MALE,FEMALE,OTHER',
             'type'                  => 'required|in:REGULAR,VIP',
-            'phone'                 => 'nullable|phone',
+            'country_code'          => 'required_with:phone',
+            'phone'                 => 'nullable|phone:' . $request->country_code,
             'email'                 => 'nullable|email|max:255',
             'company_name'          => 'nullable|string|max:255',
             'company_website'       => 'nullable|url|max:255',
@@ -130,7 +131,7 @@ class ClientController extends Controller
             'phone.required'    => 'Phone number is required',
             'phone.string'      => 'Phone number must be a valid string',
             'phone.max'         => 'Phone number cannot exceed 20 characters',
-            'phone.phone'       => 'Phone number is invalid',
+            'phone.validation'  => 'Phone number is invalid',
         ]);
 
         // Process attachments if any exist in the request.
@@ -181,7 +182,8 @@ class ClientController extends Controller
             'dob'                   => 'nullable|date',
             'gender'                => 'required|in:MALE,FEMALE,OTHER',
             'type'                  => 'required|in:REGULAR,VIP',
-            'phone'                 => 'nullable|phone:PK',
+            'country_code'          => 'required_with:phone',
+            'phone'                 => 'nullable|phone:' . $request->country_code,
             'email'                 => 'nullable|email|max:255',
             'company_name'          => 'nullable|string|max:255',
             'company_website'       => 'nullable|url|max:255',
@@ -203,7 +205,7 @@ class ClientController extends Controller
             'phone.required'    => 'Phone number is required',
             'phone.string'      => 'Phone number must be a valid string',
             'phone.max'         => 'Phone number cannot exceed 20 characters',
-            'phone.phone'       => 'Phone number is invalid',
+            'phone.validation'  => 'Phone number is invalid',
         ]);
 
         // Find the client that belongs to the authenticated lawyer
