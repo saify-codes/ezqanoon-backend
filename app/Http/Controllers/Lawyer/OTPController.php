@@ -21,15 +21,8 @@ class OTPController extends Controller
     public function sendOTP(Request $request)
     {
         $request->validate([
-            'phone' => [
-                'required',
-                function ($_, $value, $fail) use ($request) {
-                    if(!Phone::isValid($value, $request->country_code)){
-                        $fail('The phone number format is invalid.');
-                    }
-                }
-            ],
-            'country_code' => 'required'
+            'country_code'  => 'required_with:phone',
+            'phone'         => 'required|phone:' . $request->country_code,
         ]);
 
         $otp = $this->generateOTP();

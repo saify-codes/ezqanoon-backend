@@ -48,7 +48,7 @@ class SignupRequest extends FormRequest
             'phone.required'    => 'Phone number is required',
             'phone.string'      => 'Phone number must be a valid string',
             'phone.max'         => 'Phone number cannot exceed 20 characters',
-            'phone.phone'       => 'Phone number is invalid',
+            'phone.validation'  => 'Phone number is invalid',
         ];
     }
 
