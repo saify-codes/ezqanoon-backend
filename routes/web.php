@@ -185,17 +185,3 @@ Route::group(['middleware' => 'lawyer.guest'], function () {
 
     Route::post('/otp/verify', [OTPController::class, 'verifyOTP'])->name('lawyer.otp.verify');
 });
-
-Route::any('/foo', function (\Illuminate\Http\Request $request) {
-    
-    $v = Validator::make($request->all(),[
-        'phone' => 'required|phone'
-    ]);
-
-    if ($v->fails()) {
-        dd($v->errors(), $request->phone);
-    }
-
-    dd($v->validated());
-    
-});
