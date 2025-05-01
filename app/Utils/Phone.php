@@ -20,7 +20,7 @@ class Phone
      *
      * @return string|null The phone number in international format, or null if input is empty.
      */
-    public static function convertToInternationalFormat(?string $phone): ?string
+    public static function convertToInternationalFormat(?string $phone, $countryCode): ?string
     {
         if (!$phone) {
             return null;
@@ -30,20 +30,18 @@ class Phone
         $cleanedPhone   = preg_replace('/(?!^\+)\D+/', '', $phone);
         $phoneUtil      = PhoneNumberUtil::getInstance();
 
+        
         try {
             // Parse the phone number and attempt to detect the region
-            $phoneNumber = $phoneUtil->parse($cleanedPhone, null);
-
+            $phoneNumber = $phoneUtil->parse($cleanedPhone, $countryCode);
+            
             // Check if the phone number is valid
             if ($phoneUtil->isValidNumber($phoneNumber)) {
                 // Format the phone number into international format (no spaces or dashes)
                 // Just return the number with + followed by the country code and number
                 return '+' . $phoneNumber->getCountryCode() . $phoneNumber->getNationalNumber();
             }
-        } catch (Exception $e) {
-            // Handle exceptions, e.g., invalid phone number format
-            // You can log the exception if necessary
-        }
+        } catch (Exception $e) {}
 
         return null;
     }
