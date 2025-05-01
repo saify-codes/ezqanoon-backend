@@ -209,7 +209,7 @@
                 processData: false,
                 beforeSend: ()      => $('button[type="submit"]').html('<span class="spinner-border spinner-border-sm"></span>').prop('disabled', true),
                 success:    ()      => window.location.href = '{{ route("lawyer.signin") }}',
-                error:      (xhr)   => Object.entries(xhr.responseJSON.errors || {}).forEach(([field, message]) => $(`#${field}-error`).text(message)),
+                error:      (xhr)   => Object.entries(xhr.responseJSON?.errors || {}).forEach(([field, message]) => $(`#${field}-error`).text(message)),
                 complete:   ()      => $('button[type="submit"]').html('Create account').prop('disabled', false)
             });
         });
