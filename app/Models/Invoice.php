@@ -30,4 +30,9 @@ class Invoice extends Model
     {
         return Phone::convertToLocalFormat($value);
     }
+
+    public function setPhoneAttribute($value)
+    {
+        $this->attributes['phone'] = Phone::convertToInternationalFormat($value, request()->country_code);
+    }
 }
