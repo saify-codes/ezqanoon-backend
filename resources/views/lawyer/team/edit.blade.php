@@ -34,9 +34,19 @@
                             value="{{ old('name', $user->name) }}" placeholder="e.g. Musaafa" required>
                     </div>
                     <div class="col-md-4">
-                        <label for="phone" class="form-label">Phone <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="phone" name="phone"
-                            value="{{ old('phone', $user->phone) }}" placeholder="e.g. +923487161543" required>
+                        <label class="form-label">Phone <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input 
+                                type="tel" 
+                                class="form-control" 
+                                id="phone" 
+                                placeholder="Phone" 
+                                value="{{ old('phone', $user->phone) }}" 
+                                required
+                            >
+                        </div>
+                        <input type="hidden" name="phone">
+                        <input type="hidden" name="country_code">
                     </div>
                     <div class="col-md-4">
                         <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
@@ -117,6 +127,29 @@
     @push('custom-scripts')
         <script>
             $(document).ready(function() {
+
+                const iti = intlTelInput(document.querySelector("#phone"), {
+                    separateDialCode: true,
+                    initialCountry: "pk",
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                    strictMode: true   
+                });
+
+                $('form').on('submit', (eve) => {
+                    // Only validate phone if it's not empty
+                    if (!iti.isValidNumber()) {
+                        eve.preventDefault();
+                        alert('Invalid phone');
+                        return;
+                    }
+
+                    // If valid, set the phone number and country code
+                    if ($('#phone').val()) {
+                        $('[name="phone"]').val(iti.getNumber());
+                        $('[name="country_code"]').val(iti.getSelectedCountryData().iso2);
+                    }
+                });
+
                 $('#permissions').select2();
 
                 // Handle select all permissions button
