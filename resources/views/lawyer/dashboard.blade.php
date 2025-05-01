@@ -7,7 +7,7 @@
         </div>
 
         <div class="row mb-5">
-            <div class="col-md-4 grid-margin stretch-card">
+            <a href="{{route('lawyer.client.index')}}" class="col-md-4 grid-margin stretch-card">
                 <div class="card bg-primary text-white">
                     <div class="card-body">
                         <h6 class="card-title mb-0">Total Clients</h6>
@@ -16,9 +16,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
 
-            <div class="col-md-4 grid-margin stretch-card">
+            <a href="{{route('lawyer.appointment.index')}}" class="col-md-4 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body bg-info text-white">
                         <h6 class="card-title mb-0">Total Appointments</h6>
@@ -27,9 +27,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
 
-            <div class="col-md-4 grid-margin stretch-card">
+            <a href="{{route('lawyer.cases.index')}}" class="col-md-4 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body bg-success text-white">
                         <h6 class="card-title mb-0">Todays Cases</h6>
@@ -38,9 +38,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
 
-            <div class="col-md-4 grid-margin stretch-card">
+            <a href="{{route('lawyer.cases.index')}}" class="col-md-4 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body bg-danger text-white">
                         <h6 class="card-title mb-0">High Priority Cases</h6>
@@ -49,9 +49,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
 
-            <div class="col-md-4 grid-margin stretch-card">
+            <a href="{{route('lawyer.cases.index')}}" class="col-md-4 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body bg-warning text-white">
                         <h6 class="card-title mb-0">Decided Cases</h6>
@@ -60,7 +60,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="row mb-5">
@@ -176,6 +176,12 @@
                                 const {appointmentId, name, details, meetingDate} = event.extendedProps;
                                 const appointmentModal = new AppointmentModal(appointmentId, name, details, meetingDate);
                                 appointmentModal.open();
+                                break;
+
+                            case 'MYEVENT':
+                                const {eventId, description:eventDescription} = event.extendedProps;
+                                const myEventModal = new MyEventModal(eventId, eventDescription);
+                                myEventModal.open();
                                 break;
                         }
                     }
