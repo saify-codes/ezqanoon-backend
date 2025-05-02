@@ -116,7 +116,7 @@
     @push('custom-scripts')
     <script>
         
-        let isOtpVerified   = false;
+        let isOtpVerified   = true;
         let canResendOtp    = false;
         const iti           = intlTelInput(document.querySelector("#phone"), {
                                 separateDialCode: true,
