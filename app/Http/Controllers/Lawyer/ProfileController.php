@@ -18,35 +18,24 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
-        switch(Auth::user()->role) {
-            case 'ADMIN':
-                $validated = $request->validate([
-                    'name'              => 'required|string|max:255',
-                    'licence_number'    => 'required|string|max:255',
-                    // 'phone'             => 'nullable|phone', 
-                    'city'              => 'required|string|max:255',
-                    'country'           => 'nullable|string|max:255',
-                    'location'          => 'required|string|max:255',
-                    'specialization'    => 'required|string|max:255',
-                    'qualification'     => 'required|string|max:255',
-                    'experience'        => 'required|integer|min:0',
-                    'price'             => 'required|integer|min:0',
-                    'availability_from' => 'required',
-                    'availability_to'   => 'required',
-                    'description'       => 'required|string',
-                ]);
-                Auth::user()->update([...$validated, 'is_profile_completed' => true]);
-                break;
-
-            // case 'USER':
-            //     $validated = $request->validate([
-            //         'name'  => 'required|string|max:255',
-            //         'phone' => 'nullable|phone:PK',
-            //     ]);
-            //     Auth::user()->update($validated);
-            //     break;
-        }
-
+        $validated = $request->validate([
+            'name'              => 'required|string|max:255',
+            'licence_number'    => 'required|string|max:255',
+            // 'phone'             => 'nullable|phone', 
+            'city'              => 'required|string|max:255',
+            'country'           => 'nullable|string|max:255',
+            'location'          => 'required|string|max:255',
+            'specialization'    => 'required|string|max:255',
+            'qualification'     => 'required|string|max:255',
+            'experience'        => 'required|integer|min:0',
+            'price'             => 'required|integer|min:0',
+            'availability_from' => 'required',
+            'availability_to'   => 'required',
+            'description'       => 'required|string',
+        ]);
+        
+        Auth::user()->update([...$validated, 'is_profile_completed' => true]);
+        
         return redirect()->back()->with('success', 'Profile updated successfully!');
     }
 
