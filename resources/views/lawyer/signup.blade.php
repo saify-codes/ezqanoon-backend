@@ -7,8 +7,6 @@
                         <a href="{{ url('/') }}" class="noble-ui-logo d-block mb-5 text-center">
                             <img src="{{asset('logo.png')}}" alt="logo" style="height: 100px">
                         </a>
-                        <!-- Display Error Messages -->
-                        <div id="ajax-errors" class="alert alert-danger d-none"></div>
 
                         <ul class="nav nav-pills nav-fill mb-4">
                             <li class="nav-item bg-light">
@@ -51,10 +49,10 @@
                             {{-- <div class="mb-3">
                                 <label for="phone" class="form-label">Phone</label>
                                 <div class="input-group">
-                                    <input type="tel" class="form-control" id="phone" name="phone"
-                                        placeholder="Phone" value="{{ old('phone') }}" required
-                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                                    <button type="button" class="btn btn-primary" id="send-otp-btn">send otp</button>
+                                    <input type="tel" class="form-control" id="phone"placeholder="Phone" value="{{ old('phone') }}" required>
+                                    <input type="hidden" name="phone">
+                                    <input type="hidden" name="country_code">
+                                    <button type="button" class="btn btn-primary" id="send-otp-btn" onclick="sendOtp()">send otp</button>
                                 </div>
                                 <small id="phone-error" class="text-danger"></small>
                             </div> --}}
@@ -68,9 +66,8 @@
                             {{-- <div class="mb-3 d-none" id="otp-section">
                                 <label for="otp" class="form-label">Verify otp</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="otp" placeholder="enter otp"
-                                        maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                                    <button type="button" class="btn btn-primary" id="verify-otp-btn">verify otp</button>
+                                    <input type="text" class="form-control" id="otp" placeholder="enter otp" maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <button type="button" class="btn btn-primary" id="verify-otp-btn" onclick="verifyOtp()">verify otp</button>
                                 </div>
                                 <small id="otp-message" class="text-danger"></small>
                             </div> --}}
@@ -99,164 +96,130 @@
         </div>
     </div>
 
-    @push('style')
-        <style>
-            .iti{
-                width: 100%;
-            }
-        </style>
-    @endpush
-
     @push('plugin-styles')
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
         <link href="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" />
     @endpush
 
     @push('plugin-scripts')
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
         <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+    @endpush
+
+    @push('style')
+        <style>
+            .iti{
+                width: auto;
+                flex: 1;
+            }
+        </style>
     @endpush
 
     @push('custom-scripts')
     <script>
-        $(document).ready(function() {
-            let isPhoneVerified = false;
-            let canResendOtp = false;
-            let countdownInterval;
+        
+        let isOtpVerified   = false;
+        let canResendOtp    = false;
+        const iti           = intlTelInput(document.querySelector("#phone"), {
+                                separateDialCode: true,
+                                initialCountry: "pk",
+                                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                                strictMode: true
+                            });
 
-            // Initialize phone input
-            const iti = intlTelInput(document.querySelector("#phone"), {
-                onlyCountries: ["pk", "us", "gb"],
-                separateDialCode: true,
-                initialCountry: "pk",
-                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-            });
+        function sendOtp(){
 
-            function startCountdown() {
-                let timeLeft = 60;
-                canResendOtp = false;
-                
-                $('#send-otp-btn').prop('disabled', true).html(`Resend OTP in ${timeLeft}s`);
-                clearInterval(countdownInterval);
-                
-                countdownInterval = setInterval(() => {
-                    timeLeft--;
-                    if (timeLeft <= 0) {
-                        clearInterval(countdownInterval);
-                        canResendOtp = true;
-                        $('#send-otp-btn').prop('disabled', false).html('Resend OTP');
-                    } else {
-                        $('#send-otp-btn').html(`Resend OTP in ${timeLeft}s`);
-                    }
-                }, 1000);
-            }
+            const phone         = iti.getNumber()
+            const countryCode   = iti.getSelectedCountryData().iso2
+            const token         = "{{ csrf_token() }}"
 
-            async function handleOtpOperation(operation) {
-                if (operation === 'resend' && !canResendOtp) return;
-
-                const phone = iti.getNumber();
-                if (!iti.isValidNumber()) {
-                    Swal.fire('Error', 'Please enter a valid phone number', 'error');
-                    return;
-                }
-
-                const $btn = operation === 'verify' ? $('#verify-otp-btn') : $('#send-otp-btn');
-                const otp  = operation === 'verify' ? $('#otp').val() : null;
-                
-                if (operation === 'verify' && !otp) {
-                    Swal.fire('Error', 'Please enter OTP', 'error');
-                    return;
-                }
-
-                try {
-
-                    const verifyURL = "{{route('lawyer.otp.verify')}}"
-                    const sendURL   = "{{route('lawyer.otp.send')}}"
+            $.ajax({
+                url: "{{route('lawyer.otp.send')}}",
+                type: 'POST',
+                data: {phone, country_code: countryCode, _token: token},
+                beforeSend: ()       =>  $('#send-otp-btn').html('<span class="spinner-border spinner-border-sm"></span>').prop('disabled', true),
+                error:      (error)  =>  Swal.fire('Error', error.responseJSON?.message || 'Something went wrong', 'error'),
+                success:    ()       =>  {
+                    $('#phone').prop('readonly', true)
+                    $('#otp-section').removeClass('d-none')
+                    $('#send-otp-btn').prop('disabled', true).html('resend otp in 60s')
                     
-                    await $.ajax({
-                        url: operation === 'verify' ?  verifyURL : sendURL,
-                        type: 'POST',
-                        data: {
-                            phone,
-                            country_code: iti.getSelectedCountryData().dialCode,
-                            otp,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        beforeSend: ()=>{
-                            $btn.html('<span class="spinner-border spinner-border-sm"></span>').prop('disabled', true);
-                        },
-                        complete: () => {
-                            $btn.prop('disabled', false).html(operation === 'verify' ? 'Verify OTP' : 'Send OTP');
-                        }
-                    });
+                    let countdown         = 60
+                    let countdownInterval = setInterval(() => {
 
-                    if (operation === 'verify') {
-                        isPhoneVerified = true;
-                        Swal.fire({
-                            title: 'Success',
-                            text: 'Phone number verified successfully',
-                            icon: 'success',
-                            timer: 1500
-                        });
-                        $('#otp-section').addClass('d-none');
-                        $('#phone').prop('readonly', true);
-                        $('#send-otp-btn').prop('disabled', true).html('Verified ✓');
-                        clearInterval(countdownInterval);
-                    } else {
-                        $('#phone').prop('readonly', true);
-                        $('#otp-section').removeClass('d-none').find('#otp').prop('required', true);
-                        startCountdown();
-                    }
-                } catch (error) {
-                    Swal.fire('Error', error.responseJSON?.message || 'Operation failed', 'error');
+                        if (isOtpVerified) {
+                            clearInterval(countdownInterval);
+                            return
+                        }
+
+                        $('#send-otp-btn').html(`resend otp in ${countdown}s`);
+                        
+                        if (--countdown <= 0) {
+                            $('#send-otp-btn').html('resend otp').prop('disabled', false)
+                            clearInterval(countdownInterval);
+                        }
+
+                    }, 1000);
                 }
+            });
+        }
+        
+        function verifyOtp(){
+
+            const token         = "{{ csrf_token() }}"
+            const otp           = $('#otp').val()
+
+            if (!otp) {
+                alert('Please enter OTP', 'error');
+                return;
             }
 
-            // Event Handlers
-            $('#send-otp-btn').click(() => 
-                handleOtpOperation($('#send-otp-btn').html().includes('Resend') ? 'resend' : 'send')
-            );
-            
-            $('#verify-otp-btn').click(() => handleOtpOperation('verify'));
+            $.ajax({
+                url: "{{route('lawyer.otp.verify')}}",
+                type: 'POST',
+                data: {otp, _token: token},
+                beforeSend: ()          =>  $('#verify-otp-btn').html('<span class="spinner-border spinner-border-sm"></span>').prop('disabled', true),
+                complete:   ()          =>  $('#verify-otp-btn').html('verify otp').prop('disabled', false),
+                error:      (error)     =>  Swal.fire('Error', error.responseJSON?.message || 'Something went wrong', 'error'),
+                success:    ()          =>  {
+                    isOtpVerified = true;
+                    $('#otp-section').remove();
+                    $('#phone').prop('readonly', true);
+                    $('#send-otp-btn').prop('disabled', true).html('Verified ✓');
+                    Swal.fire('Hurray', 'OTP verified', 'success')
+                }
+            });
+        }
+        
+        $('form').submit(function(eve) {
 
-            $('#signup-form').submit(function(e) {
-                e.preventDefault();
-                $('.text-danger').text('');
-                $('#ajax-errors').addClass('d-none').text('');
+            eve.preventDefault();
 
-                // if (!isPhoneVerified) {
-                //     $('#ajax-errors').removeClass('d-none').text('Please verify your phone number first');
-                //     return;
-                // }
+            if (!isOtpVerified) {
+                alert('Please verify your phone number first');
+                return;
+            }
 
-                const formData = new FormData(this);
-                formData.set('phone', iti.getNumber());
-                formData.set('country_code', iti.getSelectedCountryData().dialCode);
-                
-                const $submitBtn = $(this).find('button[type="submit"]');
-                
-                $.ajax({
-                    url: '{{ route('lawyer.signup') }}',
-                    type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    beforeSend: () => {
-                        $submitBtn.html('<span class="spinner-border spinner-border-sm"></span>').prop('disabled', true);
-                    },
-                    success: () => window.location.href = '{{ route("lawyer.signin") }}',
-                    error: (xhr) => {
-                        Object.entries(xhr.responseJSON.errors || {}).forEach(([field, message]) => {
-                            $(`#${field}-error`).text(message);
-                        });
-                    },
-                    complete: () => {
-                        $submitBtn.html('Create account').prop('disabled', false);
-                        clearInterval(countdownInterval);
-                    }
-                });
+            if ($('#phone').val() && !iti.isValidNumber()) {
+                alert('Invalid phone');
+                return;
+            }
+
+            $('[name="phone"]').val(iti.getNumber());
+            $('[name="country_code"]').val(iti.getSelectedCountryData().iso2);
+            $('.text-danger').text('');
+            $('#otp-error').addClass('d-none').text('');
+
+            $.ajax({
+                url: '{{ route('lawyer.signup') }}',
+                type: 'POST',
+                data: $(this).serialize(),
+                processData: false,
+                beforeSend: ()      => $('button[type="submit"]').html('<span class="spinner-border spinner-border-sm"></span>').prop('disabled', true),
+                success:    ()      => window.location.href = '{{ route("lawyer.signin") }}',
+                error:      (xhr)   => Object.entries(xhr.responseJSON?.errors || {}).forEach(([field, message]) => $(`#${field}-error`).text(message)),
+                complete:   ()      => $('button[type="submit"]').html('Create account').prop('disabled', false)
             });
         });
+
     </script>
     @endpush
 </x-lawyer.guest>

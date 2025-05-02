@@ -26,6 +26,7 @@
   <link href="{{ asset('assets/plugins/perfect-scrollbar/perfect-scrollbar.css') }}" rel="stylesheet" />
   <link href="{{ asset('assets/plugins/tostify/tostify.min.css') }}" rel="stylesheet" />
   <link href="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" />
+  <link href="{{ asset('assets/plugins/intlTelInput/intlTelInput.min.css') }}" rel="stylesheet" />
   <!-- end plugin css -->
 
   @stack('plugin-styles')
@@ -68,6 +69,7 @@
     <script src="{{ asset('assets/plugins/tostify/tostify.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/tostify/tostify.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/intlTelInput/intlTelInput.min.js') }}"></script>
 
     <!-- end base js -->
 

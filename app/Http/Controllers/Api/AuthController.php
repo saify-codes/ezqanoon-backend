@@ -36,7 +36,7 @@ class AuthController extends Controller
         $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
-            'phone'    => Phone::convertToE164Format($request->phone, $request->country_code),
+            'phone'    => $request->phone,
             'password' => Hash::make($request->password),
         ]);
 

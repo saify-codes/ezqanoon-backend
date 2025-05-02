@@ -131,7 +131,7 @@ class Lawyer extends Authenticatable
      */
     public function setPhoneAttribute($value)
     {
-        $this->attributes['phone'] = Phone::convertToInternationalFormat($value);
+        $this->attributes['phone'] = Phone::convertToInternationalFormat($value, request()->country_code);
     }
 
     /**

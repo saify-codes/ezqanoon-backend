@@ -17,16 +17,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'phone',
-        'avatar',
-        'verified_email',
-        'verification_token',
-        'verification_token_expiry',
-    ];
+    protected $guarded = ['id'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -83,7 +74,7 @@ class User extends Authenticatable
      */
     public function setPhoneAttribute($value)
     {
-        $this->attributes['phone'] = Phone::convertToInternationalFormat($value);
+        $this->attributes['phone'] = Phone::convertToInternationalFormat($value, request()->country_code);
     }
 
    

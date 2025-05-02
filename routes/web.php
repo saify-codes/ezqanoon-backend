@@ -19,6 +19,7 @@ use App\Http\Controllers\Lawyer\TaskController;
 use App\Http\Controllers\Lawyer\TeamController;
 use App\Http\Controllers\Admin\ZoomController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Validator;
 
 /*
 |--------------------------------------------------------------------------
@@ -121,8 +122,18 @@ Route::group(['middleware' => 'lawyer.auth'], function () {
         Route::delete('/manage/client/{client}/attachment/{attachment}', [ClientAttachmentController::class, 'destroy'])->name('lawyer.client.attachments.destroy');
 
         // Event calendar
-        Route::get('/calendar', [CalendarController::class, 'index'])->name('lawyer.calendar.index');
         Route::get('/calendar/events', [CalendarController::class, 'events'])->name('lawyer.calendar.events');
+        Route::resource('/calendar', CalendarController::class, [
+            'names' => [
+                'index'             => 'lawyer.calendar.index',
+                'create'            => 'lawyer.calendar.create',
+                'store'             => 'lawyer.calendar.store',
+                'show'              => 'lawyer.calendar.show',
+                'edit'              => 'lawyer.calendar.edit',
+                'update'            => 'lawyer.calendar.update',
+                'destroy'           => 'lawyer.calendar.destroy',
+            ]
+        ]);
 
         // Billing & Invoice
         Route::resource('/invoice', InvoiceController::class, [
@@ -174,5 +185,3 @@ Route::group(['middleware' => 'lawyer.guest'], function () {
 
     Route::post('/otp/verify', [OTPController::class, 'verifyOTP'])->name('lawyer.otp.verify');
 });
-
-Route::view('/foo', 'integrations.zoom.success');

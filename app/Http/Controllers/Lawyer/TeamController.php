@@ -72,7 +72,8 @@ class TeamController extends Controller
         $request->validate([
             'name'          => 'required|string|max:255',
             'email'         => 'required|email|unique:lawyers',
-            'phone'         => 'required|phone:PK',
+            'country_code'  => 'required_with:phone',
+            'phone'         => 'required|phone:' . $request->country_code,
             'password'      => 'required|string|min:8|confirmed',
             'permissions'   => 'nullable|array',
         ]);
@@ -117,7 +118,8 @@ class TeamController extends Controller
     {
         $request->validate([
             'name'          => 'required|string|max:255',
-            'phone'         => 'required|phone:PK',
+            'country_code'  => 'required_with:phone',
+            'phone'         => 'required|phone:' . $request->country_code,
             'permissions'   => 'nullable|array',
         ]);
 

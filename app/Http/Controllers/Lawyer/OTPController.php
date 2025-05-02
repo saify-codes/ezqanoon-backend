@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class OTPController extends Controller
 {
@@ -21,25 +22,17 @@ class OTPController extends Controller
     public function sendOTP(Request $request)
     {
         $request->validate([
-            'phone' => [
-                'required',
-                function ($_, $value, $fail) use ($request) {
-                    if(!Phone::isValid($value, $request->country_code)){
-                        $fail('The phone number format is invalid.');
-                    }
-                }
-            ],
-            'country_code' => 'required'
+            'country_code'  => 'required_with:phone',
+            'phone'         => 'required|phone:' . $request->country_code,
         ]);
 
-        $otp = $this->generateOTP();
-
-        Cache::put('lawyer_otp_' . $request->phone, $otp, now()->addMinutes(5));
-
-        Log::info('Lawyer OTP generated: ' . $otp);
-
+        $otp     = $this->generateOTP();
         $message = "Your OTP is: $otp. It is valid for 5 minutes.";
-        $this->twilioService->sendSMS(Phone::convertToE164Format($request->phone, $request->country_code), $message);
+
+        $this->twilioService->sendSMS($request->phone, $message);
+
+        Cache::put("otp_" . Session::id(), ['code' => $otp, 'phone' => $request->phone], now()->addMinutes(5));
+        Log::info('Lawyer OTP generated: ' . $otp);
 
         return $this->successResponse('OTP sent successfully!');
     }
@@ -48,17 +41,16 @@ class OTPController extends Controller
     {
         $request->validate([
             'otp'   => 'required|numeric',
-            'phone' => 'required'
         ]);
 
-        $otp = Cache::get('lawyer_otp_' . $request->phone);
+        $otp = Cache::get("otp_" . Session::id());
 
         if (!$otp) {
             return $this->errorResponse('OTP expired', 400);
         }
 
-        if ($otp == $request->otp) {
-            Cache::put('lawyer_verified_number_' . $request->phone, true);
+        if ($otp['code'] == $request->otp) {
+            Session::flash('lawyer_verified_number', $otp['phone']);
             return $this->successResponse('OTP verified successfully!');
         }
 

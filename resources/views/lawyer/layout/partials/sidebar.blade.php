@@ -69,12 +69,12 @@
       @endif
 
       @if (auth()->user()->hasPermission('manage:calendar'))
-        {{-- <li class="nav-item {{ activeClass(['calendar']) }}">
+        <li class="nav-item {{ activeClass(['calendar']) }}">
           <a href="{{ url('/calendar') }}" class="nav-link">
             <i class="link-icon" data-feather="calendar"></i>
             <span class="link-title">Calendar & scheduling</span>
           </a>
-        </li> --}}
+        </li>
       @endif
 
       <li class="nav-item nav-category">Finance</li>
