@@ -36,6 +36,10 @@ return [
     */
 
     'guards' => [
+        'admin' => [
+            'driver'    => 'session',
+            'provider'  => 'admins',
+        ],
         'lawyer' => [
             'driver'    => 'session',
             'provider'  => 'lawyers',
@@ -71,6 +75,10 @@ return [
         'lawyers' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\Lawyer::class),
+        ],
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => env('AUTH_MODEL', App\Models\Admin::class),
         ],
 
         // 'users' => [

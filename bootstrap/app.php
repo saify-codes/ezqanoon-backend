@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Middleware\Admin\AuthMiddleware as AdminAuthMiddleware;
+use App\Http\Middleware\Admin\GuestMiddleware as AdminGuestMiddleware; 
 use App\Http\Middleware\Lawyer\AuthMiddleware;
-use App\Http\Middleware\Lawyer\GuestMiddleware;
+use App\Http\Middleware\Lawyer\GuestMiddleware; 
 use App\Http\Middleware\Lawyer\NoSubscriptionMiddleware;
 use App\Http\Middleware\Lawyer\SubscriptionMiddleware;
 use Illuminate\Foundation\Application;
@@ -17,6 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
+            'admin.auth'                => AdminAuthMiddleware::class,
+            'admin.guest'               => AdminGuestMiddleware::class,
             'lawyer.auth'               => AuthMiddleware::class,
             'lawyer.guest'              => GuestMiddleware::class,
             'lawyer.has_subscription'   => SubscriptionMiddleware::class,
