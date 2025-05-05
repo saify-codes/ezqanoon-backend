@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Controllers\Admin\ResetPasswordController as AdminResetPasswordController;
 use App\Http\Controllers\AeroDropController;
 use App\Http\Controllers\Lawyer\CasesController;
 use App\Http\Controllers\Lawyer\AppointmentController;
@@ -29,14 +33,30 @@ use Illuminate\Support\Facades\Validator;
 | Ensure that the 'admin' middleware is applied to protect these routes.
 |--------------------------------------------------------------------------
 */
-Route::group([], function(){
-    Route::get('/admin/dashboard', fn() => "Welcome, Admin!");
-    Route::get('/admin/users', fn() => "Manage Users");
+Route::group(['middleware' => 'admin.auth', 'prefix' => 'admin'], function(){
+    Route::get('/',                         [AdminDashboardController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/profile',                  [AdminProfileController::class, 'profile'])->name('admin.profile');
+    Route::put('/profile',                  [AdminProfileController::class, 'update']);
+    Route::post('/profile/avatar',          [AdminProfileController::class, 'uploadAvatar'])->name('admin.avatar.upload');
+    Route::delete('/profile/avatar',        [AdminProfileController::class, 'deleteAvatar'])->name('admin.avatar.delete');
+    Route::put('/profile/reset-password',   [AdminResetPasswordController::class, 'update'])->name('admin.reset-password');
+
+    // Integrations
     Route::get('/integrations/zoom/oauth/authorize', [ZoomController::class, 'authenticate'])->name('integration.zoom.authorize');
     Route::get('/integrations/zoom/oauth/callback', [ZoomController::class, 'handleOAuthCallback'])->name('integration.zoom.callback');
     Route::get('/integrations/zoom/success', [ZoomController::class, 'success'])->name('integration.zoom.success');
     Route::get('/integrations/zoom/error', [ZoomController::class, 'error'])->name('integration.zoom.error');
+    Route::get('/signout', [AdminAuthController::class, 'signout'])->name('admin.signout');
+
 });
+
+Route::group(['middleware' => 'admin.guest', 'prefix' => 'admin'], function () {
+
+    Route::view('/signin', 'admin.signin')->name('admin.signin');
+    Route::post('/signin', [AdminAuthController::class, 'signin']);
+
+});
+
 /*
 |--------------------------------------------------------------------------
 | ⚖️ LAWYER ROUTES ⚖️
