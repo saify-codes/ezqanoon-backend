@@ -41,7 +41,7 @@
                     <!-- Note for users -->
                     <small class="text-muted d-block mt-1">
                         - Maximum <strong>10 files</strong> allowed.<br>
-                        - Allowed file types: <strong>PNG, JPG, WEBP, PDF, DOC, DOCX</strong>.<br>
+                         {{-- - Allowed file types: <strong>PNG, JPG, WEBP, PDF, DOC, DOCX</strong>.<br> --}}
                         - <strong>Images</strong> must not exceed <strong>2MB</strong> each.<br>
                         - <strong>Documents/PDFs</strong> must not exceed <strong>10MB</strong> each.
                     </small>
@@ -74,7 +74,7 @@
                     uploadURL: '/upload',
                     enableCamera: true,
                     maxFiles: 10,
-                    allowedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
+                    // allowedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
                     fileSizeRules: [{
                             types: ['image/jpeg', 'image/png', 'image/webp'],
                             maxSize: 2 * 1024 * 1024,

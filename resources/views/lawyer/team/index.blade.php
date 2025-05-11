@@ -24,6 +24,7 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Phone</th>
+                            <th>Permission level</th>
                             <th>Status</th>
                             <th>Date created</th>
                             <th>Action</th>
@@ -37,6 +38,11 @@
 
     @push('style')
         <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-net-bs5/dataTables.bootstrap5.css') }}">
+        <style>
+            table tbody td:nth-child(5){
+                white-space: normal;
+            }
+        </style>
     @endpush
 
     @push('plugin-scripts')
@@ -50,8 +56,14 @@
              * Helper function to create a Bootstrap badge snippet.
              */
             function getBadge(value, classMapping) {
-                const badgeClass = classMapping[value];
-                return badgeClass?`<span class="badge rounded-pill border border-${badgeClass} text-${badgeClass}">${value}</span>` : '';
+
+                if (classMapping) {
+                    const badgeClass = classMapping[value];
+                    return badgeClass?`<span class="badge rounded-pill border border-${badgeClass} text-${badgeClass}">${value}</span>` : '';
+                }
+
+                return `<span class="badge rounded-pill border bg-primary text-white">${value}</span>`
+
             }
 
             /**
@@ -98,6 +110,14 @@
                     { data: 'name' },
                     { data: 'email' },
                     { data: 'phone' },
+                    { 
+                        data: 'permissions',
+                        render: function(data) {
+                            const permissions = data ?? []
+                            return permissions.map(permission => getBadge(permission)).join('')
+                        }
+
+                    },
                     {
                         data: 'email_verified_at',
                         render: function(data) {

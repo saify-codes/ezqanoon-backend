@@ -234,7 +234,7 @@
                     <!-- Note for users -->
                     <small class="text-muted d-block mt-1">
                         - Maximum <strong>20 files</strong> allowed.<br>
-                        - Allowed file types: <strong>PNG, JPG, WEBP, PDF, DOC, DOCX</strong>.<br>
+                        {{-- - Allowed file types: <strong>PNG, JPG, WEBP, PDF, DOC, DOCX</strong>.<br> --}}
                         - <strong>Images</strong> must not exceed <strong>2MB</strong> each.<br>
                         - <strong>Documents/PDFs</strong> must not exceed <strong>10MB</strong> each.
                     </small>

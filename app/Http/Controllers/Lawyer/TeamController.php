@@ -19,7 +19,7 @@ class TeamController extends Controller
     {
         if ($request->ajax()) {
             // DataTables columns to map for ordering:
-            $columns            = ['id', 'name', 'email', 'phone', 'email_verified_at', 'created_at'];
+            $columns            = ['id', 'name', 'email', 'phone', 'permissions', 'email_verified_at', 'created_at'];
             $draw               = $request->input('draw');
             $start              = $request->input('start');        // skip
             $length             = $request->input('length');       // rows per page
