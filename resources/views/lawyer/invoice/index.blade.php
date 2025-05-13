@@ -23,7 +23,7 @@
                             <th>#</th>
                             <th>Name</th>
                             <th>Phone</th>
-                            <th>Type</th>
+                            <th>Case Type</th>
                             <th>Status</th>
                             <th>Total</th>
                             <th>Due date</th>

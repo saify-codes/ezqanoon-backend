@@ -315,7 +315,7 @@
                         parent.prop('class', 'col-md-3').after(`
                             <div class="col-md-3">
                                 <label for="otherType" class="form-label">Specify Case Type</label>
-                                <input type="text" class="form-control" id="otherType" name="type" placeholder="Enter case type" />
+                                <input type="text" class="form-control" id="otherType" name="type" placeholder="Enter case type" value="{{ old('type', $client->type)}}" />
                             </div>
                         `);
                     } else {

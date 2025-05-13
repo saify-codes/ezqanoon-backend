@@ -39,7 +39,7 @@
                             <option value="">-- Select Case type --</option>
                             <option value="CRIMINAL" {{ old('type', $case->type) === 'CRIMINAL' ? 'selected' : '' }}>CRIMINAL</option>
                             <option value="CIVIL"    {{ old('type', $case->type) === 'CIVIL'    ? 'selected' : '' }}>CIVIL</option>
-                            <option value="OTHERS"   selected>OTHERS</option>
+                            <option value="OTHERS"   {{ old('type', !in_array($case->type, ['CRIMINAL', 'CIVIL']))? 'selected' : '' }}>OTHERS</option>
                         </select>
                     </div>
                 </div>

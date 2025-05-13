@@ -69,18 +69,36 @@
                 </table>
             </div>
 
-            <!-- Deadlines -->
-            @if ($case->deadlines)
+            <!-- Fillings -->
+            @if ($case->fillings)
                 <div class="mb-3">
-                    <h6 class="mb-3">Deadlines:</h6>
+                    <h6 class="mb-3">Fillings:</h6>
                     <div class="table-responsive mb-5">
                         <table class="table table-hover" style="table-layout: fixed">
                             <tbody>
-                                @foreach ($case->deadlines as $deadline)
+                                @foreach ($case->fillings as $filling)
                                     <tr>
-                                        <td scope="row">{{ $deadline['description'] }}</td>
-                                        <td>{{ $deadline['date'] }} <x-lawyer.deadline-badge
-                                                deadline="{{ $deadline['date'] }}" class="ms-2" /></td>
+                                        <td scope="row">{{ $filling['description'] }}</td>
+                                        <td>{{ $filling['date'] }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+            
+            <!-- Hearings -->
+            @if ($case->hearings)
+                <div class="mb-3">
+                    <h6 class="mb-3">Hearings:</h6>
+                    <div class="table-responsive mb-5">
+                        <table class="table table-hover" style="table-layout: fixed">
+                            <tbody>
+                                @foreach ($case->hearings as $hearing)
+                                    <tr>
+                                        <td scope="row">{{ $hearing['description'] }}</td>
+                                        <td>{{ $hearing['date'] }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
