@@ -111,16 +111,7 @@
                             return getBadge(data, originClasses);
                         }    
                     },
-                    {
-                        data: 'type',
-                        render: function(data) {
-                            const urgencyClasses = {
-                                'REGULAR': 'secondary',
-                                'VIP': 'primary',
-                            };
-                            return getBadge(data, urgencyClasses);
-                        }
-                    },
+                    {data: 'type'},
                     { data: 'created_at' },
                     {
                         sortable: false,

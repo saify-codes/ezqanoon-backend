@@ -175,7 +175,7 @@ class CalendarController extends Controller
         
         foreach ($hearingDates as $item) {
             $events[] = [
-                'title'             => $item->description ?: 'Hearing',
+                'title'             => $item->caseRelation->name,
                 'start'             => $item->date,
                 'textColor'         => '#FFF',
                 'backgroundColor'   => 'var(--bs-primary)',

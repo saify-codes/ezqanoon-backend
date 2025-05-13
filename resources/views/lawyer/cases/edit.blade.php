@@ -39,7 +39,7 @@
                             <option value="">-- Select Case type --</option>
                             <option value="CRIMINAL" {{ old('type', $case->type) === 'CRIMINAL' ? 'selected' : '' }}>CRIMINAL</option>
                             <option value="CIVIL"    {{ old('type', $case->type) === 'CIVIL'    ? 'selected' : '' }}>CIVIL</option>
-                            <option value="OTHERS"   selected>OTHERS</option>
+                            <option value="OTHERS"   {{ old('type', !in_array($case->type, ['CRIMINAL', 'CIVIL']))? 'selected' : '' }}>OTHERS</option>
                         </select>
                     </div>
                 </div>
@@ -234,7 +234,7 @@
                     <!-- Note for users -->
                     <small class="text-muted d-block mt-1">
                         - Maximum <strong>20 files</strong> allowed.<br>
-                        - Allowed file types: <strong>PNG, JPG, WEBP, PDF, DOC, DOCX</strong>.<br>
+                        {{-- - Allowed file types: <strong>PNG, JPG, WEBP, PDF, DOC, DOCX</strong>.<br> --}}
                         - <strong>Images</strong> must not exceed <strong>2MB</strong> each.<br>
                         - <strong>Documents/PDFs</strong> must not exceed <strong>10MB</strong> each.
                     </small>
