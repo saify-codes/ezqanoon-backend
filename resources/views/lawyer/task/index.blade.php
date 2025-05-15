@@ -21,7 +21,7 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Name</th>
+                            <th>About</th>
                             <th>Start date</th>
                             <th>Deadline</th>
                             <th>Status</th>

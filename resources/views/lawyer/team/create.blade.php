@@ -86,6 +86,7 @@
                                 type="button"
                                 id="toggle-password"
                                 tabindex="-1"
+                                style="z-index: 0"
                             >
                                 <i data-feather="eye"></i>
                             </button>
@@ -209,7 +210,7 @@
                     }
                 });
 
-                $('#permissions').select2();
+                $('#permissions').select2({placeholder: 'Select permission'});
 
                 // Handle select all permissions button
                 $('#select-all-permissions').on('click', function() {

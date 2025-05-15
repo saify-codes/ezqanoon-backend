@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('country')->nullable();
-            $table->enum('type', ['VIP', 'REGULAR']);
+            $table->string('type');
             $table->date('dob')->nullable();
             $table->enum('gender', ['MALE', 'FEMALE', 'OTHER'])->nullable();
             $table->string('phone')->nullable();
