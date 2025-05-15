@@ -29,9 +29,9 @@ class AuthController extends Controller
     public function signup(SignupRequest $request): JsonResponse
     {
         // Check if otp verified
-        // if(Cache::get('user_verified_number_' . $request->phone) !== true){
-        //     return $this->errorResponse('Phone number not verified', 401);
-        // }
+        if(Cache::get('user_verified_number_' . $request->phone) !== true){
+            return $this->errorResponse('Phone number not verified', 401);
+        }
 
         $user = User::create([
             'name'     => $request->name,

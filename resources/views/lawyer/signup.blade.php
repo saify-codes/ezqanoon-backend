@@ -46,7 +46,7 @@
                                 <small id="email-error" class="text-danger"></small>
                             </div>
 
-                            {{-- <div class="mb-3">
+                            <div class="mb-3">
                                 <label for="phone" class="form-label">Phone</label>
                                 <div class="input-group">
                                     <input type="tel" class="form-control" id="phone"placeholder="Phone" value="{{ old('phone') }}" required>
@@ -55,7 +55,7 @@
                                     <button type="button" class="btn btn-primary" id="send-otp-btn" onclick="sendOtp()">send otp</button>
                                 </div>
                                 <small id="phone-error" class="text-danger"></small>
-                            </div> --}}
+                            </div>
                             
                             <div class="mb-3">
                                 <label for="phone" class="form-label">Phone</label>
@@ -63,14 +63,14 @@
                                 <small id="phone-error" class="text-danger"></small>
                             </div>
                             
-                            {{-- <div class="mb-3 d-none" id="otp-section">
+                            <div class="mb-3 d-none" id="otp-section">
                                 <label for="otp" class="form-label">Verify otp</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="otp" placeholder="enter otp" maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                     <button type="button" class="btn btn-primary" id="verify-otp-btn" onclick="verifyOtp()">verify otp</button>
                                 </div>
                                 <small id="otp-message" class="text-danger"></small>
-                            </div> --}}
+                            </div>
 
                             <div class="mb-3">
                                 <label for="password" class="form-label">Password</label>
