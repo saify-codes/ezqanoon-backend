@@ -94,7 +94,6 @@
                                 type="tel" 
                                 class="form-control" 
                                 id="phone" 
-                                placeholder="Phone" 
                                 value="{{ old('phone') }}" 
                             >
                         </div>

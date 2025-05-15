@@ -46,7 +46,6 @@
                                     type="tel" 
                                     class="form-control" 
                                     id="phone" 
-                                    placeholder="Phone" 
                                     value="{{ old('phone') }}" 
                                     required
                                 >
@@ -227,7 +226,7 @@
                             initialCountry: "pk",
                             loadUtils: () => import("https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"),
                             strictMode: true    
-                        });
+            });
 
             
             

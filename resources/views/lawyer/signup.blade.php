@@ -49,17 +49,11 @@
                             <div class="mb-3">
                                 <label for="phone" class="form-label">Phone</label>
                                 <div class="input-group">
-                                    <input type="tel" class="form-control" id="phone"placeholder="Phone" value="{{ old('phone') }}" required>
+                                    <input type="tel" class="form-control" id="phone" value="{{ old('phone') }}" required>
                                     <input type="hidden" name="phone">
                                     <input type="hidden" name="country_code">
                                     <button type="button" class="btn btn-primary" id="send-otp-btn" onclick="sendOtp()">send otp</button>
                                 </div>
-                                <small id="phone-error" class="text-danger"></small>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="phone" class="form-label">Phone</label>
-                                <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone" value="{{ old('phone') }}" maxlength="15"  oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                                 <small id="phone-error" class="text-danger"></small>
                             </div>
                             
