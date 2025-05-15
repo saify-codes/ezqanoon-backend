@@ -95,6 +95,7 @@
                                 class="form-control" 
                                 id="phone" 
                                 value="{{ old('phone') }}" 
+                                required
                             >
                         </div>
                         <input type="hidden" name="phone">

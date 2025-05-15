@@ -98,6 +98,7 @@
                                 class="form-control" 
                                 id="phone" 
                                 value="{{ old('phone', $client->phone) }}" 
+                                required
                             >
                         </div>
                         <input type="hidden" name="phone">
