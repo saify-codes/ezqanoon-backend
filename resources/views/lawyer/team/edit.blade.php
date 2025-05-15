@@ -150,7 +150,7 @@
                     }
                 });
 
-                $('#permissions').select2();
+                $('#permissions').select2({placeholder: 'Select permission'});
 
                 // Handle select all permissions button
                 $('#selectAllPermissions').on('click', function() {

@@ -192,7 +192,7 @@
                     <!-- Note for users -->
                     <small class="text-muted d-block mt-1">
                         - Maximum <strong>20 files</strong> allowed.<br>
-                        - Allowed file types: <strong>PNG, JPG, WEBP, PDF, DOC, DOCX</strong>.<br>
+                        {{--                         {{-- - Allowed file types: <strong>PNG, JPG, WEBP, PDF, DOC, DOCX</strong>.<br> --}}
                         - <strong>Images</strong> must not exceed <strong>2MB</strong> each.<br>
                         - <strong>Documents/PDFs</strong> must not exceed <strong>10MB</strong> each.
                     </small>
@@ -315,7 +315,7 @@
                         parent.prop('class', 'col-md-3').after(`
                             <div class="col-md-3">
                                 <label for="otherType" class="form-label">Specify Case Type</label>
-                                <input type="text" class="form-control" id="otherType" name="type" placeholder="Enter case type" />
+                                <input type="text" class="form-control" id="otherType" name="type" placeholder="Enter case type" value="{{ old('type', $client->type)}}" />
                             </div>
                         `);
                     } else {

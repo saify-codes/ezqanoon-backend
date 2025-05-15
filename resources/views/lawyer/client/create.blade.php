@@ -26,12 +26,12 @@
                 @csrf
                 <!-- Personal info -->
                 <div class="row mb-3">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="first_name" name="first_name"
                             value="{{ old('first_name') }}" placeholder="e.g. Musaafa" required>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="last_name" name="last_name"
                             value="{{ old('last_name') }}" placeholder="e.g. Ahmed" required>
@@ -45,15 +45,16 @@
                         </select>
                     </div>
                     <div class="col-md-2">
+                        <label for="dob" class="form-label">DOB</label>
+                        <input type="date" class="form-control" id="dob" name="dob" value="{{ old('dob') }}">
+                    </div>
+                    <div class="col-md-4">
                         <label for="type" class="form-label">Client type <span class="text-danger">*</span></label>
                         <select class="form-select" id="type" name="type" required>
                             <option value="REGULAR" {{ old('type') === 'REGULAR' ? 'selected' : '' }}>Regular</option>
                             <option value="VIP" {{ old('type') === 'VIP' ? 'selected' : '' }}>VIP</option>
+                            <option value="OTHERS" {{ old('type') === 'OTHERS' ? 'selected' : '' }}>OTHERS</option>
                         </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label for="dob" class="form-label">DOB</label>
-                        <input type="date" class="form-control" id="dob" name="dob" value="{{ old('dob') }}">
                     </div>
                 </div>
                 
@@ -221,6 +222,24 @@
                         $('[name="phone"]').val(iti.getNumber());
                         $('[name="country_code"]').val(iti.getSelectedCountryData().iso2);
                     }
+                });
+
+                $('#type').change(function() {
+
+                    const parent = $(this).parent();
+                    const value  = this.value;
+
+                    if (value === 'OTHERS') {
+                        parent.prop('class', 'col-md-2').after(`
+                            <div class="col-md-2">
+                                <label for="otherType" class="form-label">Specify client type</label>
+                                <input type="text" class="form-control" id="otherType" name="type" placeholder="Enter client type" />
+                            </div>
+                        `);
+                    } else {
+                        parent.prop('class', 'col-md-4').next().remove();
+                    }
+
                 });
 
 

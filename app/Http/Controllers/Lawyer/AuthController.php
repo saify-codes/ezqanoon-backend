@@ -31,10 +31,10 @@ class AuthController extends Controller
     {       
 
         // Check if OTP verification is done
-        if(Session::get('lawyer_verified_number') !== $request->phone) {
-            return $this->errorResponse('Phone number not verified');
-        }
-
+        // if(Cache::get('lawyer_verified_number_' . $request->phone) !== true) {
+        //     return $this->errorResponse('Phone number not verified');
+        // }
+                
         $lawyer = Lawyer::create([
             'name'     => $request->name,
             'email'    => $request->email,
