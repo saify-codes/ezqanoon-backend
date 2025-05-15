@@ -23,9 +23,11 @@
                             <th>#</th>
                             <th>Name</th>
                             <th>Phone</th>
-                            <th>Case Type</th>
+                            <th>Invoice type</th>
                             <th>Status</th>
+                            <th>Case type</th>
                             <th>Total</th>
+                            <th>Balance</th>
                             <th>Due date</th>
                             <th>Date created</th>
                             <th>Action</th>
@@ -103,24 +105,27 @@
                         data: 'name'
                     },
                     {
-                        data: 'phone'
+                        data: 'phone',
+                        render: function(phone){
+                            return phone ?? 'N/A'
+                        }
                     },
                     {
                         data: 'type',
-                        render: function(data) {
+                        render: function(invoiceType) {
                             const typeClasses = {
                                 'ONE TIME': 'primary',
                                 'MILESTONE': 'info',
                             };
-                            return getBadge(data, typeClasses);
+                            return getBadge(invoiceType, typeClasses);
                         }
                     },
                     {
                         data: null,
-                        render: function(data) {
+                        render: function(invoice) {
 
-                            if (data.type === 'MILESTONE') {
-                                const showUrl = `{{ route('lawyer.invoice.show', ':id') }}`.replace(':id', data.id);
+                            if (invoice.type === 'MILESTONE') {
+                                const showUrl = `{{ route('lawyer.invoice.show', ':id') }}`.replace(':id', invoice.id);
                                 return `<a href="${showUrl}" class="btn btn-inverse-secondary btn-icon"><i data-feather="eye"></i></a>`
                             }
 
@@ -129,21 +134,27 @@
                                 'PAID': 'success',
                                 'OVERDUE': 'danger',
                             };
-                            return getBadge(data.status, statusClasses);
+                            return getBadge(invoice.status, statusClasses);
                         }
+                    },
+                    {
+                        data: 'case_type'
                     },
                     {
                         data: 'total'
                     },
                     {
+                        data: 'balance'
+                    },
+                    {
                         data: null,
-                        render: function(data){
-                            if (data.type === 'MILESTONE') {
-                                const showUrl = `{{ route('lawyer.invoice.show', ':id') }}`.replace(':id', data.id);
+                        render: function(invoice){
+                            if (invoice.type === 'MILESTONE') {
+                                const showUrl = `{{ route('lawyer.invoice.show', ':id') }}`.replace(':id', invoice.id);
                                 return `<a href="${showUrl}" class="btn btn-inverse-secondary btn-icon"><i data-feather="eye"></i></a>`
                             }
     
-                            return data.due_date
+                            return invoice.due_date
                         }
                     },
                     {

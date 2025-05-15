@@ -20,7 +20,7 @@ class InvoiceController extends Controller
         if ($request->ajax()) {
 
             // DataTables columns to map for ordering:
-            $columns            = ['id', 'name', 'phone', 'total', 'statue', 'due_date', 'created_at'];
+            $columns            = ['id', 'name', 'phone', 'type', 'status', 'case_type', 'total', 'balance', 'due_date', 'created_at'];
             $draw               = $request->input('draw');
             $start              = $request->input('start');        // skip
             $length             = $request->input('length');       // rows per page
@@ -28,7 +28,7 @@ class InvoiceController extends Controller
             $orderColumnIndex   = $request->input('order.0.column'); // which column index is being sorted
             $orderDirection     = $request->input('order.0.dir');    // asc or desc
 
-            $query              = Invoice::with('milestone')->where('lawyer_id', getLawyerId());
+            $query              = Invoice::select('*')->selectRaw('(total - paid) as balance')->with('milestone')->where('lawyer_id', getLawyerId());
             $totalRecords       = $query->count();
 
             if (!empty($searchValue)) {
@@ -51,6 +51,7 @@ class InvoiceController extends Controller
                 'recordsTotal'    => $totalRecords,
                 'recordsFiltered' => $totalRecordsFiltered,
                 'data'            => $data,
+                'foo' => "query->orderBy($columns[$orderColumnIndex], $orderDirection);"
             ]);
         }
         return view('lawyer.invoice.index');
@@ -92,6 +93,7 @@ class InvoiceController extends Controller
             'milestone.*.status'              => 'nullable|string',
             'receipt'                         => 'required|array',
             'grand_total'                     => 'required|numeric',
+            'paid'                            => 'required|numeric',
         ]);
 
         $invoice = Invoice::create([
@@ -108,6 +110,7 @@ class InvoiceController extends Controller
             'due_date'                        => $validated['due_date'] ?? null,
             'status'                          => $validated['status']   ?? null,
             'total'                           => $validated['grand_total'],
+            'paid'                            => $validated['paid'],
             'receipt'                         => $validated['receipt'] ?? null
         ]);
 
@@ -186,6 +189,7 @@ class InvoiceController extends Controller
             'milestone.*.status'              => 'nullable|string',
             'receipt'                         => 'required|array',
             'grand_total'                     => 'required|numeric',
+            'paid'                            => 'required|numeric',
         ]);
 
         // fetch the invoice, ensuring it belongs to this lawyer
@@ -208,6 +212,7 @@ class InvoiceController extends Controller
             'due_date'         => $validated['type'] === 'ONE TIME'? $validated['due_date']: null,
             'status'           => $validated['type'] === 'ONE TIME'? $validated['status']: null,
             'total'            => $validated['grand_total'],
+            'paid'             => $validated['paid'],
             'receipt'          => $validated['receipt'],
         ]);
 

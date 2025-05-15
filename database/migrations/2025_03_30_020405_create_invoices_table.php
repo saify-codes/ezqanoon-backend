@@ -27,6 +27,7 @@ return new class extends Migration
             $table->enum('payment_method', ['CASH', 'BANK', 'ONLINE TRANSFER']);
             $table->json('receipt')->nullable();
             $table->decimal('total', 14, 2)->default(0);
+            $table->decimal('paid', 14, 2)->default(0);
             $table->timestamps();
         });
 
@@ -48,6 +49,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('invoice_milestones');
         Schema::dropIfExists('invoices');
     }
 };

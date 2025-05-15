@@ -77,15 +77,19 @@
                         <input type="text" name="city" class="form-control" value="{{ old('city') }}" placeholder="e.g. Karachi">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Under case typ</label>
-                        <input type="text" name="case_type" class="form-control" value="{{ old('case_type') }}" placeholder="e.g. PPC">
-                    </div>
-                    <div class="col-md-3">
                         <label class="form-label">Payment method <span class="text-danger">*</span></label>
                         <select name="payment_method" class="form-control" required>
                             <option value="CASH" {{old('payment_method') === 'CASH'? 'selected' : ''}}>Cash</option>
                             <option value="BANK" {{old('payment_method') === 'BANK'? 'selected' : ''}}>Bank</option>
                             <option value="ONLINE" {{old('payment_method') === 'ONLINE'? 'selected' : ''}}>Online transfer</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="type" class="form-label">Case type <span class="text-danger">*</span></label>
+                        <select class="form-select" id="case-type" name="case_type" required>
+                            <option value="CRIMINAL" {{ old('case_type') === 'CRIMINAL' ? 'selected' : '' }}>CRIMINAL</option>
+                            <option value="CIVIL"    {{ old('case_type') === 'CIVIL' ? 'selected' : '' }}>CIVIL</option>
+                            <option value="OTHERS"   {{ old('case_type') === 'OTHERS' ? 'selected' : '' }}>OTHERS</option>
                         </select>
                     </div>
                 </div>
@@ -105,7 +109,7 @@
                                 <label class="form-label">Status <span class="text-danger">*</span></label>
                                 <select name="status" class="form-control" required>
                                     <option value="PENDING" {{old('status') === 'PENDING'? 'selected' : ''}}>Pending</option>
-                                    <option value="PAID" {{old('status') === 'PAID'? 'selected' : ''}}>Paid</option>
+                                    <option value="PAID"    {{old('status') === 'PAID'? 'selected' : ''}}>Paid</option>
                                     <option value="OVERDUE" {{old('status') === 'OVERDUE'? 'selected' : ''}}>Overdue</option>
                                 </select>
                             </div>
@@ -194,6 +198,13 @@
                     </div>
                 </div>
 
+                <div class="row mb-3 justify-content-end">
+                    <div class="col-md-3">
+                        <label class="form-label">Amount paid</label>
+                        <input type="number" min="0" name="paid" class="form-control" value="{{ old('paid', 0) }}" placeholder="Enter amount paid">
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-primary" id="submitBtn">Create Invoice</button>
             </form>
         </div>
@@ -211,6 +222,15 @@
     @push('custom-scripts')
         <script>
 
+            const iti = intlTelInput(document.querySelector("#phone"), {
+                            separateDialCode: true,
+                            initialCountry: "pk",
+                            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                            strictMode: true   
+                        });
+
+            
+            
             function calculateGrandTotal() {
                 let sum = 0;
                 $('tbody tr').each(function() {
@@ -226,151 +246,166 @@
                 calculateGrandTotal()
             }
 
-            $(document).ready(function() {
+            $('form').on('submit', (eve) => {
+                // Only validate phone if it's not empty
+                if (!iti.isValidNumber()) {
+                    eve.preventDefault();
+                    alert('Invalid phone');
+                    return;
+                }
 
-                const iti = intlTelInput(document.querySelector("#phone"), {
-                    separateDialCode: true,
-                    initialCountry: "pk",
-                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-                    strictMode: true   
-                });
-
-                $('form').on('submit', (eve) => {
-                    // Only validate phone if it's not empty
-                    if (!iti.isValidNumber()) {
-                        eve.preventDefault();
-                        alert('Invalid phone');
-                        return;
-                    }
-
-                    // If valid, set the phone number and country code
-                    if ($('#phone').val()) {
-                        $('[name="phone"]').val(iti.getNumber());
-                        $('[name="country_code"]').val(iti.getSelectedCountryData().iso2);
-                    }
-                });
-
-                // toggle sections
-                $('#type').change(function() {
-
-                    switch (this.value) {
-                        case 'ONE TIME':
-                            
-                            // 1) Show the one‑time form
-                            var $oneTmpl     = $('#one_time_template');
-                            var $oneFragment = $($oneTmpl.prop('content').cloneNode(true));
-                            $oneTmpl.replaceWith($oneFragment);
-
-                            // 2) Wrap the existing #milestone back into a new template
-                            var $milestone = $('#milestone');
-                            if ($milestone.length) {
-                                var $msTmpl = $('<template>', { id: 'milestone_template' });
-                                $milestone.replaceWith($msTmpl);
-                                // DOM append into the template’s content
-                                $msTmpl[0].content.appendChild($milestone[0]);
-                            }
-                        break;
-                        
-                        case 'MILESTONE':
-                            
-                            // 1) Show the milestone form
-                            var $msTmpl      = $('#milestone_template');
-                            var $msFragment  = $($msTmpl.prop('content').cloneNode(true));
-                            $msTmpl.replaceWith($msFragment);
-
-                            // 2) Wrap the existing #one_time back into a new template
-                            var $oneTime = $('#one_time');
-                            if ($oneTime.length) {
-                                var $otTmpl = $('<template>', { id: 'one_time_template' });
-                                $oneTime.replaceWith($otTmpl);
-                                $otTmpl[0].content.appendChild($oneTime[0]);
-                            }
-                        
-                        break;
-                    }
-
-                    feather.replace()
-                });
-
-                $('table').on('input', 'input[name*="[qty]"], input[name*="[amount]"]', function() {
-                    calculateTotal($(this).closest('tr'));
-                });
-
-                // add receipt row
-                $('table').on('click', '.add-row', function() {
-                    const index = $('tbody tr').length;
-                    $('tbody').append(`
-                    <tr>
-                        <td><input type="text" name="receipt[${index}][particular]" class="form-control" placeholder="Service 1" required></td>
-                        <td><input type="number" name="receipt[${index}][qty]" class="form-control" value="1" min="1" required></td>
-                        <td><input type="number" name="receipt[${index}][amount]" class="form-control" value="0" min="0" required></td>
-                        <td><input type="number" name="receipt[${index}][total]" class="form-control" value="0.00" readonly></td>
-                        <td class="text-center">
-                            <button type="button" class="btn btn-icon btn-danger delete-row"><i data-feather="trash"></i></button>
-                        </td>
-                    </tr>
-                `);
-                    feather.replace();
-                });
-
-                // delete receipt row
-                $('table').on('click', '.delete-row', function() {
-                    $(this).closest('tr').remove();
-                });
-
-                // add milestone
-                $(document).on('click', '.add-milestone', function() {
-                    const index = $('#milestone .milestone-row').length;
-
-                    $(this)
-                        .removeClass('btn-success add-milestone')
-                        .addClass('btn-danger remove-milestone')
-                        .html('<i data-feather="trash"></i>');
-
-                    $('#milestone').append(`
-                        <div class="row mb-3 milestone-row" data-index="0">
-                            <div class="col-md-4">
-                                <label class="form-label">Milestone Description <span class="text-danger">*</span></label>
-                                <input type="text" name="milestone[${index}][description]" class="form-control description" placeholder="e.g. first draft" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Due Date <span class="text-danger">*</span></label>
-                                <input type="date" name="milestone[${index}][due_date]" class="form-control due_date" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Status <span class="text-danger">*</span></label>
-                                <div class="d-flex gap-2">
-                                    <select name="milestone[${index}][status]" class="form-control status" required>
-                                        <option value="PENDING">Pending</option>
-                                        <option value="PAID">Paid</option>
-                                        <option value="OVERDUE">Overdue</option>
-                                    </select>
-                                    <button type="button" class="btn btn-icon btn-success add-milestone">
-                                        <i data-feather="plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `);
-                    feather.replace();
-                });
-
-                // remove milestone
-                $(document).on('click', '.remove-milestone', function() {
-                    $(this).closest('.milestone-row').remove();
-                    calculateGrandTotal()
-                });
-
-                $('#invoice-form').submit(function(e) {
-                    if (!iti.isValidNumber()) {
-                        Swal.fire('Error', 'Please enter a valid phone number', 'error');
-                        e.preventDefault()
-                    }
-                })
-
-                $('#type').trigger('change')
+                // If valid, set the phone number and country code
+                if ($('#phone').val()) {
+                    $('[name="phone"]').val(iti.getNumber());
+                    $('[name="country_code"]').val(iti.getSelectedCountryData().iso2);
+                }
             });
 
+            // toggle sections
+            $('#type').change(function() {
+
+                switch (this.value) {
+                    case 'ONE TIME':
+                        
+                        // 1) Show the one‑time form
+                        var $oneTmpl     = $('#one_time_template');
+                        var $oneFragment = $($oneTmpl.prop('content').cloneNode(true));
+                        $oneTmpl.replaceWith($oneFragment);
+
+                        // 2) Wrap the existing #milestone back into a new template
+                        var $milestone = $('#milestone');
+                        if ($milestone.length) {
+                            var $msTmpl = $('<template>', { id: 'milestone_template' });
+                            $milestone.replaceWith($msTmpl);
+                            // DOM append into the template’s content
+                            $msTmpl[0].content.appendChild($milestone[0]);
+                        }
+                    break;
+                    
+                    case 'MILESTONE':
+                        
+                        // 1) Show the milestone form
+                        var $msTmpl      = $('#milestone_template');
+                        var $msFragment  = $($msTmpl.prop('content').cloneNode(true));
+                        $msTmpl.replaceWith($msFragment);
+
+                        // 2) Wrap the existing #one_time back into a new template
+                        var $oneTime = $('#one_time');
+                        if ($oneTime.length) {
+                            var $otTmpl = $('<template>', { id: 'one_time_template' });
+                            $oneTime.replaceWith($otTmpl);
+                            $otTmpl[0].content.appendChild($oneTime[0]);
+                        }
+                    
+                    break;
+                }
+
+                feather.replace()
+            });
+
+            $('#type').trigger('change')
+
+            $('table').on('input', 'input[name*="[qty]"], input[name*="[amount]"]', function() {
+                calculateTotal($(this).closest('tr'));
+            });
+
+            // add receipt row
+            $('table').on('click', '.add-row', function() {
+                const index = $('tbody tr').length;
+                $('tbody').append(`
+                <tr>
+                    <td><input type="text" name="receipt[${index}][particular]" class="form-control" placeholder="Service 1" required></td>
+                    <td><input type="number" name="receipt[${index}][qty]" class="form-control" value="1" min="1" required></td>
+                    <td><input type="number" name="receipt[${index}][amount]" class="form-control" value="0" min="0" required></td>
+                    <td><input type="number" name="receipt[${index}][total]" class="form-control" value="0.00" readonly></td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-icon btn-danger delete-row"><i data-feather="trash"></i></button>
+                    </td>
+                </tr>
+            `);
+                feather.replace();
+            });
+
+            // delete receipt row
+            $('table').on('click', '.delete-row', function() {
+                $(this).closest('tr').remove();
+            });
+
+            // add milestone
+            $(document).on('click', '.add-milestone', function() {
+                const index = $('#milestone .milestone-row').length;
+
+                $(this)
+                    .removeClass('btn-success add-milestone')
+                    .addClass('btn-danger remove-milestone')
+                    .html('<i data-feather="trash"></i>');
+
+                $('#milestone').append(`
+                    <div class="row mb-3 milestone-row" data-index="0">
+                        <div class="col-md-4">
+                            <label class="form-label">Milestone Description <span class="text-danger">*</span></label>
+                            <input type="text" name="milestone[${index}][description]" class="form-control description" placeholder="e.g. first draft" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Due Date <span class="text-danger">*</span></label>
+                            <input type="date" name="milestone[${index}][due_date]" class="form-control due_date" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Status <span class="text-danger">*</span></label>
+                            <div class="d-flex gap-2">
+                                <select name="milestone[${index}][status]" class="form-control status" required>
+                                    <option value="PENDING">Pending</option>
+                                    <option value="PAID">Paid</option>
+                                    <option value="OVERDUE">Overdue</option>
+                                </select>
+                                <button type="button" class="btn btn-icon btn-success add-milestone">
+                                    <i data-feather="plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `);
+                feather.replace();
+            });
+
+            // remove milestone
+            $(document).on('click', '.remove-milestone', function() {
+                $(this).closest('.milestone-row').remove();
+                calculateGrandTotal()
+            });
+
+            $('#invoice-form').submit(function(e) {
+                const paid       = parseFloat($('input[name="paid"]').val()) || 0;
+                const grandTotal = parseFloat($('#grand_total').val()) || 0;
+
+                if (paid > grandTotal) {
+                    e.preventDefault();
+                    Swal.fire('Error', 'Amount paid cannot be greater than the bill total', 'error');
+                    return false;
+                }
+                
+                if (!iti.isValidNumber()) {
+                    Swal.fire('Error', 'Please enter a valid phone number', 'error');
+                    e.preventDefault()
+                }
+            })         
+
+            $('#case-type').change(function() {
+
+                const parent = $(this).parent();
+                const value  = this.value;
+
+                if (value === 'OTHERS') {
+                    parent.prop('class', 'col-md-1').after(`
+                        <div class="col-md-2">
+                            <label for="otherType" class="form-label">Specify case type</label>
+                            <input type="text" class="form-control" id="otherType" name="case_type" placeholder="Enter case type"/>
+                        </div>
+                    `);
+                } else {
+                    parent.prop('class', 'col-md-3').next().remove();
+                }
+            });
         </script>
     @endpush
 </x-lawyer.app>
