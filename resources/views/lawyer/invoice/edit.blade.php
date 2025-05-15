@@ -252,7 +252,7 @@
             const iti = intlTelInput(document.querySelector("#phone"), {
                 separateDialCode: true,
                 initialCountry: "pk",
-                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                loadUtils: () => import("https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"),
                 strictMode: true   
             });
 
@@ -272,11 +272,20 @@
             }
             
             $('form').on('submit', (eve) => {
-                // Only validate phone if it's not empty
-                if (!iti.isValidNumber()) {
+                
+                const paid       = parseFloat($('input[name="paid"]').val()) || 0;
+                const grandTotal = parseFloat($('#grand_total').val()) || 0;
+
+                if (paid > grandTotal) {
                     eve.preventDefault();
-                    alert('Invalid phone');
-                    return;
+                    Swal.fire('Error', 'Amount paid cannot be greater than the bill total', 'error');
+                    return false;
+                }
+
+                if (!iti.isValidNumber()) {
+                    Swal.fire('Error', 'Please enter a valid phone number', 'error');
+                    eve.preventDefault()
+                    return
                 }
 
                 // If valid, set the phone number and country code
@@ -398,23 +407,6 @@
                 $(this).closest('.milestone-row').remove();
                 calculateGrandTotal()
             });
-
-            $('#invoice-form').submit(function(e) {
-                
-                const paid       = parseFloat($('input[name="paid"]').val()) || 0;
-                const grandTotal = parseFloat($('#grand_total').val()) || 0;
-
-                if (paid > grandTotal) {
-                    e.preventDefault();
-                    Swal.fire('Error', 'Amount paid cannot be greater than the bill total', 'error');
-                    return false;
-                }
-
-                if (!iti.isValidNumber()) {
-                    Swal.fire('Error', 'Please enter a valid phone number', 'error');
-                    e.preventDefault()
-                }
-            })
 
             $('#case-type').change(function() {
 

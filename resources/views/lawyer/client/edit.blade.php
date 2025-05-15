@@ -214,8 +214,8 @@
                 const iti = intlTelInput(document.querySelector("#phone"), {
                     separateDialCode: true,
                     initialCountry: "pk",
-                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-                    strictMode: true   
+                    loadUtils: () => import("https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"),
+                    strictMode: true    
                 });
 
                 $('form').on('submit', (eve) => {
