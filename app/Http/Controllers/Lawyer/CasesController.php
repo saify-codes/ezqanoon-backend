@@ -22,7 +22,7 @@ class CasesController extends Controller
         if ($request->ajax()) {
 
             // DataTables columns to map for ordering:
-            $columns            = ['id', 'name', 'type', 'urgency', 'status', 'payment_status', 'created_at'];
+            $columns            = ['id', 'name', 'type', 'urgency', 'status', 'payment_status', 'hearings', 'created_at'];
             $draw               = $request->input('draw');
             $start              = $request->input('start');        // skip
             $length             = $request->input('length');       // rows per page
@@ -30,7 +30,7 @@ class CasesController extends Controller
             $orderColumnIndex   = $request->input('order.0.column'); // which column index is being sorted
             $orderDirection     = $request->input('order.0.dir');    // asc or desc
 
-            $query              = Cases::where('lawyer_id', getLawyerId());
+            $query              = Cases::with('hearings')->where('lawyer_id', getLawyerId());
             $totalRecords       = $query->count();
 
             if (!empty($searchValue)) {
@@ -280,17 +280,17 @@ class CasesController extends Controller
             }
         }
 
+        CaseFillingDate::where('case_id', $case->id)->delete();
+        
         if ($request->has('fillings')) {
-            
             $fillingsData = array_map(fn($fillingData) => [...$fillingData, 'case_id' => $case->id, 'lawyer_id' => getLawyerId()],$request->fillings);           
-            CaseFillingDate::where('case_id', $case->id)->delete();
             CaseFillingDate::insert($fillingsData);
         }
         
+        CaseHearingDate::where('case_id', $case->id)->delete();
+        
         if ($request->has('hearings')) {
-            
             $hearingsData = array_map(fn($hearingData) => [...$hearingData, 'case_id' => $case->id, 'lawyer_id' => getLawyerId()],$request->hearings);           
-            CaseHearingDate::where('case_id', $case->id)->delete();
             CaseHearingDate::insert($hearingsData);
         }
 

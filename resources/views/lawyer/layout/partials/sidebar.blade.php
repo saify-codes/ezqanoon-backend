@@ -98,6 +98,15 @@
           </a>
         </li>
       @endif
+      
+      <li class="nav-item nav-category">Settings</li>
+
+      <li class="nav-item {{ activeClass(['report']) }}">
+      <a href="{{ url('/settings') }}" class="nav-link">
+        <i class="link-icon" data-feather="settings"></i>
+        <span class="link-title">Settings</span>
+        </a>
+      </li>
     </ul>
   </div>
 </nav>

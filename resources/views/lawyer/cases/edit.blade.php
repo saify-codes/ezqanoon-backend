@@ -155,7 +155,7 @@
                             <div class="filling-row d-flex gap-4 mb-3">
                                 <input type="text" name="fillings[{{ $index }}][description]" class="form-control filling-description" maxlength="255" placeholder="Filling description" value="{{ old("fillings.$index.description", $filling['description'] ?? '') }}" required>
                                 <input type="date" name="fillings[{{$index}}][date]" class="form-control filling-date" value="{{ old("fillings.$index.date", $filling['date'] ?? '') }}" required>
-                                <button type="button" class="btn btn-sm btn-danger remove-filling"><i data-feather="minus"></i></button>
+                                <button type="button" class="btn btn-sm btn-danger remove-filling"><i data-feather="trash"></i></button>
                             </div>
                         @endforeach
                         <div class="filling-row d-flex gap-4 mb-3">
@@ -172,14 +172,14 @@
                     <label for="hearing" class="form-label">Hearing date</label>
                     <div id="hearing-container">
                         @php
-                            $hearings = old('filling', $case->hearings) ?? [];
+                            $hearings = old('hearing', $case->hearings) ?? [];
                         @endphp
 
                         @foreach ($hearings as $index => $hearing)
-                            <div class="filling-row d-flex gap-4 mb-3">
-                                <input type="text" name="hearings[{{ $index }}][description]" class="form-control filling-description" maxlength="255" placeholder="Filling description" value="{{ old("hearings.$index.description", $hearing['description'] ?? '') }}" required>
-                                <input type="date" name="hearings[{{$index}}][date]" class="form-control filling-date" value="{{ old("hearings.$index.date", $hearing['date'] ?? '') }}" required>
-                                <button type="button" class="btn btn-sm btn-danger remove-hearing"><i data-feather="minus"></i></button>
+                            <div class="hearing-row d-flex gap-4 mb-3">
+                                <input type="text" name="hearings[{{ $index }}][description]" class="form-control hearing-description" maxlength="255" placeholder="Hearing description" value="{{ old("hearings.$index.description", $hearing['description'] ?? '') }}" required>
+                                <input type="date" name="hearings[{{$index}}][date]" class="form-control hearing-date" value="{{ old("hearings.$index.date", $hearing['date'] ?? '') }}" required>
+                                <button type="button" class="btn btn-sm btn-danger remove-hearing"><i data-feather="trash"></i></button>
                             </div>
                         @endforeach
                         <div class="hearing-row d-flex gap-4 mb-3">

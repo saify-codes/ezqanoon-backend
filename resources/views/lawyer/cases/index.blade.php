@@ -27,6 +27,7 @@
                             <th>Urgency</th>
                             <th>Status</th>
                             <th>Payment</th>
+                            <th>Hearing date</th>
                             <th>Date created</th>
                             <th>Action</th>
                         </tr>
@@ -135,6 +136,13 @@
                                 'OVERDUE': 'danger',
                             };
                             return getBadge(data, paymentClasses);
+                        }
+                    },
+                    {
+                        sortable: false,
+                        data: 'hearings',
+                        render: function(hearings) {
+                            return hearings.at(-1)?.date ?? 'N/A';
                         }
                     },
                     {
