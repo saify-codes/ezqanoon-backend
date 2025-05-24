@@ -57,6 +57,9 @@ class AuthController extends Controller
                     'password' => Hash::make($request->password),
                 ]);
                 break;
+            
+            default:
+                abort(400, 'invalid type');
         }
 
         Session::flash('success', "We have sent a verification mail to <strong class='text-decoration-underline'>$user->email</strong>");
