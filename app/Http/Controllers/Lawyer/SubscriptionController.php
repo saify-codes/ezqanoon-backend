@@ -29,7 +29,7 @@ class SubscriptionController extends Controller
         ]);
 
         SubscriptionHistory::create([
-            'user_id'           => Auth::guard('lawyer')->id(),
+            'firm_id'           => Auth::guard('lawyer')->id(),
             'subscription_id'   => $subscription->id,
             'amount'            => $subscription->price,
             'start_date'        => now(),
