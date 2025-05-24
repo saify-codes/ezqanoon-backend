@@ -30,7 +30,7 @@ class CasesController extends Controller
             $orderColumnIndex   = $request->input('order.0.column'); // which column index is being sorted
             $orderDirection     = $request->input('order.0.dir');    // asc or desc
 
-            $query              = Cases::with('hearings')->where('lawyer_id', getLawyerId());
+            $query              = Cases::where('lawyer_id', Auth::guard('lawyer')->id());
             $totalRecords       = $query->count();
 
             if (!empty($searchValue)) {
@@ -65,10 +65,6 @@ class CasesController extends Controller
      */
     public function create()
     {
-        if(!Auth::user()->hasPermission('cases:create')){
-            abort(403, 'Unauthorized');
-        }
-
         return view('lawyer.cases.create');
     }
 
@@ -77,9 +73,6 @@ class CasesController extends Controller
      */
     public function store(Request $request)
     {
-        if(!Auth::user()->hasPermission('cases:create')){
-            abort(403, 'Unauthorized');
-        }
 
         $validated = $request->validate([
             'name'                            => 'required|string|max:255',
@@ -108,7 +101,7 @@ class CasesController extends Controller
         ]);
 
         $case = Cases::create([
-            'lawyer_id'                      => Auth::id(),  // or auth()->id()
+            'lawyer_id'                      => Auth::guard('lawyer')->id(),  // or auth()->id()
             'name'                           => $validated['name'],
             'type'                           => $validated['type'],
             'court_name'                     => $validated['court_name'],
@@ -151,13 +144,13 @@ class CasesController extends Controller
 
         if ($request->has('fillings')) {
             
-            $fillingsData = array_map(fn($fillingData) => [...$fillingData, 'case_id' => $case->id, 'lawyer_id' => getLawyerId()],$request->fillings);           
+            $fillingsData = array_map(fn($fillingData) => [...$fillingData, 'case_id' => $case->id, 'lawyer_id' => Auth::guard('lawyer')->id()],$request->fillings);           
             CaseFillingDate::insert($fillingsData);
         }
         
         if ($request->has('hearings')) {
             
-            $hearingsData = array_map(fn($hearingData) => [...$hearingData, 'case_id' => $case->id,  'lawyer_id' => getLawyerId()],$request->hearings);           
+            $hearingsData = array_map(fn($hearingData) => [...$hearingData, 'case_id' => $case->id,  'lawyer_id' => Auth::guard('lawyer')->id()],$request->hearings);           
             CaseHearingDate::insert($hearingsData);
         }
 
@@ -172,12 +165,9 @@ class CasesController extends Controller
      */
     public function show(string $id)
     {
-        if(!Auth::user()->hasPermission('cases:view')){
-            abort(403, 'Unauthorized');
-        }
         // Retrieve the case that belongs to the authenticated lawyer or fail
         $case = Cases::where('id', $id)
-            ->where('lawyer_id', getLawyerId())
+            ->where('lawyer_id', Auth::guard('lawyer')->id())
             ->firstOrFail();
 
         return view('lawyer.cases.show', compact('case'));
@@ -188,12 +178,8 @@ class CasesController extends Controller
      */
     public function edit(string $id)
     {
-        if(!Auth::user()->hasPermission('cases:edit')){
-            abort(403, 'Unauthorized');
-        }
-
         $case = Cases::where('id', $id)
-            ->where('lawyer_id', getLawyerId())
+            ->where('lawyer_id', Auth::guard('lawyer')->id())
             ->firstOrFail();
         return view('lawyer.cases.edit', compact('case'));
     }
@@ -203,9 +189,6 @@ class CasesController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if(!Auth::user()->hasPermission('cases:edit')){
-            abort(403, 'Unauthorized');
-        }
 
         $validated = $request->validate([
             'name'                              => 'required|string|max:255',
@@ -234,7 +217,7 @@ class CasesController extends Controller
             'attachments'                       => 'array|max:10',
         ]);
 
-        $case = Cases::where('lawyer_id', getLawyerId())->findOrFail($id);
+        $case = Cases::where('lawyer_id', Auth::guard('lawyer')->id())->findOrFail($id);
 
         $case->update([
             'name'                            => $validated['name'],
@@ -283,14 +266,18 @@ class CasesController extends Controller
         CaseFillingDate::where('case_id', $case->id)->delete();
         
         if ($request->has('fillings')) {
-            $fillingsData = array_map(fn($fillingData) => [...$fillingData, 'case_id' => $case->id, 'lawyer_id' => getLawyerId()],$request->fillings);           
+            
+            $fillingsData = array_map(fn($fillingData) => [...$fillingData, 'case_id' => $case->id, 'lawyer_id' => Auth::guard('lawyer')->id()],$request->fillings);           
+            CaseFillingDate::where('case_id', $case->id)->delete();
             CaseFillingDate::insert($fillingsData);
         }
         
         CaseHearingDate::where('case_id', $case->id)->delete();
         
         if ($request->has('hearings')) {
-            $hearingsData = array_map(fn($hearingData) => [...$hearingData, 'case_id' => $case->id, 'lawyer_id' => getLawyerId()],$request->hearings);           
+            
+            $hearingsData = array_map(fn($hearingData) => [...$hearingData, 'case_id' => $case->id, 'lawyer_id' => Auth::guard('lawyer')->id()],$request->hearings);           
+            CaseHearingDate::where('case_id', $case->id)->delete();
             CaseHearingDate::insert($hearingsData);
         }
 
@@ -304,11 +291,7 @@ class CasesController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        if(!Auth::user()->hasPermission('cases:delete')){
-            abort(403, 'Unauthorized');
-        }
-
-        Cases::where('lawyer_id', getLawyerId())->findOrFail($id)->delete();
+        Cases::where('lawyer_id', Auth::guard('lawyer')->id())->findOrFail($id)->delete();
 
         if ($request->ajax()) {
             return $this->successResponse('case deleted');
@@ -324,7 +307,7 @@ class CasesController extends Controller
         ]);
 
         // Retrieve the case and hearing
-        $case    = Cases::where('lawyer_id', getLawyerId())->findOrFail($caseId);
+        $case    = Cases::where('lawyer_id', Auth::guard('lawyer')->id())->findOrFail($caseId);
         $hearing = $case->hearings->findOrFail($hearingId);
 
         // Update the hearing date

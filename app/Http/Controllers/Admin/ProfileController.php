@@ -6,10 +6,66 @@ use App\Http\Controllers\Controller;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
     use ApiResponseTrait;
+
+     /* ------------------------------------------------------------
+     |  Common helper – returns the user, DB dbColumn & disk folder
+     * ---------------------------------------------------------- */
+    private function meta(string $type): array
+    {
+        $adminId = Auth::guard('admin')->id();
+        // folder endings keyed by the route segment
+        $map = [
+            'avatar'        => ['dbColumn' => 'avatar',        'folder' => "admin/$adminId/avatars"],
+            // add more here
+        ];
+
+        abort_unless(isset($map[$type]), 422, 'Unsupported file type');
+
+        return [
+            'dbColumn' => $map[$type]['dbColumn'],                                 // DB dbColumn has same name
+            'folder' => $map[$type]['folder'],     // disk folder
+        ];
+    }
+
+    /* ============================================================
+     *  PUT /admin/profile/file/{type}
+     * ========================================================== */
+    public function store(Request $request, string $type)
+    {
+        $meta = $this->meta($type);
+
+        $request->validate(['file' => 'required|image|mimes:jpeg,png,webp|max:2048']);
+
+        // delete previous file (if any)
+        if ($old = Auth::guard('admin')->user()->getRawOriginal($meta['dbColumn'])) {
+            Storage::disk('public')->delete("{$meta['folder']}/{$old}");
+        }
+
+        $file = $request->file('file')->store($meta['folder'], 'public');
+        Auth::guard('admin')->user()->update([$meta['dbColumn'] => basename($file)]);
+
+        return $this->successResponse("{$type} uploaded", ['url' => asset("storage/$file")], 201);
+    }
+
+    /* ============================================================
+     *  DELETE /admin/profile/file/{type}
+     * ========================================================== */
+    public function destroy(string $type)
+    {
+        $meta = $this->meta($type);
+
+        if ($name = Auth::guard('admin')->user()->getRawOriginal($meta['dbColumn'])) {
+            Storage::disk('public')->delete("{$meta['folder']}/{$name}");
+            Auth::guard('admin')->user()->update([$meta['dbColumn'] => null]);
+        }
+
+        return $this->successResponse("{$type} deleted");
+    }
 
     public function profile()
     {
@@ -27,44 +83,4 @@ class ProfileController extends Controller
         return redirect()->back()->with('success', 'Profile updated successfully!');
     }
 
-    /**
-     * uploadAvatar
-     *
-     * @param  mixed $request
-     * @return JSONResponse
-     */
-    public function uploadAvatar(Request $request)
-    {
-        $request->validate([
-            'avatar' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048', // Allow only images up to 2MB
-        ], [
-            'avatar.required'   => 'The avatar file is required.',
-            'avatar.image'      => 'The uploaded file must be an image.',
-            'avatar.mimes'      => 'Only JPEG, PNG, JPG, and webp file formats are allowed.',
-            'avatar.max'        => 'The file size must not exceed 2MB.', // Custom message for max file size
-        ]);
-
-        if ($request->hasFile('avatar')) {
-            // Store the file publicly in the 'storage/app/public/' directory
-            $avatarPath = $request->file('avatar')->store('admins/' . Auth::guard('admin')->user()->id . '/avatars', 'public');
-            // update path in db
-            Auth::guard('admin')->user()->update(['avatar' => basename($avatarPath)]);
-
-            return $this->successResponse('avatar uploaded', ['url' => asset("storage/$avatarPath")]);
-        }
-
-        return $this->errorResponse('no image uploaded');
-    }
-    
-    /**
-     * deleteAvatar
-     *
-     * @param  mixed $request
-     * @return JSONResponse
-     */
-    public function deleteAvatar(Request $request)
-    {
-       Auth::guard('admin')->user()->update(['avatar' => null]);
-        return $this->successResponse('avatar deleted');
-    }
 }

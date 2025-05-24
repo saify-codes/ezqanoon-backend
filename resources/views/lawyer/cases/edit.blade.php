@@ -253,7 +253,7 @@
     @endpush
 
     @push('plugin-scripts')
-        <script src="{{ asset('assets/plugins/aerodrop/aerodrop.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/aerodrop/aerodrop.min.js?version=' . env('VERSION', '0.0.0.0')) }}"></script>
         <script src="{{ asset('assets/plugins/ckeditor/ckeditor.min.js') }}"></script>
     @endpush
 

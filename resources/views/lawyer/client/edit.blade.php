@@ -54,9 +54,9 @@
                     <div class="col-md-4">
                         <label for="type" class="form-label">Client type <span class="text-danger">*</span></label>
                         <select class="form-select" id="type" name="type" required>
-                            <option value="REGULAR" {{ old('type', $client->type) === 'REGULAR' ? 'selected' : '' }}>Regular</option>
-                            <option value="VIP" {{ old('type', $client->type) === 'VIP' ? 'selected' : '' }}>VIP</option>
-                            <option value="OTHERS" {{ old('type', !in_array($client->type, ['REGULAR', 'VIP']))? 'selected' : '' }}>OTHERS</option>
+                            <option value="CRIMINAL" {{ old('type', $client->type) === 'CRIMINAL' ? 'selected' : '' }}>CRIMINAL</option>
+                            <option value="CIVIL" {{ old('type', $client->type) === 'CIVIL' ? 'selected' : '' }}>CIVIL</option>
+                            <option value="OTHERS" {{ old('type', !in_array($client->type, ['CRIMINAL', 'CIVIL']))? 'selected' : '' }}>OTHERS</option>
                         </select>
                     </div>
                 </div>
@@ -203,7 +203,7 @@
     @endpush
 
     @push('plugin-scripts')
-        <script src="{{ asset('assets/plugins/aerodrop/aerodrop.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/aerodrop/aerodrop.min.js?version=' . env('VERSION', '0.0.0.0')) }}"></script>
         <script src="{{ asset('assets/plugins/ckeditor/ckeditor.min.js') }}"></script>
     @endpush
 
@@ -242,7 +242,7 @@
                         parent.prop('class', 'col-md-2').after(`
                             <div class="col-md-2">
                                 <label for="otherType" class="form-label">Specify client type</label>
-                                <input type="text" class="form-control" id="otherType" name="type" placeholder="Enter client type" />
+                                <input type="text" class="form-control" id="otherType" name="type" placeholder="Enter client type" value="{{$client->type}}"/>
                             </div>
                         `);
                     } else {

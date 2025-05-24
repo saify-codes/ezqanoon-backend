@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -10,31 +11,27 @@ return new class extends Migration
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('lawyer_id');
+            $table->unsignedBigInteger('firm_id')->nullable();
+            $table->unsignedBigInteger('lawyer_id')->nullable();
             $table->unsignedBigInteger('user_id');
+            $table->enum('payment_status', ['PENDING', 'PAID']);
             $table->string('country')->default('Pakistan');
             $table->text('details');
             $table->text('summary')->nullable();
             $table->text('meeting_link_user')->nullable();
-            $table->text('meeting_link_lawyer')->nullable();
+            $table->text('meeting_link')->nullable();
             $table->timestamp('meeting_date');
             $table->timestamps();
 
-            // Foreign keys with indexes
-            $table->foreign('lawyer_id')
-                ->references('id')
-                ->on('lawyers')
-                ->onDelete('cascade');
-
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('cascade');
+            $table->foreign('lawyer_id')->references('id')->on('lawyers')->onDelete('cascade');
+            $table->foreign('firm_id')->references('id')->on('firms')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
             // Additional indexes for frequent queries
             $table->index('meeting_date');
-        });
 
+        });
+        
         Schema::create('appointment_attachments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('appointment_id');
@@ -43,11 +40,7 @@ return new class extends Migration
             $table->string('mime_type');
             $table->timestamps();
 
-            // Foreign key with index
-            $table->foreign('appointment_id')
-                ->references('id')
-                ->on('appointments')
-                ->onDelete('cascade');
+            $table->foreign('appointment_id')->references('id')->on('appointments')->onDelete('cascade');
 
             // Index for file metadata if needed
             $table->index('mime_type');
@@ -61,15 +54,13 @@ return new class extends Migration
             $table->string('mime_type');
             $table->timestamps();
 
-            // Foreign key with index
-            $table->foreign('appointment_id')
-                ->references('id')
-                ->on('appointments')
-                ->onDelete('cascade');
+            $table->foreign('appointment_id')->references('id')->on('appointments')->onDelete('cascade');
 
             // Index for file metadata if needed
             $table->index('mime_type');
         });
+
+        DB::statement("ALTER TABLE appointments ADD CONSTRAINT appointments_exactly_one_owner CHECK ((lawyer_id IS NOT NULL AND firm_id IS NULL) OR (lawyer_id IS NULL AND firm_id IS NOT NULL))");
     }
 
     public function down(): void

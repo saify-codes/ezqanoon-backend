@@ -5,92 +5,110 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\AppointmentAttachment;
+use App\Models\Lawyer;
 use App\Services\ZoomService;
 use App\Traits\ApiResponseTrait;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Exception;
 
 class AppointmentController extends Controller
 {
     use ApiResponseTrait;
 
-    public function __construct(private ZoomService $zoom) {
-    }
+    public function __construct(private ZoomService $zoom) {}
 
-        
-    public function getAppointments(){
-        $appointments = Appointment::with(['attachments', 'lawyer:id,name'])
-                        ->select('*')
-                        ->where('user_id', Auth::id())
-                        ->get();
+    /**
+     * Return all appointments that belong to the logged-in user.
+     */
+    public function getAppointments()
+    {
+        $appointments = Appointment::with([
+                'attachments',
+                'lawyer:id,name',
+                'firm:id,name',
+            ])
+            ->where('user_id', Auth::id())
+            ->latest('meeting_date')
+            ->get();
+
         return $this->successResponse('appointments', ['data' => $appointments]);
     }
-    
+
     /**
-     * makeAppointment
-     *
-     * @param  mixed $request
-     * @return void
+     * Store a new appointment.
+     * The appointment must belong to EITHER a lawyer OR a firm (never both).
      */
-    public function makeAppointment(Request $request)
+    public function createAppointment(Request $request)
     {
+
+        // ──────────────────────────
+        // 1. Validation rules
+        // ──────────────────────────
         $request->validate([
             'details'      => 'required|string',
-            'meeting_date' => 'required|date',
-            'lawyer_id'    => 'required|exists:lawyers,id',
+            'date_time'    => 'required|date_format:Y-m-d H:i',
             'country'      => 'required|string',
-            'attachment.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:5000' // Allow optional file upload
+            'lawyer_id'    => 'required|exists:lawyers,id',
+            'attachment.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:5000',
         ]);
 
         $user = Auth::user();
 
-        
+        // ──────────────────────────
+        // 2. Create Zoom meeting + DB records in a transaction
+        // ──────────────────────────
+        DB::beginTransaction();
+
         try {
-            // create meeting
-            $data = $this->zoom->createMeeting("consultant with advocate", $request->meeting_date);
-            
-            // Create the appointment record
+            // create the Zoom meeting (subject doesn’t matter much – use either entity name if it exists)
+            $lawyer      = Lawyer::find($request->lawyer_id);
+            $zoomMeeting = $this->zoom->createMeeting("Consultation with $lawyer->name", $request->date_time);
             $appointment = Appointment::create([
-                'user_id'               => $user->id,
-                'lawyer_id'             => $request->lawyer_id,
-                'country'               => $request->country,
-                'details'               => $request->details,
-                'meeting_date'          => $request->meeting_date,
-                'meeting_link_lawyer'   => $data['start_url'],
-                'meeting_link_user'     => $data['join_url'],
+                'user_id'           => $user->id,
+                'lawyer_id'         => $request->lawyer_id,
+                'country'           => $request->country,
+                'details'           => $request->details,
+                'meeting_date'      => $request->date_time,
+                'meeting_link'      => $zoomMeeting['start_url'], // host link
+                'meeting_link_user' => $zoomMeeting['join_url'], // attendee link
             ]);
-    
-            // Handle file upload
+
+            // store any attachments
             if ($request->hasFile('attachment')) {
                 foreach ($request->file('attachment') as $file) {
-                    $path       = $file->store("appointments/{$appointment->id}", 'public');
-                    $fileName   = basename($path);
+                    $path = $file->store("appointments/{$appointment->id}", 'public');
+
                     AppointmentAttachment::create([
                         'appointment_id' => $appointment->id,
-                        'file'           => $fileName,
+                        'file'           => basename($path),
                         'original_name'  => $file->getClientOriginalName(),
                         'mime_type'      => $file->getClientMimeType(),
                     ]);
                 }
             }
 
-            notifyLawyer($request->lawyer_id, 'New Appointment', "you have an appointemnt from $user->name");
-
-            return $this->successResponse('Appointment created successfully', ['data' => $appointment], 201);
-
+            // ──────────────────────────
+            // 3. Notify lawyer
+            // ──────────────────────────
+            notifyLawyer($request->lawyer_id, 'New Appointment', "You have a new appointment from {$user->name}");
             
-        } catch (Exception $e) {
+            DB::commit();
+            
+            return $this->successResponse('Appointment created successfully',['data' => $appointment],201);
 
-            Log::channel('zoom')->error('Zoom create meeting failed', [
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            Log::channel('zoom')->error('Zoom createMeeting failed', [
                 'lawyer_id' => $request->lawyer_id,
                 'user_id'   => $user->id,
                 'error'     => $e->getMessage(),
             ]);
-        }
 
-        return $this->errorResponse('Appointment not created', 500);
+            return $this->errorResponse('Appointment not created', 500, ['error' => $e->getMessage()]);
+        }
     }
 }
-

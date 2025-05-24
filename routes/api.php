@@ -19,7 +19,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('/password',         [ProfileController::class, 'updatePassword']);
     Route::post('/upload/avatar',   [ProfileController::class, 'uploadAvatar']);
     Route::get('/appointment',      [AppointmentController::class, 'getAppointments']);
-    Route::post('/appointment',     [AppointmentController::class, 'makeAppointment']);
+    Route::post('/appointment',     [AppointmentController::class, 'createAppointment']);
     Route::post('/signout',         [AuthController::class, 'signout']);
 });
 
@@ -39,9 +39,13 @@ Route::post('/otp/verify', [OTPController::class, 'verifyOTP'])->name('lawyer.ot
 |  This section contains all routes related to lawyers |
 |-------------------------------------------------------*/
 
-Route::get('/lawyer', [LawyerController::class, 'getLawyers']);
-Route::get('/lawyer/{id}', [LawyerController::class, 'getLawyer']);
-Route::get('/lawyer/{id}/reviews', [LawyerController::class, 'getReviews']);
+Route::get('/lawyer',                       [LawyerController::class, 'getLawyers']);
+Route::get('/lawyer/{lawyer}',              [LawyerController::class, 'getLawyer']);
+Route::get('/lawyer/{lawyer}/availability', [LawyerController::class, 'getAvailability']);
+
+Route::get('/firm', [LawyerController::class, 'getLawyers']);
+Route::get('/firm/{id}', [LawyerController::class, 'getLawyer']);
+// Route::get('/lawyer/{id}/reviews', [LawyerController::class, 'getReviews']);
 
 
 

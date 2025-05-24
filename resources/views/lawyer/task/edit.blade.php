@@ -56,7 +56,7 @@
                     <select class="form-select" id="assign_to" name="assign_to">
                         <option value="">select member</option>
                         @foreach ($team as $member)
-                            <option value="{{$member->id}}">{{$member->name}} ({{$member->email}})</option>
+                            <option value="{{$member->id}}" {{$member->id === $task->assign_to ? 'selected' : ''}}>{{$member->name}} ({{$member->email}})</option>
                         @endforeach
                     </select>
                 </div>

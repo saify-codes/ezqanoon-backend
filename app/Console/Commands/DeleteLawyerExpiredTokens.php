@@ -13,30 +13,29 @@ class DeleteLawyerExpiredTokens extends Command
      *
      * @var string
      */
-    protected $signature = 'app:delete-lawyer-expired-tokens';
+    protected $signature = 'app:delete-expired-tokens';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Deletes lawyer verification tokens that are older than 30 minutes';
+    protected $description = 'Delete lawyers & firms verification and reset tokens';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $threshold = Carbon::now()->subMinutes(30);
 
-        $deleted = DB::table('lawyer_verification_tokens')
-            ->where('created_at', '<=', $threshold)
+        $deleted = DB::table('email_verification_tokens')
+            ->where('created_at', '<=', Carbon::now()->subMinutes(15))
             ->delete();
             
         $this->info("Deleted {$deleted} expired verification tokens.");
         
-        $deleted = DB::table('lawyer_password_reset_tokens')
-            ->where('created_at', '<=', $threshold)
+        $deleted = DB::table('password_reset_tokens')
+            ->where('created_at', '<=', Carbon::now()->subMinutes(60))
             ->delete();
 
         $this->info("Deleted {$deleted} expired reset tokens.");

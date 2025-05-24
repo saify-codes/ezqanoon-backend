@@ -10,6 +10,17 @@
         <div class="col-md-4 grid-margin stretch-card">
             <div class="card bg-primary text-white">
                 <div class="card-body">
+                    <h6 class="card-title mb-0">Total Firms</h6>
+                    <div class="card-body">
+                        <h2>{{ $totalFirms }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 grid-margin stretch-card">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
                     <h6 class="card-title mb-0">Total Lawyers</h6>
                     <div class="card-body">
                         <h2>{{ $totalLawyers }}</h2>

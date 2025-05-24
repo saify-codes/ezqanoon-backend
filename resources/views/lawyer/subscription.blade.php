@@ -41,7 +41,10 @@
                                     </tbody>
                                 </table>
                                 <div class="d-grid">
-                                    <a href="{{ route('lawyer.subscription.select', $subscription->id) }}" class="btn btn-success mt-4">Select Plan</a>
+                                    <form action="{{ route('lawyer.subscription.select', $subscription->id) }}" method="post">
+                                        @csrf
+                                        <button class="btn btn-success w-100 mt-4">Select Plan</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

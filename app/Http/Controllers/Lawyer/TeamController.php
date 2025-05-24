@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Lawyer;
 
 use App\Http\Controllers\Controller;
-use App\Models\Lawyer;
+use App\Models\Team;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class TeamController extends Controller
 {
@@ -28,12 +29,12 @@ class TeamController extends Controller
             $orderDirection     = $request->input('order.0.dir');    // asc or desc
 
             // Get the base query instead of the collection
-            $query              = Auth::user()->team()->getQuery();
+            $query              = Auth::guard('lawyer')->user()->team()->getQuery();
             $totalRecords       = $query->count();
 
             if (!empty($searchValue)) {
                 $query->where('name', 'like', "%{$searchValue}%")
-                      ->orWhere('email', 'like', "%{$searchValue}%");
+                    ->orWhere('email', 'like', "%{$searchValue}%");
             }
 
             $totalRecordsFiltered = $query->count();
@@ -71,26 +72,30 @@ class TeamController extends Controller
     {
         $request->validate([
             'name'          => 'required|string|max:255',
-            'email'         => 'required|email|unique:lawyers',
             'country_code'  => 'required_with:phone',
             'phone'         => 'required|phone:' . $request->country_code,
             'password'      => 'required|string|min:8|confirmed',
             'permissions'   => 'nullable|array',
+            'email'         => [
+                'required',
+                'email',
+                Rule::unique('teams', 'email')->where(fn ($q) => $q->where('lawyer_id', Auth::guard('lawyer')->id()))
+            ],
         ]);
 
-        Lawyer::create([
+        Team::create([
             'name'          => $request->name,
             'email'         => $request->email,
             'phone'         => $request->phone,
             'password'      => Hash::make($request->password),
             'permissions'   => $request->permissions,
             'role'          => 'USER',
-            'lawyer_id'     => getLawyerId(),
-        ],[
+            'lawyer_id'     => Auth::guard('lawyer')->id(),
+        ], [
             'validation.phone' => 'invalid phone number'
         ]);
 
-        return redirect()->route('lawyer.team.index')->with('success', 'User created successfully');    
+        return redirect()->route('lawyer.team.index')->with('success', 'User created successfully');
     }
 
     /**
@@ -106,9 +111,9 @@ class TeamController extends Controller
      */
     public function edit(string $id)
     {
-        $user = Lawyer::where('lawyer_id', getLawyerId())->findOrFail($id);
+        $team = Team::where('lawyer_id', Auth::guard('lawyer')->id())->findOrFail($id);
 
-        return view('lawyer.team.edit', compact('user'));
+        return view('lawyer.team.edit', compact('team'));
     }
 
     /**
@@ -123,19 +128,19 @@ class TeamController extends Controller
             'permissions'   => 'nullable|array',
         ]);
 
-        $user           = Lawyer::where('lawyer_id', getLawyerId())->findOrFail($id);
-        $oldPermissions = $user->permissions;
+        $team           = Team::where('lawyer_id', Auth::guard('lawyer')->id())->findOrFail($id);
+        $oldPermissions = $team->permissions;
 
-        $user->update([
+        $team->update([
             'name'          => $request->name,
             'phone'         => $request->phone,
             'permissions'   => $request->permissions,
         ]);
 
         // Notify if permissions changed
-        if ($oldPermissions != $request->permissions) {
-            notifyUser($user->id, 'Permissions Updated', 'Admin has updated your permissions');
-        }
+        // if ($oldPermissions != $request->permissions) {
+        //     notifyUser($team->id, 'Permissions Updated', 'Admin has updated your permissions');
+        // }
 
         return redirect()->route('lawyer.team.index')->with('success', 'User updated successfully');
     }
@@ -145,8 +150,8 @@ class TeamController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-       
-        Lawyer::where('lawyer_id', getLawyerId())->findOrFail($id)->delete();
+
+        Team::where('lawyer_id', Auth::guard('lawyer')->id())->findOrFail($id)->delete();
 
         if ($request->ajax()) {
             return $this->successResponse('user deleted');
@@ -161,7 +166,7 @@ class TeamController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        Lawyer::where('lawyer_id', getLawyerId())->findOrFail($id)->update([
+        Team::where('lawyer_id', Auth::guard('lawyer')->id())->findOrFail($id)->update([
             'password' => Hash::make($request->password),
         ]);
 

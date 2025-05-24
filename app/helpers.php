@@ -1,7 +1,8 @@
 <?php
 
-use App\Models\LawyerNotification;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Admin;
+use App\Models\Notification;
+use App\Utils\Icon;
 
 function activeClass($path, $active = 'active') {
   return call_user_func_array('Request::is', (array)$path) ? $active : '';
@@ -15,37 +16,67 @@ function showClass($path) {
   return call_user_func_array('Request::is', (array)$path) ? 'show' : '';
 }
 
-function notifyLawyer($lawyerId, $title, $body = null){
+function notifyAllAdmin($title, $body = null, $icon = null){
+  $adminIds = Admin::pluck('id');
+  
+  $notifications  = [];
+  $now            = now();
+  
+  foreach ($adminIds as $adminId) {
+    $notifications[] = [
+        'admin_id'   => $adminId,
+        'title'      => $title,
+        'body'       => $body,
+        'created_at' => $now,
+        'updated_at' => $now,
+    ];
+  }
+  
+  Notification::insert($notifications);  // Bulk insert
+}
 
-  LawyerNotification::create([
+function notifyAdmin($adminId, $title, $body = null, $icon = null){
+  Notification::create([
+    'admin_id'  => $adminId,
+    'icon'      => $icon ?? Icon::email(),
+    'title'     => $title,
+    'body'      => $body,
+  ]);
+}
+
+function notifyFirm($firmId, $title, $body = null, $icon = null){
+  Notification::create([
+    'firm_id'   => $firmId,
+    'icon'      => $icon ?? Icon::email(),
+    'title'     => $title,
+    'body'      => $body,
+  ]);
+}
+
+function notifyLawyer($lawyerId, $title, $body = null, $icon = null){
+  Notification::create([
     'lawyer_id' => $lawyerId,
+    'icon'      => $icon ?? Icon::email(),
     'title'     => $title,
     'body'      => $body,
   ]);
-
 }
 
-function notifyUser($userId, $title, $body = null){
-
-  LawyerNotification::create([
-    'lawyer_id' => $userId,
+function notifyTeamMember($teamId, $title, $body = null, $icon = null,){
+  Notification::create([
+    'team_id'   => $teamId,
+    'icon'      => $icon ?? Icon::email(),
     'title'     => $title,
     'body'      => $body,
   ]);
-
-}
-
-function getLawyerId(){
-
-    if (!Auth::check()) {
-        throw new \Exception('No active login session found');
-    }
-    
-    return Auth::user()->role === 'USER' ? Auth::user()->lawyer_id : Auth::user()->id;
 }
 
 function getPermissionsList(){
     return [
+
+      'Dashboard' => [
+        'dashboard:stats'    => 'Can see stats',
+      ],
 
       'Cases' => [  
         'cases:view'    => 'View Cases',
@@ -77,4 +108,25 @@ function getPermissionsList(){
       ],
       
     ];
+}
+
+function getSpecializationList(){
+  return [
+    'Family Law',
+    'Civil Law',
+    'Criminal Law',
+    'Property',
+    'Corporate & Business law',
+    'Employment and Labour Laws',
+    'Intellectual Property',
+    'Taxation & Financial law',
+    'Custom Overseas Matter',
+    'Immigration & Nationality matters',
+    'Constitution & Administration laws',
+    'Technology, Media and Cyber laws',
+    'Shariah & Islamic Law Services',
+    'Alternative Dispute Resolution',
+    'Banking Laws',
+    'Aviation laws',
+  ];
 }

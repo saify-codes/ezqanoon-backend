@@ -16,11 +16,11 @@ class DashboardController extends Controller
     public function dashboard()
     {
         
-        $totalClients               = Lawyer::find(getLawyerId())->clients->count();
-        $totalAppointments          = Lawyer::find(getLawyerId())->appointments->count();
-        $totalCasesToday            = Lawyer::find(getLawyerId())->cases->where('date_created', Carbon::now())->count();
-        $totalHighPriorityCases     = Lawyer::find(getLawyerId())->cases->where('urgency', 'HIGH')->count();
-        $totalDecidedCases          = Lawyer::find(getLawyerId())->cases->where('status', 'CLOSED')->count();
+        $totalClients               = Lawyer::find(Auth::guard('lawyer')->id())->clients->count();
+        $totalAppointments          = Lawyer::find(Auth::guard('lawyer')->id())->appointments->count();
+        $totalCasesToday            = Lawyer::find(Auth::guard('lawyer')->id())->cases->where('date_created', Carbon::now())->count();
+        $totalHighPriorityCases     = Lawyer::find(Auth::guard('lawyer')->id())->cases->where('urgency', 'HIGH')->count();
+        $totalDecidedCases          = Lawyer::find(Auth::guard('lawyer')->id())->cases->where('status', 'CLOSED')->count();
         return view('lawyer.dashboard', compact('totalClients', 'totalAppointments', 'totalCasesToday', 'totalHighPriorityCases', 'totalDecidedCases'));
     }
 

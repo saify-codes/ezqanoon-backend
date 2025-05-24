@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdminOption;
+use App\Models\Option;
 use App\Services\ZoomService;
 use Exception;
 use Illuminate\Http\Request;
@@ -28,13 +28,16 @@ class ZoomController extends Controller
 
         try {
             $credentials = $this->zoom->exchangeAuthorizationCodeForTokens($request->code);
-            AdminOption::set('zoom_access_token', $credentials['access_token']);
-            AdminOption::set('zoom_refresh_token', $credentials['refresh_token']);
-            Session::put('zoom_oauth_success', true);
+            
+            Option::set('zoom_access_token', $credentials['access_token'], global: true);
+            Option::set('zoom_refresh_token', $credentials['refresh_token'], global: true);
+            Session::flash('zoom_oauth_success', true);
+            
             return redirect()->route('integration.zoom.success');
         } catch (Exception $e) {
             Log::channel('error')->error('Zoom OAuth callback failed: ' . $e->getMessage());
-            Session::put('zoom_oauth_error', $e->getMessage());
+            Session::flash('zoom_oauth_error', $e->getMessage());
+            
             return redirect()->route('integration.zoom.error');
         }
 
@@ -57,8 +60,7 @@ class ZoomController extends Controller
 
     public function success()
     {
-        if (Session::has('zoom_oauth_success')) {
-            Session::forget('zoom_oauth_success');
+        if ($success = Session::get('zoom_oauth_success')) {
             return view('integrations.zoom.success');
         }
     
@@ -67,9 +69,7 @@ class ZoomController extends Controller
 
     public function error()
     {
-        if (Session::has('zoom_oauth_error')) {
-            $error = Session::get('zoom_oauth_error');
-            Session::forget('zoom_oauth_error');
+        if ($error = Session::get('zoom_oauth_error')) {
             return view('integrations.zoom.error', compact('error'));
         }
 

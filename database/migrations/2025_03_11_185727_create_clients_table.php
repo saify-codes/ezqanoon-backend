@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -13,7 +14,8 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('lawyer_id');
+            $table->unsignedBigInteger('firm_id')->nullable();
+            $table->unsignedBigInteger('lawyer_id')->nullable();
             $table->string('first_name');
             $table->string('last_name');
             $table->enum('origin', ['LOCAL', 'FOREIGN']);
@@ -37,27 +39,24 @@ return new class extends Migration
             $table->json('tags')->nullable();
             $table->json('notes')->nullable();
             $table->timestamps();
+            
+            $table->foreign('lawyer_id')->references('id')->on('lawyers')->onDelete('cascade');
+            $table->foreign('firm_id')->references('id')->on('firms')->onDelete('cascade');
 
-            // Foreign key with index
-            $table->foreign('lawyer_id')
-                ->references('id')
-                ->on('lawyers')
-                ->onDelete('cascade');
+            
         });
-
+        
         Schema::create('client_attachments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('client_id');
             $table->string('file');
             $table->string('original_name');
             $table->string('mime_type');
-
-            // Foreign key with index
-            $table->foreign('client_id')
-                ->references('id')
-                ->on('clients')
-                ->onDelete('cascade');
+            
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
         });
+
+        DB::statement("ALTER TABLE clients ADD CONSTRAINT client_exactly_one_owner CHECK ((lawyer_id IS NOT NULL AND firm_id IS NULL) OR (lawyer_id IS NULL AND firm_id IS NOT NULL))");
     }
 
     /**

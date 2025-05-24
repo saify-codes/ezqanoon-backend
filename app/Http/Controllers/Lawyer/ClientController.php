@@ -17,10 +17,6 @@ class ClientController extends Controller
      */
     public function index(Request $request)
     {
-        if (!Auth::user()->hasPermission('manage:client')) {
-            abort(403, 'Unauthorized');
-        }
-
         if ($request->ajax()) {
 
             // DataTables columns to map for ordering:
@@ -32,7 +28,7 @@ class ClientController extends Controller
             $orderColumnIndex   = $request->input('order.0.column'); // which column index is being sorted
             $orderDirection     = $request->input('order.0.dir');    // asc or desc
 
-            $query              = Client::where('lawyer_id', Auth::user()->id);
+            $query              = Client::where('lawyer_id', Auth::guard('lawyer')->id());
             $totalRecords       = $query->count();
 
             if (!empty($searchValue)) {
@@ -105,7 +101,7 @@ class ClientController extends Controller
         ]);
 
         $client = Client::create([
-            'lawyer_id'             => Auth::user()->id,
+            'lawyer_id'             => Auth::guard('lawyer')->id(),
             'first_name'            => $validated['first_name'],
             'last_name'             => $validated['last_name'],
             'gender'                => $validated['gender'],
@@ -166,7 +162,7 @@ class ClientController extends Controller
      */
     public function edit(string $id)
     {
-        $client = Client::where('id', $id)->where('lawyer_id', Auth::user()->id)->firstOrFail();
+        $client = Client::where('id', $id)->where('lawyer_id', Auth::guard('lawyer')->id())->firstOrFail();
         return view('lawyer.client.edit', compact('client'));
     }
 
@@ -209,7 +205,7 @@ class ClientController extends Controller
         ]);
 
         // Find the client that belongs to the authenticated lawyer
-        $client = Client::where('id', $id)->where('lawyer_id', Auth::user()->id)->firstOrFail();
+        $client = Client::where('id', $id)->where('lawyer_id', Auth::guard('lawyer')->id())->firstOrFail();
 
         // Update client details
         $client->update([
@@ -273,7 +269,7 @@ class ClientController extends Controller
     {
         // Retrieve the client that belongs to the authenticated lawyer or fail
         $client = Client::where('id', $id)
-            ->where('lawyer_id', Auth::id())
+            ->where('lawyer_id', Auth::guard('lawyer')->id())
             ->firstOrFail();
 
         // Return the view with the case data
@@ -285,14 +281,14 @@ class ClientController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        $case = Client::where('lawyer_id', Auth::id())->findOrFail($id);
+        $case = Client::where('lawyer_id', Auth::guard('lawyer')->id())->findOrFail($id);
         $case->delete();
 
         if ($request->ajax()) {
-            return $this->successResponse('case deleted');
+            return $this->successResponse('client deleted');
         }
 
         // Return response or redirect as needed
-        return redirect()->route('lawyer.cases.index')->with('success', 'Case deleted successfully.');
+        return redirect()->route('lawyer.client.index')->with('success', 'client deleted successfully.');
     }
 }

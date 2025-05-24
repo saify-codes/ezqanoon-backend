@@ -47,6 +47,13 @@
 
     @push('custom-scripts')
         <script>
+            /**
+             * Helper function to create a Bootstrap badge snippet.
+             */
+             function getBadge(value, classMapping) {
+                const badgeClass = classMapping[value];
+                return badgeClass?`<span class="badge rounded-pill border border-${badgeClass} text-${badgeClass}">${value}</span>` : '';
+            }
            
             /**
              * Function to handle the AJAX delete request.
@@ -100,7 +107,15 @@
                         data: 'end_date'
                     },
                     {
-                        data: 'status'
+                        data: 'status',
+                        render: function(data) {
+                            const statusClasses = {
+                                'PENDING': 'primary',
+                                'IN PROGRESS': 'warning',
+                                'COMPLETED': 'success',
+                            };
+                            return getBadge(data, statusClasses);
+                        }
                     },
                     {
                         data: 'member.name',

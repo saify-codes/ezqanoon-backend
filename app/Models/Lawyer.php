@@ -39,56 +39,23 @@ class Lawyer extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
-            'permissions'       => 'array',
+            'specialization'    => 'array',
         ];
     }
     
-    /**
-     * profile
-     *
-     * @return void
-     */
-    public function profile()
+    public function availabilities()
     {
-        return $this->only(['name', 'email', 'phone', 'avatar', 'verified_email']);
-    }
-    
-    public function reviews()
-    {
-        return $this->hasMany(Rating::class, 'lawyer_id');
+        return $this->hasMany(Availability::class, 'lawyer_id');
     }
 
     public function subscription()
     {
-        if($this->role == 'USER'){
-            return Lawyer::find($this->lawyer_id)->hasOne(Subscription::class, 'id', 'subscription_id');
-        }
-        
         return $this->hasOne(Subscription::class, 'id', 'subscription_id');
-    }
-
-    public function hasPermission($permission)
-    {
-        switch ($this->role) {
-            case 'USER':
-                return in_array($permission, $this->permissions ?? []);
-            case 'ADMIN':
-                return true;
-        }
     }
 
     public function team()
     {
-        // If current user is USER type, get team members from their admin
-        if ($this->role === 'USER') {
-            return self::find($this->lawyer_id)
-            ->hasMany(self::class, 'lawyer_id')
-            ->where('role', 'USER')
-            ->where('id', '!=', $this->id); // Exclude self from the list
-        } 
-
-        // If ADMIN, return all their users
-        return $this->hasMany(self::class, 'lawyer_id')->where('role', 'USER');
+        return $this->hasMany(Team::class, 'lawyer_id');
     }
 
     public function clients(){
@@ -102,15 +69,30 @@ class Lawyer extends Authenticatable
     public function cases(){
         return $this->hasMany(Cases::class, 'lawyer_id');
     }
+    
+    public function settings(){
+        $settings = Option::get('settings', lawyerId:$this->id);
+        return json_decode($settings);
+    }
 
-    /**
-     * Accessor: get avatar absolute url.
-     *
-     * @return string|null
-     */
+    public function getLicenceFrontAttribute($value): ?string
+    {
+        return empty($value) ? null : asset("/storage/lawyers/$this->id/licences/$value");
+    }
+
+    public function getLicenceBackAttribute($value): ?string
+    {
+        return empty($value) ? null : asset("/storage/lawyers/$this->id/licences/$value");
+    }
+
+    public function getSelfieAttribute($value): ?string
+    {
+        return empty($value) ? null : asset("/storage/lawyers/$this->id/selfies/$value");
+    }
+
     public function getAvatarAttribute($value): ?string
     {
-        return empty($value) ? asset("/storage/avatar.jpg") : asset("/storage/users/$this->id/avatars/$value");
+        return empty($value) ? asset("/assets/images/avatar.jpg") : asset("/storage/lawyers/$this->id/avatars/$value");
     }
 
     /**

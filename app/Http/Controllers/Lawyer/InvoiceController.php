@@ -28,7 +28,7 @@ class InvoiceController extends Controller
             $orderColumnIndex   = $request->input('order.0.column'); // which column index is being sorted
             $orderDirection     = $request->input('order.0.dir');    // asc or desc
 
-            $query              = Invoice::select('*')->selectRaw('(total - paid) as balance')->with('milestone')->where('lawyer_id', getLawyerId());
+            $query              = Invoice::select('*')->selectRaw('(total - paid) as balance')->with('milestone')->where('lawyer_id', Auth::guard('lawyer')->id());
             $totalRecords       = $query->count();
 
             if (!empty($searchValue)) {
@@ -70,10 +70,6 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        if (!Auth::user()->hasPermission('invoice:create')) {
-            abort(403, 'Unauthorized');
-        }
-
         $validated = $request->validate([
             'name'                            => 'required|string|max:255',
             'email'                           => 'required|email',
@@ -97,7 +93,7 @@ class InvoiceController extends Controller
         ]);
 
         $invoice = Invoice::create([
-            'lawyer_id'                       => getLawyerId(),
+            'lawyer_id'                       => Auth::guard('lawyer')->id(),
             'name'                            => $validated['name'],
             'email'                           => $validated['email'],
             'phone'                           => $validated['phone'],
@@ -136,7 +132,7 @@ class InvoiceController extends Controller
     {
         // Retrieve the invloice that belongs to the authenticated lawyer or fail
         $invoice = Invoice::where('id', $id)
-            ->where('lawyer_id', getLawyerId())
+            ->where('lawyer_id', Auth::guard('lawyer')->id())
             ->firstOrFail();
 
         // Return the view with the case data
@@ -148,12 +144,8 @@ class InvoiceController extends Controller
      */
     public function edit(string $id)
     {
-        if (!Auth::user()->hasPermission('invoice:edit')) {
-            abort(403, 'Unauthorized');
-        }
-
         $invoice = Invoice::where('id', $id)
-            ->where('lawyer_id', getLawyerId())
+            ->where('lawyer_id', Auth::guard('lawyer')->id())
             ->firstOrFail();
 
         return view('lawyer.invoice.edit', compact('invoice'));
@@ -164,11 +156,6 @@ class InvoiceController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // authorization
-        if (!Auth::user()->hasPermission('invoice:edit')) {
-            abort(403, 'Unauthorized');
-        }
-
         // validate exactly as in store()
         $validated = $request->validate([
             'name'                            => 'required|string|max:255',
@@ -194,7 +181,7 @@ class InvoiceController extends Controller
 
         // fetch the invoice, ensuring it belongs to this lawyer
         $invoice = Invoice::where('id', $id)
-            ->where('lawyer_id', getLawyerId())
+            ->where('lawyer_id', Auth::guard('lawyer')->id())
             ->firstOrFail();
 
         // update main invoice fields
@@ -242,11 +229,7 @@ class InvoiceController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        if (!Auth::user()->hasPermission('invoice:delete')) {
-            abort(403, 'Unauthorized');
-        }
-
-        Invoice::where('lawyer_id', getLawyerId())->findOrFail($id)->delete();
+        Invoice::where('lawyer_id', Auth::guard('lawyer')->id())->findOrFail($id)->delete();
 
         if ($request->ajax()) {
             return $this->successResponse('invoice deleted');

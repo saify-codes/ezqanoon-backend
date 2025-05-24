@@ -107,6 +107,7 @@
                                 type="button"
                                 id="toggle-password-confirmation"
                                 tabindex="-1"
+                                style="z-index: 0"
                             >
                                 <i data-feather="eye"></i>
                             </button>

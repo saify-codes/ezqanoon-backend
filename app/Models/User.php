@@ -38,7 +38,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'  => 'hashed',
         ];
     }
 
@@ -54,7 +54,7 @@ class User extends Authenticatable
      */
     public function getAvatarAttribute($value): ?string
     {
-        return empty($value) ? asset("/storage/avatar.jpg") : asset("/storage/$value");
+        return empty($value) ? asset("/assets/images/avatar.jpg") : asset("/storage/$value");
     }
 
     /**

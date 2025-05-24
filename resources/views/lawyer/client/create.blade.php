@@ -51,8 +51,8 @@
                     <div class="col-md-4">
                         <label for="type" class="form-label">Client type <span class="text-danger">*</span></label>
                         <select class="form-select" id="type" name="type" required>
-                            <option value="REGULAR" {{ old('type') === 'REGULAR' ? 'selected' : '' }}>Regular</option>
-                            <option value="VIP" {{ old('type') === 'VIP' ? 'selected' : '' }}>VIP</option>
+                            <option value="CRIMINAL" {{ old('type') === 'CRIMINAL' ? 'selected' : '' }}>CRIMiNAL</option>
+                            <option value="CIVIL" {{ old('type') === 'CIVIL' ? 'selected' : '' }}>CIVIL</option>
                             <option value="OTHERS" {{ old('type') === 'OTHERS' ? 'selected' : '' }}>OTHERS</option>
                         </select>
                     </div>
@@ -193,7 +193,7 @@
     @endpush
 
     @push('plugin-scripts')
-        <script src="{{ asset('assets/plugins/aerodrop/aerodrop.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/aerodrop/aerodrop.min.js?version=' . env('VERSION', '0.0.0.0')) }}"></script>
         <script src="{{ asset('assets/plugins/ckeditor/ckeditor.min.js') }}"></script>
         <script src="{{ asset('assets/plugins/select2/select2.min.js') }}"></script>
     @endpush

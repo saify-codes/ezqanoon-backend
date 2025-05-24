@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Firm;
 use App\Models\Lawyer;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -15,9 +16,10 @@ class DashboardController extends Controller
     public function dashboard()
     {
         
+        $totalFirms                 = Firm::count();
         $totalLawyers               = Lawyer::count();
         $totalUsers                 = User::count();
-        return view('admin.dashboard', compact('totalLawyers', 'totalUsers'));
+        return view('admin.dashboard', compact('totalFirms', 'totalLawyers', 'totalUsers'));
     }
 
     /**

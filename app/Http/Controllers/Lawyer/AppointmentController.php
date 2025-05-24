@@ -24,7 +24,7 @@ class AppointmentController extends Controller
             $orderColumnIndex   = $request->input('order.0.column'); // which column index is being sorted
             $orderDirection     = $request->input('order.0.dir');    // asc or desc
 
-            $query          = Appointment::with(['user:id,name,email,phone,avatar', 'attachments'])->where('lawyer_id', Auth::user()->id);
+            $query          = Appointment::with(['user:id,name,email,phone,avatar', 'attachments'])->where('lawyer_id', Auth::guard('lawyer')->id());
             $totalRecords   = $query->count();
 
             if (!empty($searchValue)) {
@@ -62,7 +62,7 @@ class AppointmentController extends Controller
 
     public function edit(string $id)
     {
-        $appointment = Appointment::where('id', $id)->where('lawyer_id', getLawyerId())->firstOrFail();
+        $appointment = Appointment::where('id', $id)->where('lawyer_id', Auth::guard('lawyer')->id())->firstOrFail();
         return view('lawyer.appointments.edit', compact('appointment'));
     }
 
@@ -74,7 +74,7 @@ class AppointmentController extends Controller
             'attachments'           => 'array|max:10',
         ]);
 
-        $appointment = Appointment::where('id', $id)->where('lawyer_id', getLawyerId())->firstOrFail();
+        $appointment = Appointment::where('id', $id)->where('lawyer_id', Auth::guard('lawyer')->id())->firstOrFail();
 
         // Update client details
         $appointment->update([
@@ -114,7 +114,7 @@ class AppointmentController extends Controller
     {
         // Retrieve the client that belongs to the authenticated lawyer or fail
         $appointment = Appointment::where('id', $id)
-            ->where('lawyer_id', getLawyerId())
+            ->where('lawyer_id', Auth::guard('lawyer')->id())
             ->firstOrFail();
 
         // Return the view with the case data

@@ -211,7 +211,7 @@
     @endpush
 
     @push('plugin-scripts')
-        <script src="{{ asset('assets/plugins/aerodrop/aerodrop.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/aerodrop/aerodrop.min.js?version=' . env('VERSION', '0.0.0.0')) }}"></script>
         <script src="{{ asset('assets/plugins/ckeditor/ckeditor.min.js') }}"></script>
     @endpush
 
@@ -315,7 +315,7 @@
                         parent.prop('class', 'col-md-3').after(`
                             <div class="col-md-3">
                                 <label for="otherType" class="form-label">Specify Case Type</label>
-                                <input type="text" class="form-control" id="otherType" name="type" placeholder="Enter case type" value="{{ old('type', $client->type)}}" />
+                                <input type="text" class="form-control" id="otherType" name="type" placeholder="Enter case type" />
                             </div>
                         `);
                     } else {

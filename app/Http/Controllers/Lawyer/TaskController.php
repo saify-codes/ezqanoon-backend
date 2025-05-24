@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Lawyer;
 use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Traits\ApiResponseTrait;
+use App\Utils\Icon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,7 +28,7 @@ class TaskController extends Controller
             $orderColumnIndex   = $request->input('order.0.column'); // which column index is being sorted
             $orderDirection     = $request->input('order.0.dir');    // asc or desc
 
-            $query              = Task::with(['member:id,name,email,phone'])->where('lawyer_id', getLawyerId());
+            $query              = Task::with(['member:id,name,email,phone'])->where('lawyer_id', Auth::guard('lawyer')->id());
             $totalRecords       = $query->count();
 
             if (!empty($searchValue)) {
@@ -60,10 +61,6 @@ class TaskController extends Controller
      */
     public function create()
     {
-        if(!Auth::user()->hasPermission('task:create')){
-            abort(403, 'Unauthorized');
-        }
-
         $team = Auth::user()->team;
         return view('lawyer.task.create', compact('team'));
     }
@@ -73,16 +70,12 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        if(!Auth::user()->hasPermission('task:create')){
-            abort(403, 'Unauthorized');
-        }
-
         $validated = $request->validate([
             'name'                            => 'required|string|max:255',
             'start_date'                      => 'required|date',
             'end_date'                        => 'required|date',
             'status'                          => 'required|in:PENDING,IN PROGRESS,COMPLETED',
-            'assign_to'                       => 'nullable|exists:lawyers,id',
+            'assign_to'                       => 'nullable|exists:teams,id',
             
         ]);
         
@@ -91,9 +84,13 @@ class TaskController extends Controller
             'start_date'                      => $validated['start_date'],
             'end_date'                        => $validated['end_date'],
             'status'                          => $validated['status'],
-            'lawyer_id'                       => getLawyerId(),
+            'lawyer_id'                       => Auth::guard('lawyer')->id(),
             'assign_to'                       => $validated['assign_to'],
         ]);
+
+        if ($validated['assign_to']) {
+            notifyTeamMember($validated['assign_to'], 'New task', 'You have been assigned a task', Icon::clipboard());
+        }
 
         return redirect()
             ->route('lawyer.task.index')
@@ -105,12 +102,8 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        if(!Auth::user()->hasPermission('task:view')){
-            abort(403, 'Unauthorized');
-        }
-
         $task = Task::where('id', $id)
-            ->where('lawyer_id', getLawyerId())
+            ->where('lawyer_id', Auth::guard('lawyer')->id())
             ->firstOrFail();
 
         return view('lawyer.task.show', compact('task'));
@@ -121,13 +114,9 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        if(!Auth::user()->hasPermission('task:edit')){
-            abort(403, 'Unauthorized');
-        }
-
         $team = Auth::user()->team;
         $task = Task::where('id', $id)
-            ->where('lawyer_id', getLawyerId())
+            ->where('lawyer_id', Auth::guard('lawyer')->id())
             ->firstOrFail();
         return view('lawyer.task.edit', compact('team', 'task'));
     }
@@ -137,21 +126,27 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if(!Auth::user()->hasPermission('task:create')){
-            abort(403, 'Unauthorized');
-        }
-
         $validated = $request->validate([
             'name'                            => 'required|string|max:255',
             'start_date'                      => 'required|date',
             'end_date'                        => 'required|date',
             'status'                          => 'required|in:PENDING,IN PROGRESS,COMPLETED',
-            'assign_to'                       => 'nullable|exists:lawyers,id',
+            'assign_to'                       => 'nullable|exists:teams,id',
             
         ]);
 
-        $task = Task::where('lawyer_id', getLawyerId())->findOrFail($id);
+        $task = Task::where('lawyer_id', Auth::guard('lawyer')->id())->findOrFail($id);
 
+        if ($validated['assign_to']) {
+
+            // check if previously assigned to someone
+            if($task->assign_to){
+                notifyTeamMember($task->assign_to, 'Task changed', "$task->name has been assigned to someone else", Icon::alert());            
+                notifyTeamMember($validated['assign_to'], 'New task', 'You have been assigned a task', Icon::clipboard());
+            }else{
+                notifyTeamMember($validated['assign_to'], 'New task', 'You have been assigned a task', Icon::clipboard());
+            }
+        }
         
         $task->update([
             'name'                            => $validated['name'],
@@ -171,17 +166,19 @@ class TaskController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        if(!Auth::user()->hasPermission('task:delete')){
-            abort(403, 'Unauthorized');
+        $task = Task::where('lawyer_id', Auth::guard('lawyer')->id())->findOrFail($id);
+
+        if ($task->member?->exists()) {
+            notifyTeamMember($task->member->id, 'Task deleted', "$task->name deleted", Icon::x());            
         }
 
-        Task::where('lawyer_id', getLawyerId())->findOrFail($id)->delete();
+        $task->delete();
 
         if ($request->ajax()) {
             return $this->successResponse('task deleted');
         }
 
-        return redirect()->route('lawyer.cases.index')->with('success', 'task deleted successfully.');
+        return redirect()->route('lawyer.task.index')->with('success', 'task deleted successfully.');
    
     }
 }

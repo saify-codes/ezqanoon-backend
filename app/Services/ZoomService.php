@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\AdminOption;
+use App\Models\Option;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class ZoomService
@@ -20,8 +21,8 @@ class ZoomService
         $this->clientId     = env('ZOOM_CLIENT_ID');
         $this->clientSecret = env('ZOOM_CLIENT_SECRET');
         $this->redirectURI  = env('ZOOM_REDIRECT_URI');
-        $this->accessToken  = AdminOption::get('zoom_access_token');
-        $this->refreshToken = AdminOption::get('zoom_refresh_token');
+        $this->accessToken  = Option::get('zoom_access_token', global: true);
+        $this->refreshToken = Option::get('zoom_refresh_token', global: true);
     }
 
     /**
@@ -67,7 +68,7 @@ class ZoomService
             'duration'   => $duration,
             'timezone'   => 'UTC',
             'settings'   => [
-                'join_before_host'       => true,
+                'join_before_host'       => false,
                 'waiting_room'           => false,
                 'meeting_authentication' => false,
                 'host_video'             => true,
@@ -78,12 +79,12 @@ class ZoomService
             ],
         ];
 
-        $response = Http::withToken($this->accessToken)
-            ->post('https://api.zoom.us/v2/users/me/meetings', $payload);
+        $response = Http::withToken($this->accessToken)->post('https://api.zoom.us/v2/users/me/meetings', $payload);
 
         // if token expired, refresh and retry once
         if ($response->status() === 401) {
             $this->refreshToken();
+
             $response = Http::withToken($this->accessToken)
                 ->withHeaders(['Content-Type' => 'application/json'])
                 ->post('https://api.zoom.us/v2/users/me/meetings', $payload);
@@ -114,7 +115,7 @@ class ZoomService
         $this->accessToken  = $tokens['access_token'];
         $this->refreshToken = $tokens['refresh_token'];
 
-        AdminOption::set('zoom_access_token', $this->accessToken);
-        AdminOption::set('zoom_refresh_token', $this->refreshToken);
+        Option::set('zoom_access_token', $this->accessToken, global: true);
+        Option::set('zoom_refresh_token', $this->refreshToken, global: true);
     }
 }

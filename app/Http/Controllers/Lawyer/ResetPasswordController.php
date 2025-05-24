@@ -20,7 +20,7 @@ class ResetPasswordController extends Controller
         ]);
 
         // Retrieve the logged-in lawyer/user
-        Auth::user()->update([
+        Auth::guard('lawyer')->user()->update([
             'password' =>Hash::make($request->password),
         ]);
 

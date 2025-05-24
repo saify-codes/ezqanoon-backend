@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SigninRequest;
 use App\Models\Admin;
 use App\Models\AdminOption;
+use App\Models\Option;
 use Illuminate\Support\Facades\Cache;
 
 class AuthController extends Controller
@@ -31,7 +32,7 @@ class AuthController extends Controller
             return redirect()->route('admin.signin')->with('error','Invalid email or password');
         }
 
-        if(AdminOption::get('2fa_enabled')){
+        if(Option::get('2fa_enabled', adminId: $admin->id)){
 
             Cache::put('admin_2fa_code', $this->generateOTP());
             return redirect()->route('admin.2fa');

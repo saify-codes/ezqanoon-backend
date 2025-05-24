@@ -46,7 +46,7 @@ class Admin extends Authenticatable
      */
     public function getAvatarAttribute($value): ?string
     {
-        return empty($value) ? asset("/storage/avatar.jpg") : asset("/storage/admins/$this->id/avatars/$value");
+        return empty($value) ? asset("/assets/images/avatar.jpg") : asset("/storage/admin/$this->id/avatars/$value");
     }
     
 }

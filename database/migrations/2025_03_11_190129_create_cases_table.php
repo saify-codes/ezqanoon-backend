@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -13,7 +14,8 @@ return new class extends Migration
     {
         Schema::create('cases', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('lawyer_id');
+            $table->unsignedBigInteger('firm_id')->nullable();
+            $table->unsignedBigInteger('lawyer_id')->nullable();
             $table->string('name');
             $table->string('type');
             $table->enum('urgency', ['URGENT', 'HIGH', 'MEDIUM', 'LOW'])->nullable();
@@ -31,15 +33,13 @@ return new class extends Migration
             $table->text('opposite_party_advocate_details')->nullable();
             $table->text('case_information')->nullable();
             $table->enum('status', ['OPEN', 'IN PROGRESS', 'CLOSED'])->default('OPEN');
-            // $table->json('deadlines')->nullable();
             $table->enum('payment_status', ['PENDING', 'PAID', 'OVERDUE'])->default('PENDING');
             $table->timestamps();
 
-            // Foreign key with index
-            $table->foreign('lawyer_id')
-                ->references('id')
-                ->on('lawyers')
-                ->onDelete('cascade');
+            $table->foreign('lawyer_id')->references('id')->on('lawyers')->onDelete('cascade');
+            $table->foreign('firm_id')->references('id')->on('firms')->onDelete('cascade');
+
+            
         });
 
         Schema::create('case_attachments', function (Blueprint $table) {
@@ -48,52 +48,42 @@ return new class extends Migration
             $table->string('file');
             $table->string('original_name');
             $table->string('mime_type');
-
-            // Foreign key with index
-            $table->foreign('case_id')
-                ->references('id')
-                ->on('cases')
-                ->onDelete('cascade');
-            });
             
+            $table->foreign('case_id')->references('id')->on('cases')->onDelete('cascade');
+            
+        });
+        
         Schema::create('case_filling_dates', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('case_id');
-            $table->unsignedBigInteger('lawyer_id');
+            $table->unsignedBigInteger('firm_id')->nullable();
+            $table->unsignedBigInteger('lawyer_id')->nullable();
             $table->string('description');
             $table->date('date');
+            
+            $table->foreign('case_id')->references('id')->on('cases')->onDelete('cascade');
+            $table->foreign('lawyer_id')->references('id')->on('lawyers')->onDelete('cascade');
+            $table->foreign('firm_id')->references('id')->on('firms')->onDelete('cascade');
 
-            // Foreign key with index
-            $table->foreign('case_id')
-                ->references('id')
-                ->on('cases')
-                ->onDelete('cascade');
-                
-            $table->foreign('lawyer_id')
-                ->references('id')
-                ->on('lawyers')
-                ->onDelete('cascade');
         });
         
         Schema::create('case_hearing_dates', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('case_id');
-            $table->unsignedBigInteger('lawyer_id');
+            $table->unsignedBigInteger('firm_id')->nullable();
+            $table->unsignedBigInteger('lawyer_id')->nullable();
             $table->string('description');
             $table->date('date');
-
-            // Foreign key with index
-            $table->foreign('case_id')
-                ->references('id')
-                ->on('cases')
-                ->onDelete('cascade');
-
-            $table->foreign('lawyer_id')
-                ->references('id')
-                ->on('lawyers')
-                ->onDelete('cascade');
-
+            
+            $table->foreign('case_id')->references('id')->on('cases')->onDelete('cascade');
+            $table->foreign('lawyer_id')->references('id')->on('lawyers')->onDelete('cascade');
+            $table->foreign('firm_id')->references('id')->on('firms')->onDelete('cascade');
+           
+            
         });
+        DB::statement("ALTER TABLE cases ADD CONSTRAINT cases_exactly_one_owner CHECK ((lawyer_id IS NOT NULL AND firm_id IS NULL) OR (lawyer_id IS NULL AND firm_id IS NOT NULL))");
+        DB::statement("ALTER TABLE case_filling_dates ADD CONSTRAINT case_filling_dates_exactly_one_owner CHECK ((lawyer_id IS NOT NULL AND firm_id IS NULL) OR (lawyer_id IS NULL AND firm_id IS NOT NULL))");
+        DB::statement("ALTER TABLE case_hearing_dates ADD CONSTRAINT case_hearing_dates_exactly_one_owner CHECK ((lawyer_id IS NOT NULL AND firm_id IS NULL) OR (lawyer_id IS NULL AND firm_id IS NOT NULL))");
     }
 
     /**

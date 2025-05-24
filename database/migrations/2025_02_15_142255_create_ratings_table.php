@@ -11,24 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ratings', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('lawyer_id'); // Fixed typo from 'laywer_id' to 'lawyer_id'
-            $table->unsignedBigInteger('user_id'); // Fixed typo from 'laywer_id' to 'lawyer_id'
-            $table->text('feedback')->nullable();
-            $table->tinyInteger('rating')->default(0);
-            $table->timestamps();
+        // Schema::create('ratings', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->unsignedBigInteger('lawyer_id'); // Fixed typo from 'laywer_id' to 'lawyer_id'
+        //     $table->unsignedBigInteger('user_id'); // Fixed typo from 'laywer_id' to 'lawyer_id'
+        //     $table->text('feedback')->nullable();
+        //     $table->tinyInteger('rating')->default(0);
+        //     $table->timestamps();
 
-            $table->foreign('lawyer_id')
-                ->references('id')
-                ->on('lawyers')
-                ->onDelete('cascade');
+        //     $table->foreign('lawyer_id')
+        //         ->references('id')
+        //         ->on('lawyers')
+        //         ->onDelete('cascade');
                 
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('cascade');
-        });
+        //     $table->foreign('user_id')
+        //         ->references('id')
+        //         ->on('users')
+        //         ->onDelete('cascade');
+        // });
     }
 
     /**

@@ -24,7 +24,6 @@ class ProfileController extends Controller
     {
         // Validate the uploaded file
         $request->validate([
-            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Allow only images up to 2MB
         ], [
             'avatar.required'   => 'The avatar file is required.',
             'avatar.image'      => 'The uploaded file must be an image.',
@@ -76,24 +75,21 @@ class ProfileController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        // Validate input
         $request->validate([
-            'name'  => 'string',
-            'phone' => 'string',
+            'name'  => 'required',
+            'phone' => 'required',
         ]);
 
-        // Get the authenticated user
         $user = Auth::user();
 
-        // Update only the fields present in the request
-        $user->update($request->only('name', 'phone'));
+        $user->update([
+            'name'  => $request->name,
+            'phone' => $request->phone,
+        ]);
 
-        // Return the updated user profile
-        return $this->successResponse(
-            'Profile updated successfully',
-            ['data' => $user->profile()]
-        );
+        return $this->successResponse('Profile updated successfully');
     }
+
     
     /**
      * updatePassword

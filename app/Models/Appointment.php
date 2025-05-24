@@ -17,6 +17,10 @@ class Appointment extends Model
         return $this->hasMany(AppointmentSummaryAttachment::class);
     }
 
+    public function firm(){
+        return $this->hasOne(Firm::class, 'id', 'firm_id');
+    }
+    
     public function lawyer(){
         return $this->hasOne(Lawyer::class, 'id', 'lawyer_id');
     }

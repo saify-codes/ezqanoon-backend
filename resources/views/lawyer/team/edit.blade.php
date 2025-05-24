@@ -22,7 +22,7 @@
             <h4 class="card-title mb-4">Edit user</h4>
 
             <!-- The form -->
-            <form action="{{ route('lawyer.team.update', $user->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('lawyer.team.update', $team->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT') <!-- This is important for the update action -->
 
@@ -31,7 +31,7 @@
                     <div class="col-md-4">
                         <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="name" name="name"
-                            value="{{ old('name', $user->name) }}" placeholder="e.g. Musaafa" required>
+                            value="{{ old('name', $team->name) }}" placeholder="e.g. Musaafa" required>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Phone <span class="text-danger">*</span></label>
@@ -40,7 +40,7 @@
                                 type="tel" 
                                 class="form-control" 
                                 id="phone" 
-                                value="{{ old('phone', $user->phone) }}" 
+                                value="{{ old('phone', $team->phone) }}" 
                                 required
                             >
                         </div>
@@ -50,7 +50,7 @@
                     <div class="col-md-4">
                         <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="email" name="email"
-                            value="{{ old('email', $user->email) }}" disabled>
+                            value="{{ old('email', $team->email) }}" disabled>
                     </div>
                 </div>
 
@@ -61,13 +61,13 @@
                             @if (is_array($permission)) 
                                 <optgroup label="{{ $key }}">
                                     @foreach ($permission as $key => $permission)
-                                        <option value="{{ $key }}" {{ in_array($key, old('permissions', $user->permissions ?? [])) ? 'selected' : '' }}>
+                                        <option value="{{ $key }}" {{ in_array($key, old('permissions', $team->permissions ?? [])) ? 'selected' : '' }}>
                                             {{ $permission }}
                                         </option>
                                     @endforeach
                                 </optgroup>
                             @else
-                                <option value="{{ $key }}"{{ in_array($key, old('permissions', $user->permissions ?? [])) ? 'selected' : '' }}>
+                                <option value="{{ $key }}"{{ in_array($key, old('permissions', $team->permissions ?? [])) ? 'selected' : '' }}>
                                     {{ $permission }}
                                 </option>  
                             @endif
@@ -89,7 +89,7 @@
     <div class="card mt-3">
         <div class="card-body">
             <h4 class="card-title mb-4">Change Password</h4>
-            <form action="{{ route('lawyer.team.change-password', $user->id) }}" method="POST">
+            <form action="{{ route('lawyer.team.change-password', $team->id) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="row mb-3">

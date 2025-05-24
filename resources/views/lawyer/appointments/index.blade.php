@@ -72,8 +72,10 @@
                 processing: true,
                 serverSide: true,
                 ajax: '{{ route('lawyer.appointment.index') }}',
+                order: [[0, 'desc']],
                 columns: [{
                         data: 'id',
+                        sort: 'dess',
                     },
                     {
                         data: 'user.name',
@@ -101,7 +103,7 @@
                             const showUrl       = `{{ route('lawyer.appointment.show', ':id') }}`.replace(':id',appointment.id);
                             const editUrl       = `{{ route('lawyer.appointment.edit', ':id') }}`.replace(':id',appointment.id);
                             const deleteUrl     = `{{ route('lawyer.appointment.destroy', ':id') }}`.replace(':id',appointment.id);
-                            const meetingUrl    = appointment.meeting_link_lawyer
+                            const meetingUrl    = appointment.meeting_link
                             return `
                                 <div>
                                     <!-- <button class="btn btn-inverse-secondary btn-icon" onclick='viewCase(${JSON.stringify(appointment)})'><i data-feather="eye"></i></button> -->

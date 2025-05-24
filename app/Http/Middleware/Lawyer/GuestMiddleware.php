@@ -16,8 +16,13 @@ class GuestMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check()) {
-            return redirect('/');
+        // Get all guard names defined in auth config
+        $guards = array_keys(config('auth.guards'));
+
+        foreach ($guards as $guard) {
+            if (Auth::guard($guard)->check()) {
+                return redirect()->route($guard . '.dashboard');
+            }
         }
 
         return $next($request);

@@ -40,9 +40,17 @@ return [
             'driver'    => 'session',
             'provider'  => 'admins',
         ],
+        'firm' => [
+            'driver'    => 'session',
+            'provider'  => 'firms',
+        ],
         'lawyer' => [
             'driver'    => 'session',
             'provider'  => 'lawyers',
+        ],
+        'team' => [
+            'driver'    => 'session',
+            'provider'  => 'teams',
         ],
         'web' => [
             'driver' => 'session',
@@ -75,6 +83,14 @@ return [
         'lawyers' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\Lawyer::class),
+        ],
+        'firms' => [
+            'driver' => 'eloquent',
+            'model' => env('AUTH_MODEL', App\Models\Firm::class),
+        ],
+        'teams' => [
+            'driver' => 'eloquent',
+            'model' => env('AUTH_MODEL', App\Models\Team::class),
         ],
         'admins' => [
             'driver' => 'eloquent',

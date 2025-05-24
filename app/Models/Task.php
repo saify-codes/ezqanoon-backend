@@ -10,7 +10,7 @@ class Task extends Model
     protected $guarded = ['id'];
 
     public function member(){
-        return $this->hasOne(Lawyer::class, 'id', 'assign_to');
+        return $this->hasOne(Team::class, 'id', 'assign_to');
     }
 
     public function getCreatedAtAttribute($createdAt){

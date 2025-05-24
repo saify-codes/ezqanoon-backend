@@ -22,12 +22,8 @@ class CaseAttachmentController extends Controller
      */
     public function destroy(Cases $case, CaseAttachments $attachment)
     {
-        if(!Auth::user()->hasPermission('cases:delete')){
-            abort(403, 'Unauthorized action');
-        }
-        
         // Ensure the authenticated lawyer is the owner of the case
-        if ($case->lawyer_id !== getLawyerId()) {
+        if ($case->lawyer_id !== Auth::guard('lawyer')->id()) {
             abort(403, 'Unauthorized action');
         }
 

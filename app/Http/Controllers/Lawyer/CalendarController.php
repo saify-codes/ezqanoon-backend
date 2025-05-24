@@ -34,7 +34,7 @@ class CalendarController extends Controller
             $orderColumnIndex   = $request->input('order.0.column'); // which column index is being sorted
             $orderDirection     = $request->input('order.0.dir');    // asc or desc
 
-            $query              = CalendarEvent::where('lawyer_id', getLawyerId());
+            $query              = CalendarEvent::where('lawyer_id', Auth::guard('lawyer')->id());
             $totalRecords       = $query->count();
 
             if (!empty($searchValue)) {
@@ -76,7 +76,7 @@ class CalendarController extends Controller
         ]);
 
         CalendarEvent::create([
-            'lawyer_id'             => getLawyerId(),
+            'lawyer_id'             => Auth::guard('lawyer')->id(),
             'deadline'              => $validated['deadline']  ,
             'description'           => $validated['description'],
         ]);
@@ -88,7 +88,7 @@ class CalendarController extends Controller
 
     public function edit($id)
     {
-        $calendarEvent = CalendarEvent::where('lawyer_id', getLawyerId())->find($id);
+        $calendarEvent = CalendarEvent::where('lawyer_id', Auth::guard('lawyer')->id())->find($id);
         return view('lawyer.calendar.edit', compact('calendarEvent'));
     }
 
@@ -100,7 +100,7 @@ class CalendarController extends Controller
             'description'   => 'required|string',
         ]);
 
-        $calendarEvent = CalendarEvent::where('lawyer_id', getLawyerId())->findOrFail($id);
+        $calendarEvent = CalendarEvent::where('lawyer_id', Auth::guard('lawyer')->id())->findOrFail($id);
         $calendarEvent->update([
             'deadline'              => $validated['deadline'],
             'description'           => $validated['description'],
@@ -113,14 +113,14 @@ class CalendarController extends Controller
 
     public function show(string $id)
     {
-        $calendarEvent =  CalendarEvent::where('lawyer_id', getLawyerId())->findOrFail($id);
+        $calendarEvent =  CalendarEvent::where('lawyer_id', Auth::guard('lawyer')->id())->findOrFail($id);
         return view('lawyer.calendar.show', compact('calendarEvent'));
     }
 
    
     public function destroy(Request $request, string $id)
     {
-        $calendarEvent = CalendarEvent::where('lawyer_id', getLawyerId())->findOrFail($id);
+        $calendarEvent = CalendarEvent::where('lawyer_id', Auth::guard('lawyer')->id())->findOrFail($id);
         $calendarEvent->delete();
 
         if ($request->ajax()) {
@@ -133,25 +133,27 @@ class CalendarController extends Controller
 
     public function events(Request $request)
     {
-        $start = $request->start;
-        $end   = $request->end;
+
+        $start      = $request->start;
+        $end        = $request->end;
+        $settings   = Auth::guard('lawyer')->user()->settings();
 
         $appointments = Appointment::with('user')
-            ->where('lawyer_id', getLawyerId())
+            ->where('lawyer_id', Auth::guard('lawyer')->id())
             ->whereBetween('meeting_date', [$start, $end])
             ->get();
 
         $hearingDates = CaseHearingDate::with('caseRelation')
-            ->where('lawyer_id', getLawyerId())
+            ->where('lawyer_id', Auth::guard('lawyer')->id())
             ->whereBetween('date', [$start, $end])
             ->get();
 
-        $myEvents = CalendarEvent::where('lawyer_id', getLawyerId())
+        $myEvents = CalendarEvent::where('lawyer_id', Auth::guard('lawyer')->id())
             ->whereBetween('deadline', [$start, $end])
             ->get();
 
         $filingDates  = CaseFillingDate::with('caseRelation')
-            ->where('lawyer_id', getLawyerId())
+            ->where('lawyer_id', Auth::guard('lawyer')->id())
             ->whereBetween('date', [$start, $end])
             ->get();
 
@@ -162,7 +164,7 @@ class CalendarController extends Controller
                 'title'             => 'Appointment',
                 'start'             => Carbon::parse($item->meeting_date)->format('Y-m-d'),
                 'textColor'         => '#FFF',
-                'backgroundColor'   => 'var(--bs-warning)',
+                'backgroundColor'   => $settings?->calendar->appointment_event_color ?? "#95a5a6",
                 'extendedProps' => [
                     'type'          => 'APPOINTMENT',
                     'appointmentId' => $item->id,
@@ -178,7 +180,7 @@ class CalendarController extends Controller
                 'title'             => $item->caseRelation->name,
                 'start'             => $item->date,
                 'textColor'         => '#FFF',
-                'backgroundColor'   => 'var(--bs-primary)',
+                'backgroundColor'   => $settings?->calendar->hearing_event_color ?? "#95a5a6",
                 'extendedProps' => [
                     'type'          => 'HEARING',
                     'caseId'        => $item->case_id,
@@ -195,7 +197,7 @@ class CalendarController extends Controller
                 'title'             => $item->description,
                 'start'             => $item->deadline,
                 'textColor'         => '#FFF',
-                'backgroundColor'   => 'var(--bs-success)',
+                'backgroundColor'   => $settings?->calendar->custom_event_color ?? "#95a5a6",
                 'extendedProps' => [
                     'type'          => 'MYEVENT',
                     'eventId'       => $item->id,
@@ -209,14 +211,4 @@ class CalendarController extends Controller
         return response()->json($events);
     }
 
-    // private function getColorByUrgency($urgency)
-    // {
-    //     return match ($urgency) {
-    //         'URGENT'    => 'var(--bs-danger)', // red
-    //         'HIGH'      => 'var(--bs-primary)',// orange
-    //         'MEDIUM'    => 'var(--bs-warning)',// yellow
-    //         'LOW'       => 'var(--bs-info)',   // yellow
-    //         default     => 'var(--bs-light)',  // blue
-    //     };
-    // }
 }
