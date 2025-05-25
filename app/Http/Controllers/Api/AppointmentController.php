@@ -48,7 +48,7 @@ class AppointmentController extends Controller
             'details'      => 'required|string',
             'date_time'    => 'required|date_format:Y-m-d H:i',
             'country'      => 'required|string',
-            'lawyer_id'    => 'required|exists:firms,id',
+            'firm_id'      => 'required|exists:firms,id',
             'attachment.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:5000',
         ]);
 

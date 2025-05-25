@@ -13,12 +13,6 @@ class LawyerController extends Controller
 {
     use ApiResponseTrait;
 
-    /**
-     * getLawyers
-     * 
-     * @param Request $request
-     * @return void
-     */
     public function getLawyers(Request $request)
     {
         $query = Lawyer::where('is_profile_completed', true)->select('lawyers.*');
@@ -72,6 +66,7 @@ class LawyerController extends Controller
             'total'         => $lawyers->total(),
         ]);
     }
+   
     /**
      * getReviews
      *
@@ -83,23 +78,13 @@ class LawyerController extends Controller
     //     $reviews = Lawyer::find($laywerId)?->reviews()->paginate(10)->toArray();
     //     return $this->successResponse('laywer data', $reviews);
     // }
-    /**
-     * getLawyer
-     *
-     * @param  mixed $laywerId
-     * @return void
-     */
+    
     public function getLawyer(Lawyer $lawyer)
     {
         $lawyer->makeHidden(['license_front', 'license_back', 'selfie']);
         return $this->successResponse('lawyer data', ['data' => $lawyer]);
     }
-    /**
-     * getAvailability
-     *
-     * @param  mixed $laywerId
-     * @return void
-     */
+
     public function getAvailability(Lawyer $lawyer)
     {   
         // Group availabilities by day and pluck times

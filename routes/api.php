@@ -20,8 +20,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('/password',                 [ProfileController::class, 'updatePassword']);
     Route::post('/upload/avatar',           [ProfileController::class, 'uploadAvatar']);
     Route::get('/appointment',              [AppointmentController::class, 'getAppointments']);
-    Route::post('/appointment/firm',        [AppointmentController::class, 'createAppointmentLawyer']);
-    Route::post('/appointment/lawyer',      [AppointmentController::class, 'createAppointmentFirm']);
+    Route::post('/appointment/lawyer',      [AppointmentController::class, 'createAppointmentLawyer']);
+    Route::post('/appointment/firm',        [AppointmentController::class, 'createAppointmentFirm']);
     Route::post('/signout',                 [AuthController::class, 'signout']);
 });
 
