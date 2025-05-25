@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AppointmentController;
+use App\Http\Controllers\Api\FirmController;
 use App\Http\Controllers\Api\LawyerController;
 use App\Http\Controllers\Api\OTPController;
 use App\Http\Controllers\Api\ProfileController;
@@ -14,13 +15,14 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::get('/profile',          [ProfileController::class, 'getProfile']);
-    Route::put('/profile',          [ProfileController::class, 'updateProfile']);
-    Route::put('/password',         [ProfileController::class, 'updatePassword']);
-    Route::post('/upload/avatar',   [ProfileController::class, 'uploadAvatar']);
-    Route::get('/appointment',      [AppointmentController::class, 'getAppointments']);
-    Route::post('/appointment',     [AppointmentController::class, 'createAppointment']);
-    Route::post('/signout',         [AuthController::class, 'signout']);
+    Route::get('/profile',                  [ProfileController::class, 'getProfile']);
+    Route::put('/profile',                  [ProfileController::class, 'updateProfile']);
+    Route::put('/password',                 [ProfileController::class, 'updatePassword']);
+    Route::post('/upload/avatar',           [ProfileController::class, 'uploadAvatar']);
+    Route::get('/appointment',              [AppointmentController::class, 'getAppointments']);
+    Route::post('/appointment/firm',        [AppointmentController::class, 'createAppointmentLawyer']);
+    Route::post('/appointment/lawyer',      [AppointmentController::class, 'createAppointmentFirm']);
+    Route::post('/signout',                 [AuthController::class, 'signout']);
 });
 
 
@@ -36,18 +38,22 @@ Route::post('/otp/verify', [OTPController::class, 'verifyOTP'])->name('lawyer.ot
 /*-------------------------------------------------------
 |                      LAWYERS API                      |
 |-------------------------------------------------------|
-|  This section contains all routes related to lawyers |
+|  This section contains all routes related to lawyers  |
 |-------------------------------------------------------*/
 
 Route::get('/lawyer',                       [LawyerController::class, 'getLawyers']);
 Route::get('/lawyer/{lawyer}',              [LawyerController::class, 'getLawyer']);
 Route::get('/lawyer/{lawyer}/availability', [LawyerController::class, 'getAvailability']);
 
-Route::get('/firm', [LawyerController::class, 'getLawyers']);
-Route::get('/firm/{id}', [LawyerController::class, 'getLawyer']);
-// Route::get('/lawyer/{id}/reviews', [LawyerController::class, 'getReviews']);
+/*-------------------------------------------------------
+|                      FIRMS API                        |
+|-------------------------------------------------------|
+|  This section contains all routes related to firms    |
+|-------------------------------------------------------*/
 
-
+Route::get('/firm',                     [FirmController::class, 'getFirms']);
+Route::get('/firm/{firm}',              [FirmController::class, 'getFirm']);
+Route::get('/firm/{firm}/availability', [FirmController::class, 'getAvailability']);
 
 
 Route::any('/foo', function(){
